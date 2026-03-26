@@ -7,6 +7,7 @@ part 'app_router.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Screen,Route')
 class AppRouter extends RootStackRouter {
+  // ignore: unused_field
   final AuthGuard _authGuard;
 
   AppRouter({required AuthGuard authGuard}) : _authGuard = authGuard;
