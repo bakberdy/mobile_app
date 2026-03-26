@@ -1,12 +1,6 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
-import 'package:mobile_app/src/features/navigation/pages/main_navigation_page.dart';
-import 'package:mobile_app/src/features/onboarding/presentation/pages/onboarding_page.dart';
-import 'package:mobile_app/src/features/routes/domain/entities/route_category_entity.dart';
-import 'package:mobile_app/src/features/routes/domain/entities/route_type_entity.dart';
-import 'package:mobile_app/src/features/routes/presentation/pages/routes_page.dart';
-import 'package:mobile_app/src/features/routes/presentation/pages/home_page.dart';
-import 'package:mobile_app/src/features/user_config/presentation/screens/user_config_example_page.dart';
+import 'package:mobile_app/src/features/navigation/screens/main_navigation_screen.dart';
+import 'package:mobile_app/src/features/user_config/presentation/screens/user_config_example_screen.dart';
 import 'auth_guard.dart';
 
 part 'app_router.gr.dart';
@@ -19,12 +13,11 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    // AutoRoute(page: UserConfigExampleScreen.page, initial: true),
+    // AutoRoute(page: UserConfigExampleRoute.page, initial: true),
 
     // AutoRoute(
     //   initial: false,
     //   page: MainNavigationRoute.page,
-
     //   guards: [_authGuard],
     //   children: [
     //     AutoRoute(page: OnboardingRoute.page),
@@ -34,6 +27,6 @@ class AppRouter extends RootStackRouter {
     //     // AutoRoute(page: ProfileRoute.page, path: 'profile'),
     //   ],
     // ),
-    // // AutoRoute(page: CatalogItemDetailRoute.page, path: '/catalog/item/:itemId'),
+    // AutoRoute(page: CatalogItemDetailRoute.page, path: '/catalog/item/:itemId'),
   ];
 }

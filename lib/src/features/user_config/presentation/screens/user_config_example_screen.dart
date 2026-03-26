@@ -9,14 +9,14 @@ import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_blo
 import 'package:mobile_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
 
 @RoutePage()
-class UserConfigExamplePage extends StatefulWidget {
-  const UserConfigExamplePage({super.key});
+class UserConfigExampleScreen extends StatefulWidget {
+  const UserConfigExampleScreen({super.key});
 
   @override
-  State<UserConfigExamplePage> createState() => _UserConfigExampleScreenState();
+  State<UserConfigExampleScreen> createState() => _UserConfigExampleScreenState();
 }
 
-class _UserConfigExampleScreenState extends State<UserConfigExamplePage> {
+class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeBloc>().state;
@@ -26,7 +26,7 @@ class _UserConfigExampleScreenState extends State<UserConfigExamplePage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
-          crossAxisAlignment: .start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DropdownButton<AppThemeMode>(
               borderRadius: BorderRadius.circular(16),
@@ -53,7 +53,7 @@ class _UserConfigExampleScreenState extends State<UserConfigExamplePage> {
                 }
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DropdownButton<String>(
               borderRadius: BorderRadius.circular(16),
               underline: const SizedBox(),
@@ -79,7 +79,6 @@ class _UserConfigExampleScreenState extends State<UserConfigExamplePage> {
                 }
               },
             ),
-
             const SizedBox(height: 24),
             Text('Snackbar', style: context.textTheme.titleMedium),
             const SizedBox(height: 8),
@@ -133,7 +132,7 @@ class _UserConfigExampleScreenState extends State<UserConfigExamplePage> {
                 ),
               ],
             ),
-             const SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text('Banner', style: context.textTheme.titleMedium),
             const SizedBox(height: 8),
             Wrap(
@@ -141,18 +140,21 @@ class _UserConfigExampleScreenState extends State<UserConfigExamplePage> {
                 FilledButton(
                   onPressed: () => ScaffoldMessenger.of(context).showMaterialBanner(
                     MaterialBanner(
-                      content: Text('Custom'),
+                      content: const Text('Custom'),
                       actions: [
-                        TextButton(onPressed: () {
-                          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-                        }, child: Text('Hide')),
+                        TextButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                          },
+                          child: const Text('Hide'),
+                        ),
                       ],
                     ),
                   ),
                   child: const Text('Banner'),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

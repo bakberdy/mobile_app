@@ -21,8 +21,8 @@ final _widgetbookMaterialThemes = [
 ];
 
 /// Widgetbook catalog for Travel App design-system widgets.
-class TravelAppWidgetbook extends StatelessWidget {
-  const TravelAppWidgetbook({super.key});
+class MobileAppWidgetbook extends StatelessWidget {
+  const MobileAppWidgetbook({super.key});
 
   @override
   Widget build(BuildContext context) {

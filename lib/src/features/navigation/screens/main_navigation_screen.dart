@@ -5,15 +5,14 @@ import 'package:mobile_app/src/features/navigation/widgets/nav_bar.dart';
 import 'package:mobile_app/src/features/navigation/widgets/nav_bar_item.dart';
 
 @RoutePage()
-class MainNavigationPage extends StatefulWidget {
-  const MainNavigationPage({super.key});
+class MainNavigationScreen extends StatefulWidget {
+  const MainNavigationScreen({super.key});
 
   @override
-  State<MainNavigationPage> createState() => _MainNavigationPageState();
+  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
-class _MainNavigationPageState extends State<MainNavigationPage> {
-  // Store a callback to trigger scroll to top
+class _MainNavigationScreenState extends State<MainNavigationScreen> {
   VoidCallback? _scrollToTopCallback;
 
   void _registerScrollToTop(VoidCallback callback) {
@@ -31,13 +30,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       onRegisterCallback: _registerScrollToTop,
       child: AutoTabsScaffold(
         extendBody: true,
-        routes: [
-          // (),
+        routes: const [
           // HomeRoute(),
           // OnboardingRoute(),
         ],
         bottomNavigationBuilder: (context, tabsRouter) => NavBar(
-
           initialPage: tabsRouter.activeIndex,
           onPageChanged: (int value) {
             if (value != tabsRouter.activeIndex) {
@@ -47,8 +44,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             }
           },
           items: [
-            NavBarItem(icon: const Icon(Icons.home, size: 20,), label: 'Home'),
-            NavBarItem(icon: const Icon(Icons.person, size: 20,), label: 'Profile'),
+            NavBarItem(icon: const Icon(Icons.home, size: 20), label: 'Home'),
+            NavBarItem(icon: const Icon(Icons.person, size: 20), label: 'Profile'),
           ],
         ),
       ),
