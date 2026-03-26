@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "travel_app",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "toolArgs": [
+                "--dart-define-from-file=config/config.prod.json"
+            ]
+        },
+        {
+            "name": "travel_app (dev)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "toolArgs": [
+                "--dart-define-from-file=config/config.dev.json"
+            ]
+        },
+        {
+            "name": "travel_app (staging)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "toolArgs": [
+                "--dart-define-from-file=config/config.stage.json"
+            ]
+        },
+        {
+            "name": "travel_app (Widgetbook)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/widgetbook/main.dart"
+        }
+    ]
+}

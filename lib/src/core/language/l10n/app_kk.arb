@@ -1,0 +1,19 @@
+{
+  "@@locale": "kk",
+  "errorTitle": "Қате",
+  "apiFailureDefaultMessage": "Сұрау кезінде қате орын алды",
+  "parseFailureDefaultMessage": "Деректерді өңдеу кезінде қате орын алды",
+  "baseDefaultMessage": "Күтпеген қате орын алды",
+
+  "themeMode": "Тема режимі",
+  "light": "Жарық",
+  "dark": "Қара",
+  "system": "Жүйелік",
+
+  "kazakh": "Қазақ",
+  "russian": "Орыс",
+  "english": "Ағылшын",
+
+  "notSelected": "Таңдалмаған",
+  "dismiss": "Жабу"
+}

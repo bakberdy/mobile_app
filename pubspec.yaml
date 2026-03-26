@@ -1,0 +1,114 @@
+name: travel_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  equatable: ^2.0.8
+  cached_network_image: ^3.4.1
+  auto_route: ^11.1.0
+  dio: ^5.9.0
+  injectable: ^2.7.1+4
+  dartz: ^0.10.1
+  shared_preferences: ^2.5.4
+  intl: ^0.20.2
+  connectivity_plus: ^7.0.0
+  flutter_localizations:
+    sdk: flutter
+  flutter_secure_storage: ^10.0.0
+  flutter_bloc: ^9.1.1
+  path_provider: ^2.1.5
+  get_it: ^9.2.0
+  freezed_annotation: ^3.1.0
+  widgetbook: ^3.22.0
+
+  app_log:
+    git:
+      url: https://github.com/bakberdy/app_log.git
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  network_image_mock: ^2.1.1
+  auto_route_generator: ^10.4.0
+  build_runner: ^2.10.5
+  freezed: ^3.2.3
+  injectable_generator: ^2.6.2
+  json_serializable: ^6.8.0
+  intl_utils: ^2.8.14
+
+
+
+flutter:
+  generate: true
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Hiatus
+      fonts:
+        - asset: assets/fonts/Hiatus.ttf
+
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat/static/Montserrat-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Montserrat/static/Montserrat-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Montserrat/static/Montserrat-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Montserrat/static/Montserrat-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Montserrat/static/Montserrat-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Montserrat/static/Montserrat-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Montserrat/static/Montserrat-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Montserrat/static/Montserrat-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Montserrat/static/Montserrat-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Montserrat/static/Montserrat-BlackItalic.ttf
+          weight: 900
+          style: italic

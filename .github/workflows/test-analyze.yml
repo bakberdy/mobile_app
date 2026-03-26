@@ -1,0 +1,26 @@
+name: test-analyze
+on:
+  workflow_call:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - dev
+      - staging
+      - main
+      
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze --no-pub #--no-fatal-infos
+      - run: flutter test

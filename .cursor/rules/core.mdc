@@ -1,0 +1,61 @@
+---
+description: Core folder rules: ApiClient usage, StateStatus, FieldState semantics, Failure type routing, analytics conventions.
+globs: lib/src/core/**/*.dart
+alwaysApply: false
+---
+
+# Core Rules
+
+## ApiClient
+- Follow `lib/src/core/api/usage_documentation.md` for all usage patterns
+- ❌ Never import or instantiate `Dio` / `http` outside `core/api/`
+- Inject `ApiClient` via constructor — never create it ad hoc inside a repository
+
+## StateStatus
+`lib/src/core/bloc/state_status.dart` provides `initial | loading | success | error`.
+Use this enum for all async status in BLoC states. Only introduce a custom enum if these four values are genuinely insufficient.
+
+## FieldState
+`lib/src/core/bloc/states/field_state.dart` — use for every form/input field in BLoC state:
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `value` | `T` | Current input value |
+| `status` | `FieldStatus` | `pure \| valid \| invalid` |
+| `error` | `String?` | Validation message shown below the field when `invalid` |
+| `isDirty` | `bool` | `true` after first user interaction |
+| `enabled` | `bool` | `false` to disable the field |
+
+## Failure type → UI routing
+
+| `FailureType` | Component | Notes |
+|---------------|-----------|-------|
+| `snackbar` | `BaseSnackbar.error / .warning / .info / .success` | Default; non-blocking |
+| `banner` | `ScaffoldMessenger → MaterialBanner` | Persistent warning |
+| `inlineError` | `FieldState.error` below the input | Mapped in BLoC; never via snackbar |
+| `alert` | `BaseDialog.showBasic(...)` | Blocking modal; `barrierDismissible: false` |
+| `fullScreenError` | `BaseDialog.showFullscreen(...)` | Critical; replaces screen content |
+| `silent` | Nothing shown | Log/analytics only |
+
+If `failure.message == null`, show a localized fallback via `context.l10n`.
+
+## Analytics conventions
+- Global event names: `lib/src/core/monitoring/analytics/analytics_events.dart`
+- Feature-specific events: `lib/src/features/<feature>/domain/analytics/<feature>_events.dart`
+
+```dart
+// ✅ GOOD — user_config feature events in domain/analytics/user_config_events.dart
+final class SetAppThemeModeUseCaseEvent extends AnalyticsEvent {
+  factory SetAppThemeModeUseCaseEvent.success() => ...
+  factory SetAppThemeModeUseCaseEvent.failure({required Map<String, dynamic> properties}) => ...
+}
+
+// ❌ BAD — hardcoded string outside constants class
+Analytics.track(AnalyticsEvent(name: 'theme_changed'));
+
+// ❌ BAD — analytics in BLoC (ThemeBloc, LocaleBloc, etc.)
+// analytics only belong in UseCase call() methods
+```
+
+- `Analytics.track(...)` is only permitted inside `UseCase.call()` implementations
+- `AnalyticsEventNames` and `AnalyticsPropertyKeys` constants must be used — no raw strings

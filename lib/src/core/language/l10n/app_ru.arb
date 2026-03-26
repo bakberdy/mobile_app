@@ -1,0 +1,19 @@
+{
+  "@@locale": "ru",
+  "errorTitle": "Ошибка",
+  "apiFailureDefaultMessage": "Что-то пошло не так при запросе",
+  "parseFailureDefaultMessage": "Ошибка при обработке данных",
+  "baseDefaultMessage": "Произошла непредвиденная ошибка",
+
+  "themeMode": "Режим темы",
+  "light": "Светлый",
+  "dark": "Темный",
+  "system": "Системный",
+
+  "kazakh": "Казахский",
+  "russian": "Русский",
+  "english": "Английский",
+
+  "notSelected": "Не выбрано",
+  "dismiss": "Закрыть"
+}

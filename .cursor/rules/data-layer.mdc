@@ -1,0 +1,69 @@
+---
+description: Data layer rules: no cross-feature data imports, exception-to-Failure conversion, ApiClient usage, no analytics.
+globs: lib/src/features/**/data/**/*.dart
+alwaysApply: false
+---
+
+# Data Layer Rules
+
+## Imports
+- ❌ NO imports from another feature's `data/` layer
+- ❌ NO analytics imports — analytics belongs exclusively in domain UseCases
+- ✅ May import own feature's `domain/` (entities, repository contracts)
+- ✅ May import `core/` (error, api, storage, network)
+
+## File naming
+Files must be prefixed with the feature name:
+- ✅ `user_config_repository_impl.dart`, `user_config_local_data_source.dart`, `user_config_remote_data_source.dart`
+- ❌ `repository_impl.dart`, `local_data_source.dart`
+
+## Exception → Failure conversion
+All exceptions MUST be caught at the **repository implementation** level and converted to `Failure`.
+Data sources may throw — the repository catches and maps.
+
+```dart
+// ✅ GOOD — user_config repository impl
+@LazySingleton(as: UserConfigRepository)
+class UserConfigRepositoryImpl implements UserConfigRepository {
+  final UserConfigLocalDataSource _local;
+  UserConfigRepositoryImpl(this._local);
+
+  @override
+  FutureEither<AppThemeMode?> getAppThemeMode() async {
+    try {
+      final raw = await _local.getUserConfig(key: UserConfigConsts.themeKey);
+      final mode = raw != null ? AppThemeMode.values.byName(raw) : null;
+      return Right(mode);
+    } on FormatException catch (e) {
+      return Left(Failure.parse(source: '$runtimeType', message: e.message));
+    } catch (e) {
+      return Left(Failure.base(source: '$runtimeType', message: e.toString()));
+    }
+  }
+
+  @override
+  FutureEither<void> setTheme(AppThemeMode themeMode) async {
+    try {
+      await _local.setUserConfig(key: UserConfigConsts.themeKey, value: themeMode.name);
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure.base(source: '$runtimeType', message: e.toString()));
+    }
+  }
+}
+
+// ❌ BAD — exception thrown in data source escapes to domain/BLoC
+void _ensureSupportedValue(Object? value) {
+  if (value is! String && value is! int) {
+    throw Exception('Unsupported type'); // raw exception, never caught
+  }
+}
+```
+
+## API usage
+- Use `ApiClient` for all HTTP calls — follow `lib/src/core/api/usage_documentation.md`
+- ❌ Never import `Dio` / `http` directly in a repository or data source
+
+## No analytics
+- ❌ Never call `Analytics.track(...)` anywhere in the data layer
+- ❌ Never import `core/monitoring/analytics/` in data layer files

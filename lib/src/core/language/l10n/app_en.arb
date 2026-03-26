@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "errorTitle": "Error",
+  "apiFailureDefaultMessage": "Something went wrong on request",
+  "parseFailureDefaultMessage": "Something went wrong on handling the data",
+  "baseDefaultMessage": "An unexpected error occurred",
+
+  "themeMode": "Theme Mode",
+  "light": "Light",
+  "dark": "Dark",
+  "system": "System",
+
+  "kazakh": "Kazakh",
+  "russian": "Russian",
+  "english": "English",
+
+  "notSelected": "Not Selected",
+  "dismiss": "Dismiss"
+}

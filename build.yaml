@@ -1,0 +1,13 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        options:
+          to_json: false
+          from_json: false
+          when: false
+          map: false
+      injectable_generator:injectable_builder:
+        options:
+          auto_register: true
+          generate_for_injectable: true

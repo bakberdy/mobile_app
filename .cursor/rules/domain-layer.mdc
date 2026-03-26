@@ -1,0 +1,78 @@
+---
+description: Domain layer rules: no Flutter/data imports, UseCase naming, analytics events, file naming, failure analytics.
+globs: lib/src/features/**/domain/**/*.dart
+alwaysApply: false
+---
+
+# Domain Layer Rules
+
+## Imports
+- ❌ NO `flutter/` imports — domain is pure Dart
+- ❌ NO imports from any feature's `data/` layer
+- ✅ Only: `dart:*`, `dartz`, `injectable`, `freezed_annotation`, own `core/` (error, usecases, monitoring/analytics)
+
+## File naming
+All files inside a feature MUST be prefixed with the **feature name**:
+- ✅ `user_config_repository.dart`, `user_config_get_app_theme_mode_use_case.dart`
+- ❌ `repository.dart`, `get_app_theme_mode.dart`
+
+## UseCase naming
+Class must end with `UseCase` (not `Usecase`). File must end with `_use_case.dart` (not `_usecase.dart`).
+
+```dart
+// ❌ BAD — current violation in user_config
+class GetAppThemeModeUsecase ...          // file: get_app_theme_mode_usecase.dart
+class GetLocaleUsecase ...                // file: get_locale_usecase.dart
+
+// ✅ GOOD
+class GetAppThemeModeUseCase ...          // file: get_app_theme_mode_use_case.dart
+class GetLocaleUseCase ...                // file: get_locale_use_case.dart
+```
+
+## Analytics events
+Each feature owns its analytics events in `domain/analytics/<feature_name>_events.dart`.
+Event classes extend `AnalyticsEvent`. Named factory constructors are mandatory — no inline raw strings.
+
+```dart
+// ✅ GOOD — user_config: domain/analytics/user_config_events.dart
+final class GetAppThemeModeUseCaseEvent extends AnalyticsEvent {
+  const GetAppThemeModeUseCaseEvent({required super.name, super.properties});
+
+  factory GetAppThemeModeUseCaseEvent.success() =>
+      GetAppThemeModeUseCaseEvent(name: 'get_app_theme_mode_use_case_success');
+
+  factory GetAppThemeModeUseCaseEvent.failure({required Map<String, dynamic> properties}) =>
+      GetAppThemeModeUseCaseEvent(name: 'get_app_theme_mode_use_case_failure', properties: properties);
+}
+
+// ❌ BAD — raw string inline, not in domain/analytics/
+Analytics.track(AnalyticsEvent(name: 'get_theme_failure'));
+```
+
+## Failure tracking in UseCases
+Failures MUST be sent to analytics **only inside UseCases**, not in BLoC or data layer:
+
+```dart
+// ✅ GOOD — from user_config: domain/usecases/get_app_theme_mode_use_case.dart
+@override
+FutureEither<AppThemeMode?> call(NoParams params) async {
+  final result = await _repo.getAppThemeMode();
+  return result.fold(
+    (failure) {
+      Analytics.track(GetAppThemeModeUseCaseEvent.failure(properties: {
+        AnalyticsPropertyKeys.failureMessage: failure.message,
+        AnalyticsPropertyKeys.failureType: failure.type.name,
+        AnalyticsPropertyKeys.failureSource: failure.source,
+      }));
+      return result;
+    },
+    (success) {
+      Analytics.track(GetAppThemeModeUseCaseEvent.success());
+      return result;
+    },
+  );
+}
+```
+
+## Failures are business logic only
+`Failure` types belong in domain. Raw exceptions (storage, network) are caught in `data/` and mapped there.

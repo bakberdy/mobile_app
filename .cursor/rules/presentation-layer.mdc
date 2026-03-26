@@ -1,0 +1,124 @@
+---
+description: Presentation UI rules: no hardcoded texts/colors, localize all strings, failure display by type, no TextEditingController.
+globs: lib/src/features/**/presentation/**/*.dart
+alwaysApply: false
+---
+
+# Presentation Layer Rules
+
+## No hardcoded texts
+Every string shown in the UI must be localized via `context.l10n`. Add the key to **all** `.arb` files under `lib/src/core/language/l10n/`.
+
+```dart
+// ❌ BAD — current violations in user_config_example_page.dart
+Text('Snackbar')
+Text('Banner')
+BaseSnackbar.success(context, message: 'Route saved successfully')
+BaseSnackbar.error(context, message: 'Failed to load route data')
+
+// ✅ GOOD
+Text(context.l10n.snackbarSectionTitle)
+Text(context.l10n.bannerSectionTitle)
+BaseSnackbar.success(context, message: context.l10n.routeSavedSuccessfully)
+BaseSnackbar.error(context, message: context.l10n.failedToLoadRouteData)
+```
+
+New keys go in every `.arb` file:
+```json
+// app_en.arb
+"snackbarSectionTitle": "Snackbar",
+"routeSavedSuccessfully": "Route saved successfully"
+```
+
+## No hardcoded colors
+- ❌ `Color(0xFF123456)`, `Colors.red`, `Colors.green.shade400`
+- ✅ `context.colorScheme.error`, `context.colorScheme.primary`
+
+## Input fields — no TextEditingController
+Input state lives in BLoC via `FieldState`. Read value from state, dispatch events on change, show `FieldState.error` when invalid.
+
+```dart
+// ✅ GOOD — hypothetical user_config display name field
+BlocBuilder<UserConfigEditBloc, UserConfigEditState>(
+  builder: (context, state) => TextField(
+    onChanged: (v) => context.read<UserConfigEditBloc>().add(UserConfigDisplayNameChanged(v)),
+    decoration: InputDecoration(
+      labelText: context.l10n.displayName,
+      errorText: state.displayName.isInvalid ? state.displayName.error : null,
+    ),
+  ),
+)
+
+// ❌ BAD
+final _nameController = TextEditingController();
+TextField(controller: _nameController)
+```
+
+## Failure display
+Listen to `state.failure` in a `BlocListener` and display the appropriate component based on `failure.type`.
+Always check `failure.message` first; if null, fall back to a localized default via `context.l10n`.
+
+### Component reference
+
+| `FailureType` | Component | Call |
+|---------------|-----------|------|
+| `snackbar` | `BaseSnackbar` | `BaseSnackbar.error / .warning / .info / .success(context, message:)` |
+| `alert` | `BaseDialog` | `BaseDialog.showBasic(context, title:, description:, primaryLabel:)` |
+| `fullScreenError` | `BaseDialog` | `BaseDialog.showFullscreen(context, title:, bodyText:, primaryLabel:)` |
+| `banner` | `MaterialBanner` | `ScaffoldMessenger.of(context).showMaterialBanner(...)` |
+| `inlineError` | — | Mapped to `FieldState.error` in BLoC — nothing to do in UI |
+| `silent` | — | No UI; log/analytics only |
+
+```dart
+// ✅ GOOD — applies to ThemeBloc / LocaleBloc consumers
+BlocListener<ThemeBloc, ThemeState>(
+  listenWhen: (prev, curr) => curr.failure != null && prev.failure != curr.failure,
+  listener: (context, state) {
+    final failure = state.failure!;
+    final message = failure.message ?? context.l10n.defaultErrorMessage;
+
+    switch (failure.type) {
+      case FailureType.snackbar:
+        // Choose severity: .error / .warning / .info / .success
+        BaseSnackbar.error(context, message: message);
+
+      case FailureType.alert:
+        // Blocking modal — user must acknowledge before continuing
+        BaseDialog.showBasic(
+          context,
+          title: context.l10n.errorTitle,
+          description: message,
+          primaryLabel: context.l10n.ok,
+          barrierDismissible: false,
+        );
+
+      case FailureType.fullScreenError:
+        // Full-screen takeover — for critical, unrecoverable errors
+        BaseDialog.showFullscreen(
+          context,
+          title: context.l10n.errorTitle,
+          bodyText: message,
+          primaryLabel: context.l10n.retry,
+          onPrimary: () => context.read<ThemeBloc>().add(const ThemeStarted()),
+          barrierDismissible: false,
+        );
+
+      case FailureType.inlineError:
+        // Already mapped to FieldState.error in BLoC — nothing to do here
+        break;
+
+      case FailureType.silent:
+        break;
+    }
+  },
+)
+```
+
+## Imports
+- ❌ NO imports from any `data/` layer
+- ❌ NO imports from another feature's `presentation/` or BLoC directly — rely on DI
+
+## File naming
+Files must be prefixed with the feature name:
+- ✅ `user_config_example_page.dart`, `user_config_theme_dropdown.dart`
+- ❌ `example_page.dart`, `theme_dropdown.dart`
