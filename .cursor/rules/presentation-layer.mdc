@@ -10,7 +10,7 @@ alwaysApply: false
 Every string shown in the UI must be localized via `context.l10n`. Add the key to **all** `.arb` files under `lib/src/core/language/l10n/`.
 
 ```dart
-// ❌ BAD — current violations in user_config_example_page.dart
+// ❌ BAD — current violations in user_config_example_screen.dart
 Text('Snackbar')
 Text('Banner')
 BaseSnackbar.success(context, message: 'Route saved successfully')
@@ -30,9 +30,28 @@ New keys go in every `.arb` file:
 "routeSavedSuccessfully": "Route saved successfully"
 ```
 
+## No force unwrap without null check
+
+Never use `!` to force-unwrap a nullable value without first checking it with `if` or a null-aware operator.
+
+```dart
+// ❌ BAD — crashes if null despite listenWhen guard
+final failure = state.failure!;
+
+// ✅ GOOD — explicit null check before use
+final failure = state.failure;
+if (failure == null) return;
+
+// ✅ GOOD — null-aware access when a fallback exists
+final message = state.failure?.message ?? context.l10n.defaultErrorMessage;
+```
+
 ## No hardcoded colors
 - ❌ `Color(0xFF123456)`, `Colors.red`, `Colors.green.shade400`
 - ✅ `context.colorScheme.error`, `context.colorScheme.primary`
+
+## Context extensions
+Never call `Theme.of(context)`, `ColorScheme.of(context)`, or `AppLocalizations.of(context)` directly — use `context.colorScheme`, `context.l10n`, etc. See `core.mdc` for the full property table.
 
 ## Input fields — no TextEditingController
 Input state lives in BLoC via `FieldState`. Read value from state, dispatch events on change, show `FieldState.error` when invalid.
@@ -54,71 +73,14 @@ final _nameController = TextEditingController();
 TextField(controller: _nameController)
 ```
 
-## Failure display
-Listen to `state.failure` in a `BlocListener` and display the appropriate component based on `failure.type`.
-Always check `failure.message` first; if null, fall back to a localized default via `context.l10n`.
-
-### Component reference
-
-| `FailureType` | Component | Call |
-|---------------|-----------|------|
-| `snackbar` | `BaseSnackbar` | `BaseSnackbar.error / .warning / .info / .success(context, message:)` |
-| `alert` | `BaseDialog` | `BaseDialog.showBasic(context, title:, description:, primaryLabel:)` |
-| `fullScreenError` | `BaseDialog` | `BaseDialog.showFullscreen(context, title:, bodyText:, primaryLabel:)` |
-| `banner` | `MaterialBanner` | `ScaffoldMessenger.of(context).showMaterialBanner(...)` |
-| `inlineError` | — | Mapped to `FieldState.error` in BLoC — nothing to do in UI |
-| `silent` | — | No UI; log/analytics only |
-
-```dart
-// ✅ GOOD — applies to ThemeBloc / LocaleBloc consumers
-BlocListener<ThemeBloc, ThemeState>(
-  listenWhen: (prev, curr) => curr.failure != null && prev.failure != curr.failure,
-  listener: (context, state) {
-    final failure = state.failure!;
-    final message = failure.message ?? context.l10n.defaultErrorMessage;
-
-    switch (failure.type) {
-      case FailureType.snackbar:
-        // Choose severity: .error / .warning / .info / .success
-        BaseSnackbar.error(context, message: message);
-
-      case FailureType.alert:
-        // Blocking modal — user must acknowledge before continuing
-        BaseDialog.showBasic(
-          context,
-          title: context.l10n.errorTitle,
-          description: message,
-          primaryLabel: context.l10n.ok,
-          barrierDismissible: false,
-        );
-
-      case FailureType.fullScreenError:
-        // Full-screen takeover — for critical, unrecoverable errors
-        BaseDialog.showFullscreen(
-          context,
-          title: context.l10n.errorTitle,
-          bodyText: message,
-          primaryLabel: context.l10n.retry,
-          onPrimary: () => context.read<ThemeBloc>().add(const ThemeStarted()),
-          barrierDismissible: false,
-        );
-
-      case FailureType.inlineError:
-        // Already mapped to FieldState.error in BLoC — nothing to do here
-        break;
-
-      case FailureType.silent:
-        break;
-    }
-  },
-)
-```
+## Failure display, buttons, dialogs and bottom sheets
+See `presentation-components.mdc` for the full `FailureType` switch example, button catalogue (`BaseFilledButton`, `BaseElevatedButton`, etc.), `BaseDialog`, and `BaseBottomSheet` usage.
 
 ## Imports
 - ❌ NO imports from any `data/` layer
 - ❌ NO imports from another feature's `presentation/` or BLoC directly — rely on DI
 
 ## File naming
-Files must be prefixed with the feature name:
-- ✅ `user_config_example_page.dart`, `user_config_theme_dropdown.dart`
-- ❌ `example_page.dart`, `theme_dropdown.dart`
+Files must be prefixed with the feature name. Screens use `_screen.dart` suffix, never `_page.dart`.
+- ✅ `user_config_example_screen.dart`, `user_config_theme_dropdown.dart`
+- ❌ `example_screen.dart`, `theme_dropdown.dart`, `user_config_example_page.dart`

@@ -1,0 +1,65 @@
+---
+description: How to run the app and how to add new environment values (API keys, URLs, flags) through config JSON files and AppConfig.
+globs: "{lib/app_config.dart,config/*.json,lib/src/**/*.dart}"
+alwaysApply: false
+---
+
+# App Configuration
+
+## Running the app
+All launch configurations are in `.vscode/launch.json`. Use the correct one for your environment:
+
+| Launch name | Config file loaded | Use for |
+|---|---|---|
+| `mobile_app (dev)` | `config/config.dev.json` | Daily development |
+| `mobile_app (staging)` | `config/config.stage.json` | Staging / QA |
+| `mobile_app` | `config/config.prod.json` | Production builds |
+| `mobile_app (Widgetbook)` | — | Component catalogue only |
+
+Config files live in the **`config/`** folder at the project root and are injected at compile time via `--dart-define-from-file`.
+
+## Adding a new environment value (API key, URL, toggle)
+
+Follow all 4 steps every time — skipping any step will leave an environment without the value.
+
+**Step 1 — Add the key to every env config file:**
+```json
+// config/config.dev.json   config/config.stage.json   config/config.prod.json
+{
+  "base_api_url": "...",
+  "environment": "...",
+  "my_new_key": "actual-value-for-this-env"
+}
+```
+
+**Step 2 — Add a placeholder (no real value) to `config/config.example.json`:**
+```json
+{
+  "my_new_key": "YOUR_MY_NEW_KEY"
+}
+```
+
+**Step 3 — Read it in `lib/app_config.dart` via `String.fromEnvironment`:**
+```dart
+static const String _myNewKey = String.fromEnvironment(
+  'my_new_key',         // must match the JSON key exactly
+  defaultValue: 'not-provided',
+);
+```
+
+**Step 4 — Expose it as a field on `AppConfig`:**
+```dart
+final String myNewKey;
+
+// Add to AppConfig.instance initialiser:
+myNewKey: _myNewKey,
+
+// Add to AppConfig._internal constructor:
+required this.myNewKey,
+```
+
+## Rules
+- ❌ Never hardcode API keys, base URLs, or environment flags anywhere in Dart code
+- ❌ Never commit real secrets to `config.example.json`
+- ✅ All three env files (`dev`, `stage`, `prod`) must always have the same set of keys
+- ✅ Inject `AppConfig` via DI (`AppModule`) — never call `AppConfig.instance` directly outside `app_module.dart`

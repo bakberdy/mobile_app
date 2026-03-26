@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/components/buttons/base_button_progress.dart';
-import 'package:travel_app/src/config/theme/typography.dart';
-import 'package:travel_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/components/buttons/base_button_progress.dart';
+import 'package:mobile_app/src/config/theme/typography.dart';
+import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 class BaseElevatedButton extends StatelessWidget {
   const BaseElevatedButton._({

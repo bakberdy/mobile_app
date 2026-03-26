@@ -1,0 +1,150 @@
+---
+description: Navigation rules: AutoRoute only, @RoutePage annotation, route declaration, guards, no Navigator, no navigation in BLoC.
+globs: lib/src/**/*.dart
+alwaysApply: false
+---
+
+# Navigation Rules
+
+This project uses **AutoRoute**. All navigation must go through it — no raw `Navigator` calls.
+
+## Screen annotation
+
+Every screen that can be navigated to MUST be annotated with `@RoutePage()`.
+
+```dart
+// ✅ GOOD — lib/src/features/onboarding/presentation/screens/onboarding_screen.dart
+@RoutePage()
+class OnboardingScreen extends StatelessWidget { ... }
+
+// ❌ BAD — no annotation, AutoRoute won't generate a route for it
+class OnboardingScreen extends StatelessWidget { ... }
+
+// ❌ BAD — wrong suffix
+class OnboardingPage extends StatelessWidget { ... }  // use Screen, not Page
+```
+
+- Screens live in `lib/src/features/<feature>/presentation/screens/`
+- File suffix: `_screen.dart` — class suffix: `Screen`
+- ❌ Never use `_page.dart` / `Page` suffix
+
+---
+
+## Route declaration
+
+All routes are declared in `lib/src/config/router/app_router.dart`. Never add routes anywhere else.
+
+```dart
+// ✅ GOOD — app_router.dart
+@AutoRouterConfig(replaceInRouteName: 'Screen,Route')
+class AppRouter extends RootStackRouter {
+  @override
+  List<AutoRoute> get routes => [
+    AutoRoute(page: MainNavigationRoute.page, initial: true, guards: [_authGuard],
+      children: [
+        AutoRoute(page: HomeRoute.page, path: 'home', initial: true),
+        AutoRoute(page: ProfileRoute.page, path: 'profile'),
+      ],
+    ),
+    AutoRoute(page: OnboardingRoute.page, path: '/onboarding'),
+  ];
+}
+
+// ❌ BAD — route declared outside AppRouter
+final router = GoRouter(routes: [...]);   // wrong library
+```
+
+Generated route name: `OnboardingScreen` → `OnboardingRoute` (suffix `Screen` → `Route`).
+
+## Navigation API — context.router only
+
+```dart
+// ✅ GOOD
+context.router.push(const OnboardingRoute());
+context.router.replace(const HomeRoute());
+context.router.pop();
+context.router.replaceAll([const MainNavigationRoute()]); // reset stack (e.g. after login)
+context.router.pushAndPopUntil(ProfileRoute(), predicate: (_) => false);
+
+// ❌ BAD — raw Navigator
+Navigator.of(context).push(MaterialPageRoute(builder: (_) => OnboardingScreen()));
+Navigator.pushNamed(context, '/onboarding');
+Navigator.pushReplacement(context, ...);
+```
+
+## Route parameters
+
+Pass parameters via typed route constructor arguments — never via widget constructor or BLoC event.
+
+```dart
+// ✅ GOOD — route with typed params (declared in app_router.dart)
+AutoRoute(page: RouteDetailRoute.page, path: '/routes/:id')
+
+// Generated usage:
+context.router.push(RouteDetailRoute(routeId: route.id));
+
+// In the screen — receive via @PathParam / @QueryParam
+@RoutePage()
+class RouteDetailScreen extends StatelessWidget {
+  final String routeId;
+  const RouteDetailScreen({@PathParam('id') required this.routeId, super.key});
+}
+
+// ❌ BAD — passing data through widget constructor outside AutoRoute
+Navigator.push(context, MaterialPageRoute(builder: (_) => RouteDetailScreen(routeId: '123')));
+```
+
+## Navigation belongs in UI — never in BLoC or UseCase
+
+BLoC emits state; the UI listens and navigates. BLoC must not hold a router reference.
+
+```dart
+// ✅ GOOD
+BlocListener<LoginBloc, LoginState>(
+  listenWhen: (prev, curr) => curr.status == StateStatus.success && prev.status != curr.status,
+  listener: (context, state) => context.router.replaceAll([const MainNavigationRoute()]),
+  child: ...,
+)
+
+// ❌ BAD — router injected into BLoC
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  final AppRouter _router;
+  void _onSuccess(...) => _router.replaceAll([...]); // ❌
+}
+```
+
+## Route guards
+
+Guards live in `lib/src/config/router/` and extend `AutoRouteGuard`.
+
+```dart
+// ✅ GOOD — lib/src/config/router/auth_guard.dart
+class AuthGuard extends AutoRouteGuard {
+  @override
+  void onNavigation(NavigationResolver resolver, StackRouter router) async {
+    final token = await _tokenStorage.getAccessToken();
+    token != null && token.isNotEmpty
+        ? resolver.next(true)
+        : router.replaceAll([const OnboardingRoute()]);
+  }
+}
+// ❌ BAD — auth check inside initState or BLoC```
+
+## Tab navigation
+
+Use `AutoTabsScaffold` for bottom-tab layouts. Tab switching via `tabsRouter.setActiveIndex()`.
+
+```dart
+// ✅ GOOD — MainNavigationScreen
+AutoTabsScaffold(
+  routes: [HomeRoute(), ProfileRoute()],
+  bottomNavigationBuilder: (context, tabsRouter) => NavBar(
+    initialPage: tabsRouter.activeIndex,
+    onPageChanged: (index) => tabsRouter.setActiveIndex(index),
+    items: [...],
+  ),
+)
+
+// ❌ BAD
+PageView(controller: _pageController, ...) // manual tab management
+```

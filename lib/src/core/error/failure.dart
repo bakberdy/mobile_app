@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:travel_app/src/core/utils/typedef.dart';
+import 'package:mobile_app/src/core/utils/typedef.dart';
 
 part 'failure.freezed.dart';
 

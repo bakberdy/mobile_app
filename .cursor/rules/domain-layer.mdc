@@ -9,12 +9,18 @@ alwaysApply: false
 ## Imports
 - ❌ NO `flutter/` imports — domain is pure Dart
 - ❌ NO imports from any feature's `data/` layer
-- ✅ Only: `dart:*`, `dartz`, `injectable`, `freezed_annotation`, own `core/` (error, usecases, monitoring/analytics)
+- ✅ Only: `dart:*`, `dartz`, `injectable`, `equatable`, own `core/` (error, usecases, monitoring/analytics)
+- ❌ NO `freezed_annotation` on domain classes — use `Equatable` instead
 
 ## File naming
-All files inside a feature MUST be prefixed with the **feature name**:
-- ✅ `user_config_repository.dart`, `user_config_get_app_theme_mode_use_case.dart`
-- ❌ `repository.dart`, `get_app_theme_mode.dart`
+All files inside a feature MUST be prefixed with the **feature name**. Domain classes have **no `Entity` suffix** — on the class name or the file name.
+
+- ✅ `user_config_repository.dart`, `user_config_get_app_theme_mode_use_case.dart`, `routes_route.dart`, `routes_route_type.dart`
+- ❌ `repository.dart`, `get_app_theme_mode.dart`, `routes_route_entity.dart`, `RouteEntity`
+
+Class naming:
+- ✅ `Route`, `RouteType`, `AppThemeMode`, `GetRouteRequestParameters`
+- ❌ `RouteEntity`, `RouteTypeEntity`, `GetRouteRequestParametersEntity`
 
 ## UseCase naming
 Class must end with `UseCase` (not `Usecase`). File must end with `_use_case.dart` (not `_usecase.dart`).
@@ -50,10 +56,10 @@ Analytics.track(AnalyticsEvent(name: 'get_theme_failure'));
 ```
 
 ## Failure tracking in UseCases
-Failures MUST be sent to analytics **only inside UseCases**, not in BLoC or data layer:
+Failures MUST be sent to analytics **only inside UseCases**, not in BLoC or data layer. See `core.mdc` for analytics conventions.
 
 ```dart
-// ✅ GOOD — from user_config: domain/usecases/get_app_theme_mode_use_case.dart
+// ✅ GOOD — from user_config: get_app_theme_mode_use_case.dart
 @override
 FutureEither<AppThemeMode?> call(NoParams params) async {
   final result = await _repo.getAppThemeMode();
@@ -66,11 +72,76 @@ FutureEither<AppThemeMode?> call(NoParams params) async {
       }));
       return result;
     },
-    (success) {
-      Analytics.track(GetAppThemeModeUseCaseEvent.success());
-      return result;
-    },
+    (_) { Analytics.track(GetAppThemeModeUseCaseEvent.success()); return result; },
   );
+}
+```
+
+## UseCase interface and return types
+All UseCases MUST extend `UseCase<T, Params>` (or `StreamUseCase<T, Params>` for streams) from `core/usecases/use_case.dart`.
+Return type MUST be `FutureEither<T>` — never write out `Future<Either<Failure, T>>` in full.
+
+When a UseCase takes no input, use `NoParams` as the `Params` type.
+The `Params` class (when not `NoParams`) must be defined in the same file, below the UseCase class.
+
+```dart
+// ✅ GOOD — no input parameters
+@LazySingleton()
+class GetAppThemeModeUseCase implements UseCase<AppThemeMode?, NoParams> {
+  final UserConfigRepository _repo;
+  GetAppThemeModeUseCase(this._repo);
+
+  @override
+  FutureEither<AppThemeMode?> call(NoParams params) async {
+    // ...
+  }
+}
+
+// ✅ GOOD — with parameters, Params class in the same file
+@LazySingleton()
+class SetAppThemeModeUseCase implements UseCase<void, SetAppThemeModeParms> {
+  final UserConfigRepository _repo;
+  SetAppThemeModeUseCase(this._repo);
+
+  @override
+  FutureEither<void> call(SetAppThemeModeParms params) async {
+    // ...
+  }
+}
+
+class SetAppThemeModeParms {
+  const SetAppThemeModeParms({required this.themeMode});
+  final AppThemeMode themeMode;
+}
+
+// ✅ GOOD — stream use case
+@LazySingleton()
+class WatchRouteUpdatesUseCase implements StreamUseCase<List<Route>, NoParams> {
+  final RoutesRepository _repo;
+  WatchRouteUpdatesUseCase(this._repo);
+
+  @override
+  StreamEither<List<Route>> connect(NoParams params) => _repo.watchRoutes();
+
+  @override
+  Future<void> disconnect() => _repo.closeRouteStream();
+}
+
+// ❌ BAD — wrong base class, full generic written out, Params defined elsewhere
+class GetThemeUseCase {
+  Future<Either<Failure, AppThemeMode?>> call() async { ... }
+}
+```
+
+## Repository interfaces
+Repository interfaces live in `domain/repository/`. They are pure Dart — no implementation details.
+Return types MUST use `FutureEither<T>` or `StreamEither<T>`.
+
+```dart
+// ✅ GOOD
+abstract interface class UserConfigRepository {
+  FutureEither<AppThemeMode?> getAppThemeMode();
+  FutureEither<void> setAppThemeMode(AppThemeMode mode);
 }
 ```
 

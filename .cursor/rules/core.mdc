@@ -27,17 +27,7 @@ Use this enum for all async status in BLoC states. Only introduce a custom enum 
 | `enabled` | `bool` | `false` to disable the field |
 
 ## Failure type → UI routing
-
-| `FailureType` | Component | Notes |
-|---------------|-----------|-------|
-| `snackbar` | `BaseSnackbar.error / .warning / .info / .success` | Default; non-blocking |
-| `banner` | `ScaffoldMessenger → MaterialBanner` | Persistent warning |
-| `inlineError` | `FieldState.error` below the input | Mapped in BLoC; never via snackbar |
-| `alert` | `BaseDialog.showBasic(...)` | Blocking modal; `barrierDismissible: false` |
-| `fullScreenError` | `BaseDialog.showFullscreen(...)` | Critical; replaces screen content |
-| `silent` | Nothing shown | Log/analytics only |
-
-If `failure.message == null`, show a localized fallback via `context.l10n`.
+See `presentation-components.mdc` for the full component table, switch example, and `failure.defaultMessage(context)` usage.
 
 ## Analytics conventions
 - Global event names: `lib/src/core/monitoring/analytics/analytics_events.dart`
@@ -59,3 +49,27 @@ Analytics.track(AnalyticsEvent(name: 'theme_changed'));
 
 - `Analytics.track(...)` is only permitted inside `UseCase.call()` implementations
 - `AnalyticsEventNames` and `AnalyticsPropertyKeys` constants must be used — no raw strings
+
+## Context extensions
+`core/utils/extensions/context_x.dart` provides convenience properties on `BuildContext`.
+Always use them — never call the underlying Flutter APIs directly.
+
+| Property | Returns | ❌ Never use |
+|----------|---------|-------------|
+| `context.theme` | `ThemeData` | `Theme.of(context)` |
+| `context.textTheme` | `TextTheme` | `Theme.of(context).textTheme` |
+| `context.colorScheme` | `ColorScheme` | `ColorScheme.of(context)` / `Theme.of(context).colorScheme` |
+| `context.baseThemeX` | `BaseThemeExtension` | `theme.extension<BaseThemeExtension>()!` |
+| `context.l10n` | `AppLocalizations` | `AppLocalizations.of(context)` |
+| `context.locale` | `Locale` | `Localizations.localeOf(context)` |
+| `context.languageCode` | `String` | `Localizations.localeOf(context).languageCode` |
+| `context.isRTL` | `bool` | manual `['ar','he','fa','ur'].contains(...)` check |
+
+## Typedefs
+`core/utils/typedef.dart` defines shared type aliases. Use them everywhere:
+
+| Alias | Expands to |
+|-------|-----------|
+| `FutureEither<T>` | `Future<Either<Failure, T>>` |
+| `StreamEither<T>` | `Stream<Either<Failure, T>>` |
+| `DataMap` | `Map<String, dynamic>` |

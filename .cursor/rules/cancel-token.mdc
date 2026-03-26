@@ -1,0 +1,129 @@
+---
+description: Cancel token rules: when to use ApiCancelToken, how it flows through data source → repository → UseCase Params → BLoC, and how the BLoC cancels on screen dismissal.
+globs: lib/src/features/**/*.dart
+alwaysApply: false
+---
+
+# Cancel Token Rules
+
+Use `ApiCancelToken` (`core/api/models/api_cancel_token.dart`) for any request that is slow, large, or user-interruptible: search queries, file uploads/downloads, paginated fetches, map/media data.
+
+## Data source
+Add `ApiCancelToken? cancelToken` as a named optional parameter and forward it to `ApiClient`:
+
+```dart
+// ✅ GOOD
+Future<List<RouteModel>> searchRoutes(String query, {ApiCancelToken? cancelToken}) async {
+  final response = await _apiClient.get(
+    ApiConstants.routes,
+    queryParameters: {'q': query},
+    cancelToken: cancelToken,
+  );
+  return (response.data as List).map((e) => RouteModel.fromJson(e)).toList();
+}
+```
+
+## Repository interface
+Declare the same optional parameter so domain can pass a token when it needs control:
+
+```dart
+// ✅ GOOD — domain/repository/routes_repository.dart
+abstract interface class RoutesRepository {
+  FutureEither<List<Route>> searchRoutes(String query, {ApiCancelToken? cancelToken});
+}
+```
+
+## Repository implementation — cancellation is silent
+When cancelled, `ApiClient` throws `ApiException(type: ApiExceptionType.cancel)`.
+Check for it **before** `toFailure()` and return `Failure.api(type: FailureType.silent, ...)`.
+`FailureType.silent` tells the BLoC to reset quietly — no error UI is shown.
+
+```dart
+// ✅ GOOD
+@override
+FutureEither<List<Route>> searchRoutes(String query, {ApiCancelToken? cancelToken}) async {
+  try {
+    final models = await _remote.searchRoutes(query, cancelToken: cancelToken);
+    return Right(models.map((m) => m.toEntity()).toList());
+  } on Exception catch (e) {
+    if (e is ApiException && e.type == ApiExceptionType.cancel) {
+      return Left(Failure.api(type: FailureType.silent, source: '$runtimeType'));
+    }
+    return Left(e.toFailure(source: '$runtimeType'));
+  }
+}
+
+// ❌ BAD — cancellation becomes a snackbar error
+} on Exception catch (e) {
+  return Left(e.toFailure(source: '$runtimeType'));
+}
+```
+
+## UseCase Params
+Include `ApiCancelToken?` in the `Params` class — nullable, so callers that don't need it pass `null`:
+
+```dart
+class SearchRoutesParams {
+  const SearchRoutesParams({required this.query, this.cancelToken});
+  final String query;
+  final ApiCancelToken? cancelToken;
+}
+```
+
+## BLoC — own the token, cancel on close
+
+The **BLoC owns `ApiCancelToken` as a private field** — never put it in Freezed state.
+Override `close()` to cancel when the screen is dismissed.
+
+```dart
+// ✅ GOOD
+class RoutesSearchBloc extends Bloc<RoutesSearchEvent, RoutesSearchState> {
+  final SearchRoutesUseCase _searchUseCase;
+  ApiCancelToken? _cancelToken; // BLoC field — NOT in Freezed state
+
+  RoutesSearchBloc(this._searchUseCase) : super(const RoutesSearchState()) {
+    on<RoutesSearchQueryChanged>(_onQueryChanged, transformer: restartable());
+  }
+
+  Future<void> _onQueryChanged(RoutesSearchQueryChanged event, Emitter<RoutesSearchState> emit) async {
+    _cancelToken?.cancel();          // cancel previous in-flight request
+    _cancelToken = ApiCancelToken(); // fresh token for this request
+
+    emit(state.copyWith(status: StateStatus.loading, failure: null));
+    final result = await _searchUseCase(
+      SearchRoutesParams(query: event.query, cancelToken: _cancelToken),
+    );
+    result.fold(
+      (failure) {
+        if (failure.type == FailureType.silent) {
+          emit(state.copyWith(status: StateStatus.initial)); // cancelled — reset silently
+          return;
+        }
+        emit(state.copyWith(status: StateStatus.error, failure: failure));
+      },
+      (routes) => emit(state.copyWith(status: StateStatus.success, routes: routes)),
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _cancelToken?.cancel('bloc closed'); // fires when screen is popped from the stack
+    return super.close();
+  }
+}
+
+// ❌ BAD — token in Freezed state
+const factory SearchState({ApiCancelToken? cancelToken}) = _SearchState; // ❌
+
+// ❌ BAD — no close() override; request keeps running after screen dismissal
+
+// ❌ BAD — cancellation shown as error
+result.fold((failure) => emit(state.copyWith(failure: failure)), ...); // snackbar on cancel
+```
+
+## Rules summary
+- `_cancelToken` is a **BLoC field**, never inside Freezed state
+- Cancel the previous token at the **start** of every new request
+- Always override `close()` — this is the screen-dismissal hook
+- `restartable()` stops event processing but does **not** cancel the HTTP request — you still need the token
+- On fold: `FailureType.silent` → emit `StateStatus.initial`, do not show any UI

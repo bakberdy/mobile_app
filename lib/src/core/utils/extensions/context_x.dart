@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/config/theme/base_theme_x.dart';
-import 'package:travel_app/src/core/language/generated/app_localizations.dart';
+import 'package:mobile_app/src/config/theme/base_theme_x.dart';
+import 'package:mobile_app/src/core/language/generated/app_localizations.dart';
 
 extension ContextExtensions on BuildContext {
 

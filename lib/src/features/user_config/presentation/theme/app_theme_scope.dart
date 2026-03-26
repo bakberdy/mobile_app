@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_app/src/config/di/injection.dart';
-import 'package:travel_app/src/features/user_config/domain/entity/app_theme_mode.dart';
-import 'package:travel_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
+import 'package:mobile_app/src/config/di/injection.dart';
+import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
+import 'package:mobile_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
 
 typedef AppThemeScopeBuilder =
     Widget Function(BuildContext context, ThemeMode themeMode, Widget? child);

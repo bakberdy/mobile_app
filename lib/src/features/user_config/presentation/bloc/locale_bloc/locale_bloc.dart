@@ -4,12 +4,12 @@ import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:travel_app/src/core/bloc/state_status.dart';
-import 'package:travel_app/src/core/error/error.dart';
-import 'package:travel_app/src/core/usecases/use_case.dart';
-import 'package:travel_app/src/core/utils/constants/locale_constants.dart';
-import 'package:travel_app/src/features/user_config/domain/usecases/get_locale_usecase.dart';
-import 'package:travel_app/src/features/user_config/domain/usecases/set_locale_usecase.dart';
+import 'package:mobile_app/src/core/bloc/state_status.dart';
+import 'package:mobile_app/src/core/error/error.dart';
+import 'package:mobile_app/src/core/usecases/use_case.dart';
+import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/get_locale_usecase.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/set_locale_usecase.dart';
 
 part 'locale_event.dart';
 part 'locale_state.dart';

@@ -1,11 +1,11 @@
 import 'package:app_log/app_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_app/app.dart';
-import 'package:travel_app/app_config.dart';
-import 'package:travel_app/src/config/di/injection.dart';
-import 'package:travel_app/src/core/monitoring/analytics/analytics.dart';
-import 'package:travel_app/src/core/monitoring/analytics/analytics_events.dart';
+import 'package:mobile_app/app.dart';
+import 'package:mobile_app/app_config.dart';
+import 'package:mobile_app/src/config/di/injection.dart';
+import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
+import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

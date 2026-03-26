@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/features/navigation/providers/scroll_to_top_provider.dart';
-import 'package:travel_app/src/features/navigation/widgets/nav_bar.dart';
-import 'package:travel_app/src/features/navigation/widgets/nav_bar_item.dart';
+import 'package:mobile_app/src/features/navigation/providers/scroll_to_top_provider.dart';
+import 'package:mobile_app/src/features/navigation/widgets/nav_bar.dart';
+import 'package:mobile_app/src/features/navigation/widgets/nav_bar_item.dart';
 
 @RoutePage()
 class MainNavigationPage extends StatefulWidget {

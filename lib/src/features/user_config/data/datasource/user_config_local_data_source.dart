@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:travel_app/src/core/storage/local_storage/local_storage.dart';
+import 'package:mobile_app/src/core/storage/local_storage/local_storage.dart';
 
 abstract class UserConfigLocalDataSource {
   Future<void> setUserConfig({required String key, required String value});

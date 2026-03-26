@@ -1,12 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_app/src/components/dialogs/base_snackbar.dart';
-import 'package:travel_app/src/core/utils/constants/locale_constants.dart';
-import 'package:travel_app/src/core/utils/extensions/context_x.dart';
-import 'package:travel_app/src/features/user_config/domain/entity/app_theme_mode.dart';
-import 'package:travel_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart';
-import 'package:travel_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
+import 'package:mobile_app/src/components/dialogs/base_snackbar.dart';
+import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
+import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
+import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart';
+import 'package:mobile_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
 
 @RoutePage()
 class UserConfigExamplePage extends StatefulWidget {

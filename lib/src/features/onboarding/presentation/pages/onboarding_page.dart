@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:travel_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 @RoutePage()
 class OnboardingPage extends StatelessWidget {

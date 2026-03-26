@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 class BaseSnackbar {
   BaseSnackbar._();

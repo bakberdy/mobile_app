@@ -1,4 +1,4 @@
-import 'package:travel_app/src/core/monitoring/analytics/analytics_events.dart';
+import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
 
 final class GetAppThemeModeUsecaseEvent extends AnalyticsEvent {
   const GetAppThemeModeUsecaseEvent({required super.name, super.properties});

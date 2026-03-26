@@ -37,7 +37,7 @@ api/
 Outside of `core/api/` always import through the barrel:
 
 ```dart
-import 'package:travel_app/src/core/api/api.dart';
+import 'package:mobile_app/src/core/api/api.dart';
 ```
 
 Never import from `internal/` directly.

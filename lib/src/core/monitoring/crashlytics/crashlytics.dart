@@ -1,6 +1,6 @@
 
 
-import 'package:travel_app/src/core/monitoring/crashlytics/crashlytics_provider.dart';
+import 'package:mobile_app/src/core/monitoring/crashlytics/crashlytics_provider.dart';
 
 class Crashlytics {
   static List<CrashlyticsProvider> _providers = [];

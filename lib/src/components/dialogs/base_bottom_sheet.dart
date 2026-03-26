@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/components/dialogs/base_dialog_kit_panel.dart';
-import 'package:travel_app/src/components/dialogs/dialog_kit_layout.dart';
-import 'package:travel_app/src/components/dialogs/dialog_kit_models.dart';
+import 'package:mobile_app/src/components/dialogs/base_dialog_kit_panel.dart';
+import 'package:mobile_app/src/components/dialogs/dialog_kit_layout.dart';
+import 'package:mobile_app/src/components/dialogs/dialog_kit_models.dart';
 
 /// Optional alias: `BaseBottomSheet.show(context, type: BaseBottomSheetType.basic, …)`.
 typedef BaseBottomSheetType = BaseDialogType;

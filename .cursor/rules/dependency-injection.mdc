@@ -1,0 +1,141 @@
+---
+description: DI rules: injectable annotations by layer, AppModule for external deps, constructor injection only, never GetIt directly.
+globs: lib/src/**/*.dart
+alwaysApply: false
+---
+
+# Dependency Injection Rules
+
+This project uses `injectable` + `get_it`. All wiring is code-generated into `lib/src/config/di/injection.config.dart` — never edit that file manually.
+
+---
+
+## Annotation by layer
+
+| Layer | Annotation | Lifecycle |
+|-------|-----------|-----------|
+| **BLoC** | `@Injectable()` | Factory — new instance every time |
+| **UseCase** | `@LazySingleton()` | Created on first use, shared |
+| **Repository impl** | `@LazySingleton(as: RepoInterface)` | Created on first use; `as:` binds impl to interface |
+| **Data source impl** | `@LazySingleton(as: DataSourceInterface)` | Created on first use; `as:` binds impl to interface |
+| **External / platform deps** | `@module` in `AppModule` | Declared explicitly |
+
+Default to `@LazySingleton` for everything except BLoCs. Only use `@singleton` (eager) in `AppModule` when a dependency must be ready before anything else (e.g. `SharedPreferences` with `@preResolve`).
+
+```dart
+// ✅ GOOD — BLoC: factory (new instance per screen)
+@Injectable()
+class ThemeBloc extends Bloc<ThemeEvent, ThemeState> { ... }
+
+// ✅ GOOD — UseCase
+@LazySingleton()
+class GetAppThemeModeUseCase extends UseCase<AppThemeMode?, NoParams> { ... }
+
+// ✅ GOOD — Repository impl bound to its interface
+@LazySingleton(as: UserConfigRepository)
+class UserConfigRepositoryImpl implements UserConfigRepository { ... }
+
+// ✅ GOOD — Data source impl bound to its interface
+@LazySingleton(as: UserConfigLocalDataSource)
+class UserConfigLocalDataSourceImpl implements UserConfigLocalDataSource { ... }
+
+// ❌ BAD — BLoC as singleton: all screens share the same stale instance
+@LazySingleton()
+class ThemeBloc extends Bloc<ThemeEvent, ThemeState> { ... }
+
+// ❌ BAD — no interface binding: impl leaks into domain/BLoC
+@LazySingleton()
+class UserConfigRepositoryImpl implements UserConfigRepository { ... }
+```
+
+---
+
+## External dependencies → AppModule
+
+Third-party or platform classes that can't be annotated go in `lib/src/config/di/app_module.dart`.
+
+```dart
+// ✅ GOOD — lib/src/config/di/app_module.dart
+@module
+abstract class AppModule {
+  @singleton
+  AppConfig get appConfig => AppConfig.instance;
+
+  @preResolve       // ← use for async init (e.g. SharedPreferences)
+  @singleton
+  Future<SharedPreferences> get sharedPreferences async =>
+      await SharedPreferences.getInstance();
+
+  @lazySingleton
+  ApiClient apiClient(TokenStorage tokenStorage, AppConfig config) =>
+      ApiClient(ApiConfig(baseUrl: config.baseUrl), tokenStorage);
+}
+
+// ❌ BAD — registering external deps inline in main.dart or anywhere else
+GetIt.instance.registerSingleton<ApiClient>(ApiClient(...));
+```
+
+---
+
+## Constructor injection only
+
+Always receive dependencies through the constructor. Never call `GetIt.instance.get<T>()` or `sl<T>()` inside a class body.
+
+```dart
+// ✅ GOOD
+@LazySingleton()
+class GetLocaleUseCase extends UseCase<String?, NoParams> {
+  final UserConfigRepository _repo;
+  GetLocaleUseCase(this._repo); // injected by injectable
+}
+
+// ❌ BAD — service locator pattern inside a class
+class GetLocaleUseCase extends UseCase<String?, NoParams> {
+  final _repo = GetIt.instance<UserConfigRepository>(); // ❌ hidden dependency
+}
+```
+
+---
+
+## Always inject by interface, never by implementation
+
+```dart
+// ✅ GOOD — depends on the abstract interface
+@LazySingleton()
+class GetAppThemeModeUseCase {
+  final UserConfigRepository _repo; // ← interface
+  GetAppThemeModeUseCase(this._repo);
+}
+
+// ❌ BAD — depends on the concrete implementation
+class GetAppThemeModeUseCase {
+  final UserConfigRepositoryImpl _repo; // ← leaks data layer into domain
+}
+```
+
+---
+
+## After adding or changing annotations
+
+Run code generation to update `injection.config.dart`:
+
+---
+
+Never manually edit `lib/src/config/di/injection.config.dart`.
+
+---
+
+## BLoC provisioning in UI
+
+Since BLoCs are factories, always obtain them via `sl<MyBloc>()` inside `BlocProvider.create:`.
+See `bloc-layer.mdc` for the full wrapper/content screen split pattern.
+
+```dart
+// ✅ GOOD — sl<T>() used inside BlocProvider.create at screen level
+BlocProvider(create: (_) => sl<ThemeBloc>()..add(const ThemeStarted()))
+
+// ❌ BAD — sl<T>() called outside BlocProvider (creates unmanaged instance)
+final bloc = sl<ThemeBloc>(); // ❌ lifecycle not tied to widget tree
+```
+
+See `bloc-screen-structure.mdc` for the full wrapper/content pattern and re-providing rules.

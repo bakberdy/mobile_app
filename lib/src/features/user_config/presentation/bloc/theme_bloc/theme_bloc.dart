@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:travel_app/src/core/bloc/state_status.dart';
-import 'package:travel_app/src/core/error/error.dart';
-import 'package:travel_app/src/core/usecases/use_case.dart';
-import 'package:travel_app/src/features/user_config/domain/entity/app_theme_mode.dart';
-import 'package:travel_app/src/features/user_config/domain/usecases/get_app_theme_mode_usecase.dart';
-import 'package:travel_app/src/features/user_config/domain/usecases/set_theme_usecase.dart';
+import 'package:mobile_app/src/core/bloc/state_status.dart';
+import 'package:mobile_app/src/core/error/error.dart';
+import 'package:mobile_app/src/core/usecases/use_case.dart';
+import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/get_app_theme_mode_usecase.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/set_theme_usecase.dart';
 
 part 'theme_event.dart';
 part 'theme_state.dart';

@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "travel_app",
+            "name": "mobile_app",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
@@ -14,7 +14,7 @@
             ]
         },
         {
-            "name": "travel_app (dev)",
+            "name": "mobile_app (dev)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
@@ -23,7 +23,7 @@
             ]
         },
         {
-            "name": "travel_app (staging)",
+            "name": "mobile_app (staging)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
@@ -32,7 +32,7 @@
             ]
         },
         {
-            "name": "travel_app (Widgetbook)",
+            "name": "mobile_app (Widgetbook)",
             "request": "launch",
             "type": "dart",
             "program": "lib/widgetbook/main.dart"

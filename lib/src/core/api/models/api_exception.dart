@@ -1,4 +1,4 @@
-import 'package:travel_app/src/core/api/api.dart';
+import 'package:mobile_app/src/core/api/api.dart';
 
  class ApiException implements Exception {
   final ApiExceptionType type;

@@ -12,14 +12,29 @@ alwaysApply: false
 - ✅ May import own feature's `domain/` (entities, repository contracts)
 - ✅ May import `core/` (error, api, storage, network)
 
-## File naming
+## File naming and structure
 Files must be prefixed with the feature name:
-- ✅ `user_config_repository_impl.dart`, `user_config_local_data_source.dart`, `user_config_remote_data_source.dart`
-- ❌ `repository_impl.dart`, `local_data_source.dart`
+- ✅ `user_config_repository_impl.dart`, `user_config_local_data_source.dart`, `routes_route_model.dart`
+- ❌ `repository_impl.dart`, `local_data_source.dart`, `route_model.dart`
+
+Data layer folder layout:
+```
+data/
+  datasource/   ← local & remote data sources
+  models/       ← JSON models (see model-entity-separation.mdc)
+  repository/   ← repository implementations
+```
+
+Models MUST NOT be imported by domain or presentation. Only the repository uses them.
+See `model-entity-separation.mdc` for the full model/entity rule.
 
 ## Exception → Failure conversion
 All exceptions MUST be caught at the **repository implementation** level and converted to `Failure`.
 Data sources may throw — the repository catches and maps.
+
+Use the `ExceptionX.toFailure(source:)` extension from `core/error/exception_x.dart`.
+It automatically maps `ApiException` → `Failure.api`, `FormatException`/`TypeError` → `Failure.parse`, everything else → `Failure.base`.
+Never construct `Failure.*` variants manually in a catch block.
 
 ```dart
 // ✅ GOOD — user_config repository impl
@@ -34,10 +49,8 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
       final raw = await _local.getUserConfig(key: UserConfigConsts.themeKey);
       final mode = raw != null ? AppThemeMode.values.byName(raw) : null;
       return Right(mode);
-    } on FormatException catch (e) {
-      return Left(Failure.parse(source: '$runtimeType', message: e.message));
-    } catch (e) {
-      return Left(Failure.base(source: '$runtimeType', message: e.toString()));
+    } on Exception catch (e) {
+      return Left(e.toFailure(source: '$runtimeType'));
     }
   }
 
@@ -46,10 +59,15 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
     try {
       await _local.setUserConfig(key: UserConfigConsts.themeKey, value: themeMode.name);
       return const Right(null);
-    } catch (e) {
-      return Left(Failure.base(source: '$runtimeType', message: e.toString()));
+    } on Exception catch (e) {
+      return Left(e.toFailure(source: '$runtimeType'));
     }
   }
+}
+
+// ❌ BAD — manually constructing Failure variants
+} catch (e) {
+  return Left(Failure.base(source: '$runtimeType', message: e.toString()));
 }
 
 // ❌ BAD — exception thrown in data source escapes to domain/BLoC
@@ -59,6 +77,41 @@ void _ensureSupportedValue(Object? value) {
   }
 }
 ```
+
+## Storage — LocalStorage vs SecureStorage
+Two distinct abstractions exist in `core/storage/`. Choose based on sensitivity:
+
+| Abstraction | Class | Use for |
+|-------------|-------|---------|
+| `LocalStorage` | `lib/src/core/storage/local_storage/local_storage.dart` | Non-sensitive preferences (theme, locale, onboarding flags) |
+| `SecureStorage` | `lib/src/core/storage/secure_storage/secure_storage.dart` | Sensitive data (auth tokens, credentials, keys) |
+
+Both share the same interface (`read`, `write`, `delete`, `deleteAll`, `containsKey`, `readAll`). Inject by type — never use `SharedPreferences` or `FlutterSecureStorage` directly in a data source.
+
+```dart
+// ✅ GOOD — non-sensitive user preference
+@LazySingleton()
+class UserConfigLocalDataSourceImpl implements UserConfigLocalDataSource {
+  final LocalStorage _storage;
+  UserConfigLocalDataSourceImpl(this._storage);
+  ...
+}
+
+// ✅ GOOD — auth token
+@LazySingleton()
+class AuthLocalDataSourceImpl implements AuthLocalDataSource {
+  final SecureStorage _storage;
+  AuthLocalDataSourceImpl(this._storage);
+  ...
+}
+
+// ❌ BAD — direct platform dependency
+final prefs = await SharedPreferences.getInstance();
+```
+
+## Cancel tokens
+For slow or user-interruptible requests, add `ApiCancelToken?` to data source and repository methods.
+See `cancel-token.mdc` for the full data source → repository → UseCase Params → BLoC flow.
 
 ## API usage
 - Use `ApiClient` for all HTTP calls — follow `lib/src/core/api/usage_documentation.md`

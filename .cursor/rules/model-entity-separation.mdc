@@ -1,0 +1,134 @@
+---
+description: Model vs Entity separation: entities use Equatable (no Freezed), models extend entities and use json_serializable (no Freezed).
+globs: lib/src/features/**/*.dart
+alwaysApply: false
+---
+
+# Model vs Entity Separation
+
+## Core principle
+- **Domain class** → `domain/entity/`, plain Dart + `Equatable`, no JSON, no Freezed, no suffix
+- **Model** → `data/models/`, extends domain class, `@JsonSerializable`, no Freezed
+
+The domain never knows how data is serialized.
+The model extends the domain class — a `RouteModel` IS a `Route`.
+
+## File locations and naming
+
+```
+lib/src/features/routes/
+  domain/
+    entity/
+      routes_route.dart          ← class Route extends Equatable
+      routes_route_type.dart     ← class RouteType extends Equatable
+  data/
+    models/
+      routes_route_model.dart    ← @JsonSerializable class RouteModel extends Route
+```
+
+- Domain class file: `<feature_name>_<name>.dart` — class `<Name>` (no suffix)
+- Model file: `<feature_name>_<name>_model.dart` — class `<Name>Model`
+
+## Domain class — Equatable, no Freezed, no JSON
+
+```dart
+// ✅ GOOD — lib/src/features/routes/domain/entity/routes_route.dart
+import 'package:equatable/equatable.dart';
+
+class Route extends Equatable {
+  final String id;
+  final String title;
+  final String description;
+  final double distanceKm;
+  final int durationMinutes;
+  final RouteType type;
+
+  const Route({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.distanceKm,
+    required this.durationMinutes,
+    required this.type,
+  });
+
+  @override
+  List<Object?> get props => [id, title, description, distanceKm, durationMinutes, type];
+}
+
+// ❌ BAD
+class RouteEntity extends Equatable { ... }  // Entity suffix
+class Route {                                 // No Equatable — equality broken
+  @override bool operator ==(Object other) => ...  // manual equality, skip Equatable
+
+@freezed abstract class Route with _$Route { ... } // Freezed on entity — forbidden
+```
+
+## Data Model — extends domain class, json_serializable, no Freezed
+
+Model extends the entity, so `RouteModel` satisfies `Route` everywhere — no `toEntity()` needed.
+`fromEntity()` IS required as a named constructor for write-back scenarios (POST/PUT to API).
+
+```dart
+// ✅ GOOD — lib/src/features/routes/data/models/routes_route_model.dart
+import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile_app/src/features/routes/domain/entity/routes_route.dart';
+
+part 'routes_route_model.g.dart';
+
+@JsonSerializable()
+class RouteModel extends Route {
+  const RouteModel({
+    required super.id,
+    required super.title,
+    required super.description,
+    @JsonKey(name: 'distance_km') required super.distanceKm,
+    @JsonKey(name: 'duration_minutes') required super.durationMinutes,
+    required super.type,
+  });
+
+  // ── Deserialization ────────────────────────────────────────────────────────
+
+  factory RouteModel.fromJson(Map<String, dynamic> json) =>
+      _$RouteModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RouteModelToJson(this);
+
+  // ── Entity conversion ──────────────────────────────────────────────────────
+
+  /// Creates a model from a domain object (used when writing back to API).
+  factory RouteModel.fromEntity(Route route) => RouteModel(
+        id: route.id,
+        title: route.title,
+        description: route.description,
+        distanceKm: route.distanceKm,
+        durationMinutes: route.durationMinutes,
+        type: route.type,
+      );
+}
+
+// ❌ BAD
+@freezed abstract class RouteModel with _$RouteModel { ... }  // No Freezed on models
+class RouteModel {                                             // Doesn't extend domain class
+  final String id;
+  RouteModel.fromEntity(Route r) { ... }                      // fromEntity outside class body
+```
+
+## Repository: no .toEntity() needed
+Since `RouteModel extends Route`, the repository returns `RouteModel` typed as `Route` — no conversion method needed.
+Use `RouteModel.fromEntity(route)` when serializing a domain object for a write (POST/PUT) request.
+
+## Strict rules summary
+
+| Rule | Domain class | Model |
+|------|-------------|-------|
+| Location | `domain/entity/` | `data/models/` |
+| Class suffix | ❌ None (no `Entity`) | ✅ `Model` |
+| Extends | `Equatable` | Domain class (e.g. `Route`) |
+| Freezed | ❌ Never | ❌ Never |
+| `Equatable` + `props` | ✅ Always | inherited from domain class |
+| `fromJson` / `toJson` | ❌ Never | ✅ Always |
+| `@JsonKey` | ❌ Never | ✅ Allowed |
+| `fromEntity()` constructor | ❌ Never | ✅ Named constructor inside model |
+| `toEntity()` method | not needed — model IS domain class | — |
+| Imported by BLoC / UseCase | ✅ Domain class only | ❌ Never |

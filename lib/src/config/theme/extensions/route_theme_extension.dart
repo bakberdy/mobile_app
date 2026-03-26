@@ -1,7 +1,7 @@
 // ignore_for_file: unintended_html_in_doc_comment
 
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/config/theme/app_colors.dart';
+import 'package:mobile_app/src/config/theme/app_colors.dart';
 
 /// Domain-specific colors for route difficulty levels.
 ///

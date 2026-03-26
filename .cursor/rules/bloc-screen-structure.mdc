@@ -1,0 +1,94 @@
+---
+description: BLoC screen structure: wrapper + content split in one file, BlocProvider placement, no re-providing BLoCs already in the tree.
+globs: lib/src/features/**/presentation/**/*.dart
+alwaysApply: false
+---
+
+# BLoC Screen Structure
+
+Every screen that owns a BLoC MUST follow the wrapper/content split inside a **single file**:
+
+- **`SomeScreen`** — `@RoutePage()`, `StatelessWidget`, only provides BLoC(s) and renders content
+- **`_SomeScreenContent`** — private widget, all UI logic, `BlocBuilder`/`BlocListener`/`BlocConsumer` live here
+
+```dart
+// ✅ GOOD — user_config_example_screen.dart
+
+@RoutePage()
+class UserConfigExampleScreen extends StatelessWidget {
+  const UserConfigExampleScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<ThemeBloc>()..add(const ThemeStarted())),
+        BlocProvider(create: (_) => sl<LocaleBloc>()..add(LocaleStarted(deviceLanguageCode: 'en'))),
+      ],
+      child: const _UserConfigExampleContent(),
+    );
+  }
+}
+
+class _UserConfigExampleContent extends StatelessWidget {
+  const _UserConfigExampleContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<ThemeBloc, ThemeState>(
+      listenWhen: (prev, curr) => curr.failure != null && prev.failure != curr.failure,
+      listener: (context, state) { /* failure handling — see presentation-components.mdc */ },
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(title: Text(context.l10n.themeMode)),
+        body: ...,
+      ),
+    );
+  }
+}
+
+// ❌ BAD — @RoutePage class does UI directly, no content split
+@RoutePage()
+class UserConfigExamplePage extends StatefulWidget { // ❌ Page suffix
+  @override
+  State<UserConfigExamplePage> createState() => _State();
+}
+class _State extends State<UserConfigExamplePage> {
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<ThemeBloc>().state; // ❌ BLoC never provided
+    return Scaffold(...);
+  }
+}
+```
+
+## Rules
+- `@RoutePage()` goes on the **wrapper only** — never on `_SomeScreenContent`
+- Wrapper is always `StatelessWidget` — it never builds UI
+- `_SomeScreenContent` can be `StatefulWidget` if local UI state is needed (animations, focus nodes, scroll controllers)
+- Initial BLoC events are dispatched in `BlocProvider.create:` — never in `initState` or `build`
+- Use `MultiBlocProvider` when the screen owns more than one BLoC
+
+## Do not re-provide BLoCs already in the tree
+If a BLoC is already provided by a parent screen or ancestor, just access it via `context.read` / `context.watch`.
+
+```dart
+// ✅ GOOD — ThemeBloc provided at app root; child just reads it
+class _SomeChildWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<ThemeBloc>().state;
+    return Text(state.appliedThemeMode.name);
+  }
+}
+
+// ❌ BAD — re-providing creates a second instance that shadows the parent's
+class SomeChildScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => sl<ThemeBloc>(), // ❌ duplicate
+      child: ...,
+    );
+  }
+}
+```

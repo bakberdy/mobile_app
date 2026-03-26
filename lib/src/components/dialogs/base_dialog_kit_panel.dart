@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/components/buttons/base_filled_button.dart';
-import 'package:travel_app/src/components/buttons/base_outlined_button.dart';
-import 'package:travel_app/src/components/dialogs/dialog_kit_layout.dart';
-import 'package:travel_app/src/components/dialogs/dialog_kit_models.dart';
-import 'package:travel_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/components/buttons/base_filled_button.dart';
+import 'package:mobile_app/src/components/buttons/base_outlined_button.dart';
+import 'package:mobile_app/src/components/dialogs/dialog_kit_layout.dart';
+import 'package:mobile_app/src/components/dialogs/dialog_kit_models.dart';
+import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 /// Shared column (header, body by [BaseDialogType], actions) for modal dialog and bottom sheet.
 class BaseDialogKitPanel<T> extends StatefulWidget {

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:travel_app/src/components/buttons/base_elevated_button.dart';
-import 'package:travel_app/src/components/buttons/base_filled_button.dart';
-import 'package:travel_app/src/components/buttons/base_icon_button.dart';
-import 'package:travel_app/src/components/buttons/base_outlined_button.dart';
-import 'package:travel_app/src/components/buttons/base_text_button.dart';
-import 'package:travel_app/src/components/dialogs/base_bottom_sheet.dart';
-import 'package:travel_app/src/components/dialogs/base_dialog.dart';
-import 'package:travel_app/src/components/dialogs/base_snackbar.dart';
-import 'package:travel_app/src/config/theme/app_theme.dart';
-import 'package:travel_app/src/core/language/generated/app_localizations.dart';
-import 'package:travel_app/src/core/utils/constants/locale_constants.dart';
+import 'package:mobile_app/src/components/buttons/base_elevated_button.dart';
+import 'package:mobile_app/src/components/buttons/base_filled_button.dart';
+import 'package:mobile_app/src/components/buttons/base_icon_button.dart';
+import 'package:mobile_app/src/components/buttons/base_outlined_button.dart';
+import 'package:mobile_app/src/components/buttons/base_text_button.dart';
+import 'package:mobile_app/src/components/dialogs/base_bottom_sheet.dart';
+import 'package:mobile_app/src/components/dialogs/base_dialog.dart';
+import 'package:mobile_app/src/components/dialogs/base_snackbar.dart';
+import 'package:mobile_app/src/config/theme/app_theme.dart';
+import 'package:mobile_app/src/core/language/generated/app_localizations.dart';
+import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 /// Captured once so [MaterialThemeAddon]'s `initialTheme` is the same instance
@@ -59,7 +59,7 @@ Widget _materialAppWithL10n(BuildContext context, Widget child) {
 }
 
 final _rootCategory = WidgetbookCategory(
-  name: 'travel_app',
+  name: 'mobile_app',
   isInitiallyExpanded: true,
   children: [
     WidgetbookFolder(

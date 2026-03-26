@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app/src/core/utils/extensions/context_x.dart';
-import 'package:travel_app/src/features/navigation/widgets/nav_bar_item.dart';
+import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/features/navigation/widgets/nav_bar_item.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({

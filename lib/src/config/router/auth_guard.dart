@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:travel_app/src/core/api/storage/token_storage.dart';
+import 'package:mobile_app/src/core/api/storage/token_storage.dart';
 class AuthGuard extends AutoRouteGuard {
   final TokenStorage _tokenStorage;
 

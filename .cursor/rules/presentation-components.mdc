@@ -1,0 +1,122 @@
+---
+description: UI component rules: failure display by FailureType, button catalogue (BaseFilledButton etc.), BaseDialog and BaseBottomSheet usage.
+globs: lib/src/features/**/presentation/**/*.dart
+alwaysApply: false
+---
+
+# Presentation Components
+
+## Failure display
+Listen to `state.failure` in `BlocListener`. Use `failure.message ?? failure.defaultMessage(context)` — never a generic fallback key.
+`failure.defaultMessage(context)` (`core/error/failure_x.dart`) returns the correct localized message per failure type.
+
+| `FailureType` | Component | Call |
+|---------------|-----------|------|
+| `snackbar` | `BaseSnackbar` | `.error / .warning / .info / .success(context, message:)` |
+| `banner` | `MaterialBanner` | `ScaffoldMessenger.of(context).showMaterialBanner(...)` |
+| `alert` | `BaseDialog` | `BaseDialog.showBasic(context, ...)` |
+| `fullScreenError` | `BaseDialog` | `BaseDialog.showFullscreen(context, ...)` |
+| `inlineError` | — | Mapped to `FieldState.error` in BLoC — nothing to do in UI |
+| `silent` | — | No UI (cancelled request / analytics only) |
+
+```dart
+BlocListener<ThemeBloc, ThemeState>(
+  listenWhen: (prev, curr) => curr.failure != null && prev.failure != curr.failure,
+  listener: (context, state) {
+    final failure = state.failure;
+    if (failure == null) return;
+    final message = failure.message ?? failure.defaultMessage(context);
+    switch (failure.type) {
+      case FailureType.snackbar:
+        BaseSnackbar.error(context, message: message);
+      case FailureType.banner:
+        ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+          content: Text(message),
+          actions: [TextButton(
+            onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
+            child: Text(context.l10n.dismiss),
+          )],
+        ));
+      case FailureType.alert:
+        BaseDialog.showBasic(context,
+          title: context.l10n.errorTitle,
+          description: message,
+          primaryLabel: context.l10n.ok,
+          barrierDismissible: false,
+        );
+      case FailureType.fullScreenError:
+        BaseDialog.showFullscreen(context,
+          title: context.l10n.errorTitle,
+          bodyText: message,
+          primaryLabel: context.l10n.retry,
+          onPrimary: () => context.read<ThemeBloc>().add(const ThemeStarted()),
+          barrierDismissible: false,
+        );
+      case FailureType.inlineError:
+        break;
+      case FailureType.silent:
+        break;
+    }
+  },
+)
+```
+
+## Buttons — always use project components
+Never use raw Flutter buttons (`FilledButton`, `ElevatedButton`, `OutlinedButton`, `TextButton`, `IconButton`).
+
+| Component | Factories | Default `expand` |
+|-----------|-----------|-----------------|
+| `BaseFilledButton` | `.primary()`, `.secondary()` | `true` / `false` |
+| `BaseElevatedButton` | `.primary()`, `.secondary()` | `true` / `false` |
+| `BaseOutlinedButton` | `.primary()`, `.secondary()` | `true` / `false` |
+| `BaseTextButton` | `.primary()`, `.secondary()` | `false` / `false` |
+| `BaseIconButton` | `.standard()`, `.primary()`, `.secondary()` | n/a |
+
+All accept `loading: bool` and `disabled: bool`. Pass `null` to `onPressed` to implicitly disable.
+
+```dart
+// ✅ GOOD
+BaseFilledButton.primary(
+  onPressed: () => context.read<UserConfigEditBloc>().add(const UserConfigSavePressed()),
+  label: context.l10n.save,
+  loading: state.status == StateStatus.loading,
+)
+BaseIconButton.standard(icon: const Icon(Icons.close), onPressed: () => context.router.maybePop())
+
+// ❌ BAD
+FilledButton(onPressed: _onSave, child: Text('Save'))
+```
+
+## Dialogs and bottom sheets
+Never call `showDialog` or `showModalBottomSheet` directly. Use project components from `lib/src/components/dialogs/`.
+
+- **`BaseDialog`** — confirmations, critical errors, blocking choices
+- **`BaseBottomSheet`** — selection lists, option menus, non-blocking contextual actions
+
+```dart
+// Dialog
+BaseDialog.showBasic(context,
+  title: context.l10n.confirmTitle,
+  description: context.l10n.confirmDescription,
+  primaryLabel: context.l10n.confirm,
+  onPrimary: _onConfirm,
+  secondaryLabel: context.l10n.cancel,
+  barrierDismissible: false,
+);
+
+// Bottom sheet — selection (returns chosen index)
+final index = await BaseBottomSheet.showSelect(context,
+  title: context.l10n.selectLanguage,
+  options: [context.l10n.english, context.l10n.russian, context.l10n.kazakh],
+  selectedIndex: state.selectedLocaleIndex,
+);
+
+// Bottom sheet — list of actions
+BaseBottomSheet.showList(context,
+  title: context.l10n.options,
+  items: [
+    BaseDialogListItem(label: context.l10n.edit, onTap: _onEdit),
+    BaseDialogListItem(label: context.l10n.delete, onTap: _onDelete),
+  ],
+);
+```

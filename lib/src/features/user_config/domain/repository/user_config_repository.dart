@@ -1,5 +1,5 @@
-import 'package:travel_app/src/core/utils/typedef.dart';
-import 'package:travel_app/src/features/user_config/domain/entity/app_theme_mode.dart';
+import 'package:mobile_app/src/core/utils/typedef.dart';
+import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
 
 abstract class UserConfigRepository {
   FutureEither<void> setTheme(AppThemeMode themeMode);

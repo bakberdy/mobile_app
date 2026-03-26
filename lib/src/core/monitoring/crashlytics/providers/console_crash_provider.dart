@@ -1,6 +1,6 @@
 
 import 'package:app_log/app_log.dart';
-import 'package:travel_app/src/core/monitoring/crashlytics/crashlytics_provider.dart';
+import 'package:mobile_app/src/core/monitoring/crashlytics/crashlytics_provider.dart';
 
 
 class ConsoleCrashProvider implements CrashlyticsProvider {

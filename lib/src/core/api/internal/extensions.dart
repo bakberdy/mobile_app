@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:travel_app/src/core/api/api.dart';
+import 'package:mobile_app/src/core/api/api.dart';
 
 
 extension DioExceptionX on DioException{

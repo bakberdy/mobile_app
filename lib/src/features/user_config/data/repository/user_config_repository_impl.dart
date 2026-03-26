@@ -1,13 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:travel_app/src/core/error/error.dart';
-import 'package:travel_app/src/core/network/network_info.dart';
-import 'package:travel_app/src/core/utils/typedef.dart';
-import 'package:travel_app/src/features/user_config/data/datasource/user_config_local_data_source.dart';
-import 'package:travel_app/src/features/user_config/data/datasource/user_config_remote_data_source.dart';
-import 'package:travel_app/src/features/user_config/domain/entity/app_theme_mode.dart';
-import 'package:travel_app/src/features/user_config/domain/repository/user_config_repository.dart';
-import 'package:travel_app/src/features/user_config/user_config_consts.dart';
+import 'package:mobile_app/src/core/error/error.dart';
+import 'package:mobile_app/src/core/network/network_info.dart';
+import 'package:mobile_app/src/core/utils/typedef.dart';
+import 'package:mobile_app/src/features/user_config/data/datasource/user_config_local_data_source.dart';
+import 'package:mobile_app/src/features/user_config/data/datasource/user_config_remote_data_source.dart';
+import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
+import 'package:mobile_app/src/features/user_config/domain/repository/user_config_repository.dart';
+import 'package:mobile_app/src/features/user_config/user_config_consts.dart';
 
 @Singleton(as: UserConfigRepository)
 class UserConfigRepositoryImpl implements UserConfigRepository {

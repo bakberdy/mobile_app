@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:travel_app/src/core/storage/local_storage/local_storage.dart';
+import 'package:mobile_app/src/core/storage/local_storage/local_storage.dart';
 
 @LazySingleton(as: LocalStorage)
 class SharedPreferencesStorage implements LocalStorage {

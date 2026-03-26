@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:travel_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 import 'failure.dart';
 
