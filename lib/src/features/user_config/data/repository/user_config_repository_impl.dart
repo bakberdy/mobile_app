@@ -3,11 +3,11 @@ import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/error/error.dart';
 import 'package:mobile_app/src/core/network/network_info.dart';
 import 'package:mobile_app/src/core/utils/typedef.dart';
+import 'package:mobile_app/src/features/user_config/consts/local_storage_consts.dart';
 import 'package:mobile_app/src/features/user_config/data/datasource/user_config_local_data_source.dart';
 import 'package:mobile_app/src/features/user_config/data/datasource/user_config_remote_data_source.dart';
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
 import 'package:mobile_app/src/features/user_config/domain/repository/user_config_repository.dart';
-import 'package:mobile_app/src/features/user_config/user_config_consts.dart';
 
 @Singleton(as: UserConfigRepository)
 class UserConfigRepositoryImpl implements UserConfigRepository {
@@ -25,7 +25,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   @override
   FutureEither<AppThemeMode?> getAppThemeMode() async {
     try {
-      final storageKey = UserConfigConsts.themeModeKey;
+      final storageKey = LocalStorageConsts.themeModeKey;
       final isConnected = await _networkInfo.isConnected;
       final localTheme = await _safeReadLocal(storageKey);
       final remoteTheme = await _safeReadRemote(
@@ -57,7 +57,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   @override
   FutureEither<String?> getLocale() async {
     try {
-      final storageKey = UserConfigConsts.localeKey;
+      final storageKey = LocalStorageConsts.localeKey;
       final isConnected = await _networkInfo.isConnected;
       final localLocale = await _safeReadLocal(storageKey);
       final remoteLocale = await _safeReadRemote(
@@ -90,7 +90,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   FutureEither<void> setLocale(String locale) async {
     try {
       await _setOfflineFirst(
-        key: UserConfigConsts.localeKey,
+        key: LocalStorageConsts.localeKey,
         value: locale,
       );
 
@@ -104,7 +104,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   FutureEither<void> setTheme(AppThemeMode themeMode) async {
     try {
       await _setOfflineFirst(
-        key: UserConfigConsts.themeModeKey,
+        key: LocalStorageConsts.themeModeKey,
         value: themeMode.name,
       );
 

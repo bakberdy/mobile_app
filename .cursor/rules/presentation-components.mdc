@@ -13,7 +13,7 @@ Listen to `state.failure` in `BlocListener`. Use `failure.message ?? failure.def
 | `FailureType` | Component | Call |
 |---------------|-----------|------|
 | `snackbar` | `BaseSnackbar` | `.error / .warning / .info / .success(context, message:)` |
-| `banner` | `MaterialBanner` | `ScaffoldMessenger.of(context).showMaterialBanner(...)` |
+| `banner` | `BaseDialog` | `BaseDialog.showBanner(context, message:)` |
 | `alert` | `BaseDialog` | `BaseDialog.showBasic(context, ...)` |
 | `fullScreenError` | `BaseDialog` | `BaseDialog.showFullscreen(context, ...)` |
 | `inlineError` | — | Mapped to `FieldState.error` in BLoC — nothing to do in UI |
@@ -30,13 +30,7 @@ BlocListener<ThemeBloc, ThemeState>(
       case FailureType.snackbar:
         BaseSnackbar.error(context, message: message);
       case FailureType.banner:
-        ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-          content: Text(message),
-          actions: [TextButton(
-            onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
-            child: Text(context.l10n.dismiss),
-          )],
-        ));
+        BaseDialog.showBanner(context, message: message);
       case FailureType.alert:
         BaseDialog.showBasic(context,
           title: context.l10n.errorTitle,

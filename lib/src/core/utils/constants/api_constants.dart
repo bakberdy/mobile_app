@@ -7,6 +7,4 @@ class ApiConstants {
   static const String acceptHeader = 'Accept';
   static const String contentTypeJson = 'application/json';
   static const String userAgentHeader = 'User-Agent';
-
-  /// API endpoints
 }

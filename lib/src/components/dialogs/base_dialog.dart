@@ -203,6 +203,36 @@ class BaseDialog {
     );
   }
 
+  /// Shows a [MaterialBanner] at the top of the nearest [Scaffold].
+  /// Hides any currently visible banner before showing the new one.
+  static void showBanner(
+    BuildContext context, {
+    required String message,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger
+      ..hideCurrentMaterialBanner()
+      ..showMaterialBanner(
+        MaterialBanner(
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                messenger.hideCurrentMaterialBanner();
+                onAction?.call();
+              },
+              child: Text(actionLabel ?? context.l10n.dismiss),
+            ),
+          ],
+        ),
+      );
+  }
+
+  static void hideBanner(BuildContext context) =>
+      ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+
   /// Full-screen route (not in the Figma card kit). For long text, legal, or onboarding.
   static Future<T?> showFullscreen<T>(
     BuildContext context, {
