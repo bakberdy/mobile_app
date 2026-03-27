@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Core principle
 - **Domain class** → `domain/entity/`, plain Dart + `Equatable`, no JSON, no Freezed, no suffix
-- **Model** → `data/models/`, extends domain class, `@JsonSerializable`, no Freezed
+- **Model** → `data/models/<model_name>/`, extends domain class, `@JsonSerializable`, no Freezed
 
 The domain never knows how data is serialized.
 The model extends the domain class — a `RouteModel` IS a `Route`.
@@ -23,11 +23,13 @@ lib/src/features/routes/
       routes_route_type.dart     ← class RouteType extends Equatable
   data/
     models/
-      routes_route_model.dart    ← @JsonSerializable class RouteModel extends Route
+      routes_route_model/
+        routes_route_model.dart  ← @JsonSerializable class RouteModel extends Route
 ```
 
 - Domain class file: `<feature_name>_<name>.dart` — class `<Name>` (no suffix)
-- Model file: `<feature_name>_<name>_model.dart` — class `<Name>Model`
+- Model folder: `data/models/<feature_name>_<name>_model/`
+- Model file: `data/models/<feature_name>_<name>_model/<feature_name>_<name>_model.dart` — class `<Name>Model`
 
 ## Domain class — Equatable, no Freezed, no JSON
 
@@ -70,7 +72,7 @@ Model extends the entity, so `RouteModel` satisfies `Route` everywhere — no `t
 `fromEntity()` IS required as a named constructor for write-back scenarios (POST/PUT to API).
 
 ```dart
-// ✅ GOOD — lib/src/features/routes/data/models/routes_route_model.dart
+// ✅ GOOD — lib/src/features/routes/data/models/routes_route_model/routes_route_model.dart
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_app/src/features/routes/domain/entity/routes_route.dart';
 
@@ -122,7 +124,7 @@ Use `RouteModel.fromEntity(route)` when serializing a domain object for a write 
 
 | Rule | Domain class | Model |
 |------|-------------|-------|
-| Location | `domain/entity/` | `data/models/` |
+| Location | `domain/entity/` | `data/models/<feature_name>_<name>_model/` |
 | Class suffix | ❌ None (no `Entity`) | ✅ `Model` |
 | Extends | `Equatable` | Domain class (e.g. `Route`) |
 | Freezed | ❌ Never | ❌ Never |

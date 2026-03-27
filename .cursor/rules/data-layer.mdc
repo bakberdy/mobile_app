@@ -21,7 +21,7 @@ Data layer folder layout:
 ```
 data/
   datasource/   ← local & remote data sources
-  models/       ← JSON models (see model-entity-separation.mdc)
+  models/       ← JSON model folders (e.g. `models/routes_route_model/routes_route_model.dart`)
   repository/   ← repository implementations
 ```
 
