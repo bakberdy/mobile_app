@@ -9,42 +9,52 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get apiFailureDefaultMessage => 'Something went wrong on request';
+
+  @override
+  String get baseDefaultMessage => 'An unexpected error occurred';
+
+  @override
+  String get continueToLogin => 'Continue to Login';
+
+  @override
+  String get dark => 'Dark';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get english => 'English';
+
+  @override
   String get errorTitle => 'Error';
 
   @override
-  String get apiFailureDefaultMessage => 'Something went wrong on request';
+  String get kazakh => 'Kazakh';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get notSelected => 'Not Selected';
 
   @override
   String get parseFailureDefaultMessage =>
       'Something went wrong on handling the data';
 
   @override
-  String get baseDefaultMessage => 'An unexpected error occurred';
+  String get russian => 'Russian';
 
   @override
-  String get themeMode => 'Theme Mode';
+  String get santoniLuxuryFurnitureDescription =>
+      'Welcome to Santoni Luxury Furniture, your one-stop destination for premium furniture. Explore our curated collection of stylish and elegant pieces.';
 
   @override
-  String get light => 'Light';
-
-  @override
-  String get dark => 'Dark';
+  String get santoniLuxuryFurnitureTitle => 'Santoni Luxury Furniture';
 
   @override
   String get system => 'System';
 
   @override
-  String get kazakh => 'Kazakh';
-
-  @override
-  String get russian => 'Russian';
-
-  @override
-  String get english => 'English';
-
-  @override
-  String get notSelected => 'Not Selected';
-
-  @override
-  String get dismiss => 'Dismiss';
+  String get themeMode => 'Theme Mode';
 }

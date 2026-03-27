@@ -13,6 +13,7 @@ class BaseFilledButton extends StatelessWidget {
     required this.label,
     this.icon,
     required this.expand,
+    this.borderRadius,
     this.disabled = false,
     this.loading = false,
   }) : _variant = variant;
@@ -23,6 +24,7 @@ class BaseFilledButton extends StatelessWidget {
     required String label,
     IconData? icon,
     bool expand = true,
+    BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
   }) => BaseFilledButton._(
@@ -32,6 +34,7 @@ class BaseFilledButton extends StatelessWidget {
     label: label,
     icon: icon,
     expand: expand,
+    borderRadius: borderRadius,
     disabled: disabled,
     loading: loading,
   );
@@ -42,6 +45,7 @@ class BaseFilledButton extends StatelessWidget {
     required String label,
     IconData? icon,
     bool expand = false,
+    BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
   }) => BaseFilledButton._(
@@ -51,6 +55,7 @@ class BaseFilledButton extends StatelessWidget {
     label: label,
     icon: icon,
     expand: expand,
+    borderRadius: borderRadius,
     disabled: disabled,
     loading: loading,
   );
@@ -60,6 +65,7 @@ class BaseFilledButton extends StatelessWidget {
   final String label;
   final IconData? icon;
   final bool expand;
+  final BorderRadius? borderRadius;
   final bool disabled;
   final bool loading;
 
@@ -75,9 +81,7 @@ class BaseFilledButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle? style = _variant == _BaseFilledButtonVariant.secondary
-        ? _secondaryStyle(context)
-        : null;
+    final ButtonStyle? style = _buttonStyle(context);
 
     final Widget button = icon != null
         ? FilledButton.icon(
@@ -108,6 +112,24 @@ class BaseFilledButton extends StatelessWidget {
       return SizedBox(width: double.infinity, child: button);
     }
     return button;
+  }
+
+  ButtonStyle? _buttonStyle(BuildContext context) {
+    final shape = WidgetStateProperty.all(
+      RoundedRectangleBorder(
+        borderRadius: borderRadius ?? BorderRadius.circular(AppRadii.lg),
+      ),
+    );
+
+    if (_variant == _BaseFilledButtonVariant.secondary) {
+      return _secondaryStyle(context).copyWith(shape: shape);
+    }
+
+    if (borderRadius != null) {
+      return ButtonStyle(shape: shape);
+    }
+
+    return null;
   }
 
   static ButtonStyle _secondaryStyle(BuildContext context) {

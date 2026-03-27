@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/src/components/buttons/base_button_progress.dart';
+import 'package:mobile_app/src/config/theme/app_radii.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 class BaseIconButton extends StatelessWidget {
@@ -11,6 +12,7 @@ class BaseIconButton extends StatelessWidget {
     this.isSelected = false,
     required this.onPressed,
     this.tooltip,
+    this.borderRadius,
     this.disabled = false,
     this.loading = false,
   }) : _variant = variant;
@@ -22,6 +24,7 @@ class BaseIconButton extends StatelessWidget {
     bool isSelected = false,
     required VoidCallback? onPressed,
     String? tooltip,
+    BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
   }) =>
@@ -33,6 +36,7 @@ class BaseIconButton extends StatelessWidget {
         isSelected: isSelected,
         onPressed: onPressed,
         tooltip: tooltip,
+        borderRadius: borderRadius,
         disabled: disabled,
         loading: loading,
       );
@@ -44,6 +48,7 @@ class BaseIconButton extends StatelessWidget {
     bool isSelected = false,
     required VoidCallback? onPressed,
     String? tooltip,
+    BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
   }) =>
@@ -55,6 +60,7 @@ class BaseIconButton extends StatelessWidget {
         isSelected: isSelected,
         onPressed: onPressed,
         tooltip: tooltip,
+        borderRadius: borderRadius,
         disabled: disabled,
         loading: loading,
       );
@@ -66,6 +72,7 @@ class BaseIconButton extends StatelessWidget {
     bool isSelected = false,
     required VoidCallback? onPressed,
     String? tooltip,
+    BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
   }) =>
@@ -77,6 +84,7 @@ class BaseIconButton extends StatelessWidget {
         isSelected: isSelected,
         onPressed: onPressed,
         tooltip: tooltip,
+        borderRadius: borderRadius,
         disabled: disabled,
         loading: loading,
       );
@@ -87,6 +95,7 @@ class BaseIconButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback? onPressed;
   final String? tooltip;
+  final BorderRadius? borderRadius;
   final bool disabled;
   final bool loading;
 
@@ -105,7 +114,7 @@ class BaseIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle? style = switch (_variant) {
-      _BaseIconButtonVariant.standard => null,
+      _BaseIconButtonVariant.standard => _shapeOnlyStyle(),
       _BaseIconButtonVariant.primary => _coloredStyle(context, isPrimary: true),
       _BaseIconButtonVariant.secondary =>
         _coloredStyle(context, isPrimary: false),
@@ -123,10 +132,19 @@ class BaseIconButton extends StatelessWidget {
     );
   }
 
-  static ButtonStyle _coloredStyle(
-    BuildContext context, {
-    required bool isPrimary,
-  }) {
+  ButtonStyle? _shapeOnlyStyle() {
+    if (borderRadius == null) {
+      return null;
+    }
+
+    return ButtonStyle(shape: WidgetStateProperty.all(_shape));
+  }
+
+  OutlinedBorder get _shape => RoundedRectangleBorder(
+    borderRadius: borderRadius ?? BorderRadius.circular(AppRadii.lg),
+  );
+
+  ButtonStyle _coloredStyle(BuildContext context, {required bool isPrimary}) {
     final s = context.colorScheme;
     final Color normal = isPrimary ? s.primary : s.secondary;
     return ButtonStyle(
@@ -145,6 +163,7 @@ class BaseIconButton extends StatelessWidget {
         }
         return null;
       }),
+      shape: WidgetStateProperty.all(_shape),
     );
   }
 }

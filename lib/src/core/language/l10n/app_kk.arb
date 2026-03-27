@@ -1,19 +1,19 @@
 {
   "@@locale": "kk",
-  "errorTitle": "Қате",
   "apiFailureDefaultMessage": "Сұрау кезінде қате орын алды",
-  "parseFailureDefaultMessage": "Деректерді өңдеу кезінде қате орын алды",
   "baseDefaultMessage": "Күтпеген қате орын алды",
-
-  "themeMode": "Тема режимі",
-  "light": "Жарық",
+  "continueToLogin": "Кіруге жалғастыру",
   "dark": "Қара",
-  "system": "Жүйелік",
-
-  "kazakh": "Қазақ",
-  "russian": "Орыс",
+  "dismiss": "Жабу",
   "english": "Ағылшын",
-
+  "errorTitle": "Қате",
+  "kazakh": "Қазақ",
+  "light": "Жарық",
   "notSelected": "Таңдалмаған",
-  "dismiss": "Жабу"
+  "parseFailureDefaultMessage": "Деректерді өңдеу кезінде қате орын алды",
+  "russian": "Орыс",
+  "santoniLuxuryFurnitureDescription": "Santoni Luxury Furniture әлеміне қош келдіңіз, премиум жиһазға арналған бірегей мекеніңіз. Сәнді әрі талғампаз бұйымдардан құралған арнайы топтамамызды зерттеңіз.",
+  "santoniLuxuryFurnitureTitle": "Santoni Luxury Furniture",
+  "system": "Жүйелік",
+  "themeMode": "Тема режимі"
 }

@@ -8,6 +8,7 @@ import 'package:mobile_app/src/config/theme/app_radii.dart';
 import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
+import 'package:mobile_app/src/features/example/presentation/widgets/custom_example_widget.dart';
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
 import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart';
 import 'package:mobile_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
@@ -142,6 +143,13 @@ class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
                   expand: false,
                 ),
               ],
+            ),
+            SizedBox(height: AppSpacing.lg),
+            CustomExampleWidget(
+              title: context.l10n.santoniLuxuryFurnitureTitle,
+              description: context.l10n.santoniLuxuryFurnitureDescription,
+              buttonLabel: context.l10n.continueToLogin,
+              onPressed: () {},
             ),
           ],
         ),

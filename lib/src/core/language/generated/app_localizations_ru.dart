@@ -9,41 +9,51 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get errorTitle => 'Ошибка';
-
-  @override
   String get apiFailureDefaultMessage => 'Что-то пошло не так при запросе';
-
-  @override
-  String get parseFailureDefaultMessage => 'Ошибка при обработке данных';
 
   @override
   String get baseDefaultMessage => 'Произошла непредвиденная ошибка';
 
   @override
-  String get themeMode => 'Режим темы';
-
-  @override
-  String get light => 'Светлый';
+  String get continueToLogin => 'Продолжить вход';
 
   @override
   String get dark => 'Темный';
 
   @override
-  String get system => 'Системный';
-
-  @override
-  String get kazakh => 'Казахский';
-
-  @override
-  String get russian => 'Русский';
+  String get dismiss => 'Закрыть';
 
   @override
   String get english => 'Английский';
 
   @override
+  String get errorTitle => 'Ошибка';
+
+  @override
+  String get kazakh => 'Казахский';
+
+  @override
+  String get light => 'Светлый';
+
+  @override
   String get notSelected => 'Не выбрано';
 
   @override
-  String get dismiss => 'Закрыть';
+  String get parseFailureDefaultMessage => 'Ошибка при обработке данных';
+
+  @override
+  String get russian => 'Русский';
+
+  @override
+  String get santoniLuxuryFurnitureDescription =>
+      'Добро пожаловать в Santoni Luxury Furniture, ваш универсальный магазин премиальной мебели. Откройте для себя нашу тщательно подобранную коллекцию стильных и элегантных предметов.';
+
+  @override
+  String get santoniLuxuryFurnitureTitle => 'Santoni Luxury Furniture';
+
+  @override
+  String get system => 'Системный';
+
+  @override
+  String get themeMode => 'Режим темы';
 }

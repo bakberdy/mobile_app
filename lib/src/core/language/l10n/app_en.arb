@@ -1,19 +1,19 @@
 {
   "@@locale": "en",
-  "errorTitle": "Error",
   "apiFailureDefaultMessage": "Something went wrong on request",
-  "parseFailureDefaultMessage": "Something went wrong on handling the data",
   "baseDefaultMessage": "An unexpected error occurred",
-
-  "themeMode": "Theme Mode",
-  "light": "Light",
+  "continueToLogin": "Continue to Login",
   "dark": "Dark",
-  "system": "System",
-
-  "kazakh": "Kazakh",
-  "russian": "Russian",
+  "dismiss": "Dismiss",
   "english": "English",
-
+  "errorTitle": "Error",
+  "kazakh": "Kazakh",
+  "light": "Light",
   "notSelected": "Not Selected",
-  "dismiss": "Dismiss"
+  "parseFailureDefaultMessage": "Something went wrong on handling the data",
+  "russian": "Russian",
+  "santoniLuxuryFurnitureDescription": "Welcome to Santoni Luxury Furniture, your one-stop destination for premium furniture. Explore our curated collection of stylish and elegant pieces.",
+  "santoniLuxuryFurnitureTitle": "Santoni Luxury Furniture",
+  "system": "System",
+  "themeMode": "Theme Mode"
 }

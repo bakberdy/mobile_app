@@ -100,23 +100,11 @@ abstract class AppLocalizations {
     Locale('ru'),
   ];
 
-  /// No description provided for @errorTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Error'**
-  String get errorTitle;
-
   /// No description provided for @apiFailureDefaultMessage.
   ///
   /// In en, this message translates to:
   /// **'Something went wrong on request'**
   String get apiFailureDefaultMessage;
-
-  /// No description provided for @parseFailureDefaultMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong on handling the data'**
-  String get parseFailureDefaultMessage;
 
   /// No description provided for @baseDefaultMessage.
   ///
@@ -124,17 +112,11 @@ abstract class AppLocalizations {
   /// **'An unexpected error occurred'**
   String get baseDefaultMessage;
 
-  /// No description provided for @themeMode.
+  /// No description provided for @continueToLogin.
   ///
   /// In en, this message translates to:
-  /// **'Theme Mode'**
-  String get themeMode;
-
-  /// No description provided for @light.
-  ///
-  /// In en, this message translates to:
-  /// **'Light'**
-  String get light;
+  /// **'Continue to Login'**
+  String get continueToLogin;
 
   /// No description provided for @dark.
   ///
@@ -142,23 +124,11 @@ abstract class AppLocalizations {
   /// **'Dark'**
   String get dark;
 
-  /// No description provided for @system.
+  /// No description provided for @dismiss.
   ///
   /// In en, this message translates to:
-  /// **'System'**
-  String get system;
-
-  /// No description provided for @kazakh.
-  ///
-  /// In en, this message translates to:
-  /// **'Kazakh'**
-  String get kazakh;
-
-  /// No description provided for @russian.
-  ///
-  /// In en, this message translates to:
-  /// **'Russian'**
-  String get russian;
+  /// **'Dismiss'**
+  String get dismiss;
 
   /// No description provided for @english.
   ///
@@ -166,17 +136,65 @@ abstract class AppLocalizations {
   /// **'English'**
   String get english;
 
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorTitle;
+
+  /// No description provided for @kazakh.
+  ///
+  /// In en, this message translates to:
+  /// **'Kazakh'**
+  String get kazakh;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
   /// No description provided for @notSelected.
   ///
   /// In en, this message translates to:
   /// **'Not Selected'**
   String get notSelected;
 
-  /// No description provided for @dismiss.
+  /// No description provided for @parseFailureDefaultMessage.
   ///
   /// In en, this message translates to:
-  /// **'Dismiss'**
-  String get dismiss;
+  /// **'Something went wrong on handling the data'**
+  String get parseFailureDefaultMessage;
+
+  /// No description provided for @russian.
+  ///
+  /// In en, this message translates to:
+  /// **'Russian'**
+  String get russian;
+
+  /// No description provided for @santoniLuxuryFurnitureDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Santoni Luxury Furniture, your one-stop destination for premium furniture. Explore our curated collection of stylish and elegant pieces.'**
+  String get santoniLuxuryFurnitureDescription;
+
+  /// No description provided for @santoniLuxuryFurnitureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Santoni Luxury Furniture'**
+  String get santoniLuxuryFurnitureTitle;
+
+  /// No description provided for @system.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get system;
+
+  /// No description provided for @themeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme Mode'**
+  String get themeMode;
 }
 
 class _AppLocalizationsDelegate

@@ -61,6 +61,7 @@ Always use them — never call the underlying Flutter APIs directly.
 | `context.colorScheme` | `ColorScheme` | `ColorScheme.of(context)` / `Theme.of(context).colorScheme` |
 | `context.baseThemeX` | `BaseThemeExtension` | `theme.extension<BaseThemeExtension>()!` |
 | `context.l10n` | `AppLocalizations` | `AppLocalizations.of(context)` |
+| `context.assets` | `AppContextAssets` | `AppAssets...` in widgets |
 | `context.locale` | `Locale` | `Localizations.localeOf(context)` |
 | `context.languageCode` | `String` | `Localizations.localeOf(context).languageCode` |
 | `context.isRTL` | `bool` | manual `['ar','he','fa','ur'].contains(...)` check |

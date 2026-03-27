@@ -1,19 +1,19 @@
 {
   "@@locale": "ru",
-  "errorTitle": "Ошибка",
   "apiFailureDefaultMessage": "Что-то пошло не так при запросе",
-  "parseFailureDefaultMessage": "Ошибка при обработке данных",
   "baseDefaultMessage": "Произошла непредвиденная ошибка",
-
-  "themeMode": "Режим темы",
-  "light": "Светлый",
+  "continueToLogin": "Продолжить вход",
   "dark": "Темный",
-  "system": "Системный",
-
-  "kazakh": "Казахский",
-  "russian": "Русский",
+  "dismiss": "Закрыть",
   "english": "Английский",
-
+  "errorTitle": "Ошибка",
+  "kazakh": "Казахский",
+  "light": "Светлый",
   "notSelected": "Не выбрано",
-  "dismiss": "Закрыть"
+  "parseFailureDefaultMessage": "Ошибка при обработке данных",
+  "russian": "Русский",
+  "santoniLuxuryFurnitureDescription": "Добро пожаловать в Santoni Luxury Furniture, ваш универсальный магазин премиальной мебели. Откройте для себя нашу тщательно подобранную коллекцию стильных и элегантных предметов.",
+  "santoniLuxuryFurnitureTitle": "Santoni Luxury Furniture",
+  "system": "Системный",
+  "themeMode": "Режим темы"
 }

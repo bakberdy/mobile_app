@@ -1,0 +1,47 @@
+---
+description: Widget rules for feature presentation widgets.
+globs: lib/src/features/**/presentation/widgets/**/*.dart
+alwaysApply: false
+---
+
+# Presentation Widget Rules
+
+- One public widget class per file. Extract private helper widgets only when they own meaningful structure or behavior; do not create tiny wrappers that only return a `Text` or similarly trivial subtree.
+- Widget names must clearly describe what the widget does.
+- Every changeable UI value must come from constructor arguments or project tokens. Keep the API minimal: do not add parameters that are unused or not truly configurable.
+- Never hardcode user-visible text, colors, asset paths, or other mutable design values.
+- Use `context.l10n` for text, `context.colorScheme` for colors, and `context.assets` for assets.
+- If spacing or corner radius already fits the design, use `AppSpacing` and `AppRadii` instead of raw numbers.
+- Avoid unscoped magic numbers for layout and styling. Prefer theme tokens, named constants, or constructor parameters when a value may change.
+- Avoid methods that return widgets. Prefer inline composition or a private widget class when extraction is justified.
+- In vertically scrollable layouts, avoid fixed widths. In horizontally scrollable layouts, avoid fixed heights. Prefer `Padding`, `Expanded`, `Flexible`, alignment, and constraints.
+- Use `MediaQuery.sizeOf(context)` for screen-relative sizing and `LayoutBuilder` for parent-relative sizing.
+- Prefer `const` constructors and widgets whenever possible.
+
+```dart
+// ❌ BAD
+class MyWidgetHeader extends StatelessWidget {
+  const MyWidgetHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) => const Text('Title');
+}
+```
+
+```dart
+// ✅ GOOD
+class ProfilePromoCard extends StatelessWidget {
+  const ProfilePromoCard({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.imageProvider,
+    required this.onPressed,
+  });
+ 
+  final String title;
+  final String description;
+  final ImageProvider imageProvider;
+  final VoidCallback onPressed;
+}
+```
