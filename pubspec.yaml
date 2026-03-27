@@ -33,6 +33,7 @@ dependencies:
   app_log:
     git:
       url: https://github.com/bakberdy/app_log.git
+  json_annotation: ^4.11.0
 
 
 
