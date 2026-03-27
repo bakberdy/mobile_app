@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/src/config/theme/app_radii.dart';
+import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 class BaseSnackbar {
@@ -18,10 +20,11 @@ class BaseSnackbar {
     Color? accentColor,
   }) {
     final colors = _resolveColors(context, type);
-    final resolvedBg      = backgroundColor ?? colors.background;
-    final resolvedFg      = foregroundColor ?? colors.foreground;
-    final resolvedAccent  = accentColor     ?? colors.accent;
-    final resolvedIcon    = icon            ?? Icon(colors.iconData, color: resolvedAccent, size: 20);
+    final resolvedBg = backgroundColor ?? colors.background;
+    final resolvedFg = foregroundColor ?? colors.foreground;
+    final resolvedAccent = accentColor ?? colors.accent;
+    final resolvedIcon =
+        icon ?? Icon(colors.iconData, color: resolvedAccent, size: 20);
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -31,14 +34,17 @@ class BaseSnackbar {
           behavior: behavior,
           backgroundColor: resolvedBg,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(AppRadii.md)),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: 14,
+          ),
           content: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               resolvedIcon,
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   message,
@@ -66,15 +72,14 @@ class BaseSnackbar {
     String? actionLabel,
     VoidCallback? onAction,
     Duration duration = const Duration(seconds: 3),
-  }) =>
-      show(
-        context,
-        message: message,
-        type: BaseSnackbarType.success,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        duration: duration,
-      );
+  }) => show(
+    context,
+    message: message,
+    type: BaseSnackbarType.success,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    duration: duration,
+  );
 
   static void error(
     BuildContext context, {
@@ -82,15 +87,14 @@ class BaseSnackbar {
     String? actionLabel,
     VoidCallback? onAction,
     Duration duration = const Duration(seconds: 4),
-  }) =>
-      show(
-        context,
-        message: message,
-        type: BaseSnackbarType.error,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        duration: duration,
-      );
+  }) => show(
+    context,
+    message: message,
+    type: BaseSnackbarType.error,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    duration: duration,
+  );
 
   static void warning(
     BuildContext context, {
@@ -98,15 +102,14 @@ class BaseSnackbar {
     String? actionLabel,
     VoidCallback? onAction,
     Duration duration = const Duration(seconds: 3),
-  }) =>
-      show(
-        context,
-        message: message,
-        type: BaseSnackbarType.warning,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        duration: duration,
-      );
+  }) => show(
+    context,
+    message: message,
+    type: BaseSnackbarType.warning,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    duration: duration,
+  );
 
   static void info(
     BuildContext context, {
@@ -114,21 +117,23 @@ class BaseSnackbar {
     String? actionLabel,
     VoidCallback? onAction,
     Duration duration = const Duration(seconds: 3),
-  }) =>
-      show(
-        context,
-        message: message,
-        type: BaseSnackbarType.info,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        duration: duration,
-      );
+  }) => show(
+    context,
+    message: message,
+    type: BaseSnackbarType.info,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    duration: duration,
+  );
 
   static void hide(BuildContext context) =>
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-  static _SnackbarColors _resolveColors(BuildContext context, BaseSnackbarType type) {
-    final t  = context.baseThemeX;
+  static _SnackbarColors _resolveColors(
+    BuildContext context,
+    BaseSnackbarType type,
+  ) {
+    final t = context.baseThemeX;
     final cs = context.colorScheme;
 
     return switch (type) {

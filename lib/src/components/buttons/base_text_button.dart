@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/src/components/buttons/base_button_progress.dart';
+import 'package:mobile_app/src/config/theme/app_radii.dart';
+import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/config/theme/typography.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
@@ -23,17 +25,16 @@ class BaseTextButton extends StatelessWidget {
     bool expand = false,
     bool disabled = false,
     bool loading = false,
-  }) =>
-      BaseTextButton._(
-        key: key,
-        variant: _BaseTextButtonVariant.primary,
-        onPressed: onPressed,
-        label: label,
-        icon: icon,
-        expand: expand,
-        disabled: disabled,
-        loading: loading,
-      );
+  }) => BaseTextButton._(
+    key: key,
+    variant: _BaseTextButtonVariant.primary,
+    onPressed: onPressed,
+    label: label,
+    icon: icon,
+    expand: expand,
+    disabled: disabled,
+    loading: loading,
+  );
 
   factory BaseTextButton.secondary({
     Key? key,
@@ -43,17 +44,16 @@ class BaseTextButton extends StatelessWidget {
     bool expand = false,
     bool disabled = false,
     bool loading = false,
-  }) =>
-      BaseTextButton._(
-        key: key,
-        variant: _BaseTextButtonVariant.secondary,
-        onPressed: onPressed,
-        label: label,
-        icon: icon,
-        expand: expand,
-        disabled: disabled,
-        loading: loading,
-      );
+  }) => BaseTextButton._(
+    key: key,
+    variant: _BaseTextButtonVariant.secondary,
+    onPressed: onPressed,
+    label: label,
+    icon: icon,
+    expand: expand,
+    disabled: disabled,
+    loading: loading,
+  );
 
   final _BaseTextButtonVariant _variant;
   final VoidCallback? onPressed;
@@ -97,7 +97,7 @@ class BaseTextButton extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       progress,
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.xs),
                       Text(label),
                     ],
                   )
@@ -134,7 +134,9 @@ class BaseTextButton extends StatelessWidget {
         ),
       ),
       shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.lg),
+        ),
       ),
     );
   }

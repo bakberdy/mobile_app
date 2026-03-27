@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/src/config/theme/app_radii.dart';
+import 'package:mobile_app/src/config/theme/app_spacing.dart';
 
 /// Shared layout tokens for [BaseDialog] and [BaseBottomSheet] (Figma kit).
 abstract final class DialogKitLayout {
-  static const double padding = 24;
-  static const double cornerRadius = 20;
-  static const double sectionGap = 24;
+  static const double padding = AppSpacing.lg;
+  static const double cornerRadius = AppRadii.xl;
+  static const double sectionGap = AppSpacing.lg;
 
   /// Applied to [ColorScheme.scrim] when modals omit an explicit barrier color.
   static const double barrierScrimOpacity = 0.54;
@@ -19,10 +21,10 @@ abstract final class DialogKitLayout {
   }
 
   static List<BoxShadow> dialogCardShadows(ColorScheme scheme) => [
-        BoxShadow(
-          color: scheme.shadow.withValues(alpha: dialogShadowOpacity),
-          offset: const Offset(0, 5),
-          blurRadius: 16,
-        ),
-      ];
+    BoxShadow(
+      color: scheme.shadow.withValues(alpha: dialogShadowOpacity),
+      offset: const Offset(0, 5),
+      blurRadius: 16,
+    ),
+  ];
 }

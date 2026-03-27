@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/src/components/buttons/base_button_progress.dart';
+import 'package:mobile_app/src/config/theme/app_radii.dart';
+import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/config/theme/typography.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
@@ -23,17 +25,16 @@ class BaseFilledButton extends StatelessWidget {
     bool expand = true,
     bool disabled = false,
     bool loading = false,
-  }) =>
-      BaseFilledButton._(
-        key: key,
-        variant: _BaseFilledButtonVariant.primary,
-        onPressed: onPressed,
-        label: label,
-        icon: icon,
-        expand: expand,
-        disabled: disabled,
-        loading: loading,
-      );
+  }) => BaseFilledButton._(
+    key: key,
+    variant: _BaseFilledButtonVariant.primary,
+    onPressed: onPressed,
+    label: label,
+    icon: icon,
+    expand: expand,
+    disabled: disabled,
+    loading: loading,
+  );
 
   factory BaseFilledButton.secondary({
     Key? key,
@@ -43,17 +44,16 @@ class BaseFilledButton extends StatelessWidget {
     bool expand = false,
     bool disabled = false,
     bool loading = false,
-  }) =>
-      BaseFilledButton._(
-        key: key,
-        variant: _BaseFilledButtonVariant.secondary,
-        onPressed: onPressed,
-        label: label,
-        icon: icon,
-        expand: expand,
-        disabled: disabled,
-        loading: loading,
-      );
+  }) => BaseFilledButton._(
+    key: key,
+    variant: _BaseFilledButtonVariant.secondary,
+    onPressed: onPressed,
+    label: label,
+    icon: icon,
+    expand: expand,
+    disabled: disabled,
+    loading: loading,
+  );
 
   final _BaseFilledButtonVariant _variant;
   final VoidCallback? onPressed;
@@ -97,7 +97,7 @@ class BaseFilledButton extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       baseButtonProgressIndicator(_progressColor(context)),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.xs),
                       Text(label),
                     ],
                   )
@@ -141,7 +141,9 @@ class BaseFilledButton extends StatelessWidget {
         ),
       ),
       shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.lg),
+        ),
       ),
     );
   }

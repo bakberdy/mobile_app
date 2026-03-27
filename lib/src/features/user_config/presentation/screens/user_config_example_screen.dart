@@ -1,7 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_app/src/components/buttons/base_filled_button.dart';
+import 'package:mobile_app/src/components/buttons/base_outlined_button.dart';
 import 'package:mobile_app/src/components/dialogs/base_snackbar.dart';
+import 'package:mobile_app/src/config/theme/app_radii.dart';
+import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
@@ -13,7 +17,8 @@ class UserConfigExampleScreen extends StatefulWidget {
   const UserConfigExampleScreen({super.key});
 
   @override
-  State<UserConfigExampleScreen> createState() => _UserConfigExampleScreenState();
+  State<UserConfigExampleScreen> createState() =>
+      _UserConfigExampleScreenState();
 }
 
 class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
@@ -24,12 +29,12 @@ class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.themeMode)),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DropdownButton<AppThemeMode>(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadii.lg),
               underline: const SizedBox(),
               value: themeState.themeMode,
               hint: Text(context.l10n.notSelected),
@@ -53,9 +58,9 @@ class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
                 }
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             DropdownButton<String>(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadii.lg),
               underline: const SizedBox(),
               value: localeState.languageCode,
               hint: Text(context.l10n.notSelected),
@@ -79,42 +84,46 @@ class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
                 }
               },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             Text('Snackbar', style: context.textTheme.titleMedium),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.xs,
+              runSpacing: AppSpacing.xs,
               children: [
-                FilledButton(
+                BaseFilledButton.primary(
                   onPressed: () => BaseSnackbar.success(
                     context,
                     message: 'Route saved successfully',
                   ),
-                  child: const Text('Success'),
+                  label: 'Success',
+                  expand: false,
                 ),
-                FilledButton(
+                BaseFilledButton.primary(
                   onPressed: () => BaseSnackbar.error(
                     context,
                     message: 'Failed to load route data',
                   ),
-                  child: const Text('Error'),
+                  label: 'Error',
+                  expand: false,
                 ),
-                FilledButton(
+                BaseFilledButton.primary(
                   onPressed: () => BaseSnackbar.warning(
                     context,
                     message: 'GPS signal is weak',
                   ),
-                  child: const Text('Warning'),
+                  label: 'Warning',
+                  expand: false,
                 ),
-                FilledButton(
+                BaseFilledButton.primary(
                   onPressed: () => BaseSnackbar.info(
                     context,
                     message: 'Pull down to refresh routes',
                   ),
-                  child: const Text('Info'),
+                  label: 'Info',
+                  expand: false,
                 ),
-                FilledButton(
+                BaseFilledButton.primary(
                   onPressed: () => BaseSnackbar.error(
                     context,
                     message: 'Route deleted',
@@ -124,34 +133,13 @@ class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
                       message: 'Route restored',
                     ),
                   ),
-                  child: const Text('With action'),
+                  label: 'With action',
+                  expand: false,
                 ),
-                OutlinedButton(
+                BaseOutlinedButton.primary(
                   onPressed: () => BaseSnackbar.hide(context),
-                  child: const Text('Hide'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text('Banner', style: context.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Wrap(
-              children: [
-                FilledButton(
-                  onPressed: () => ScaffoldMessenger.of(context).showMaterialBanner(
-                    MaterialBanner(
-                      content: const Text('Custom'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-                          },
-                          child: const Text('Hide'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  child: const Text('Banner'),
+                  label: 'Hide',
+                  expand: false,
                 ),
               ],
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/src/components/dialogs/base_dialog_kit_panel.dart';
 import 'package:mobile_app/src/components/dialogs/dialog_kit_layout.dart';
 import 'package:mobile_app/src/components/dialogs/dialog_kit_models.dart';
+import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 
 export 'dialog_kit_models.dart';
@@ -261,7 +262,8 @@ class BaseDialog {
       },
       pageBuilder: (dialogContext, _, _) {
         final theme = Theme.of(dialogContext);
-        final effectiveContent = body ??
+        final effectiveContent =
+            body ??
             (bodyText != null
                 ? Text(bodyText, style: theme.dialogTheme.contentTextStyle)
                 : null);
@@ -282,7 +284,7 @@ class BaseDialog {
               ),
               body: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(AppSpacing.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -292,7 +294,7 @@ class BaseDialog {
                         )
                       else
                         const Spacer(),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.md),
                       _FullscreenActionRow(
                         dialogContext: dialogContext,
                         primaryLabel: primaryLabel,
@@ -346,11 +348,17 @@ class BaseDialog {
       barrierColor: DialogKitLayout.modalBarrierColor(context, barrierColor),
       transitionDuration: const Duration(milliseconds: 200),
       transitionBuilder: (_, animation, _, child) {
-        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOut,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
-            scale: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            scale: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+            ),
             child: child,
           ),
         );
@@ -367,11 +375,15 @@ class BaseDialog {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: surface,
-                    borderRadius: BorderRadius.circular(DialogKitLayout.cornerRadius),
+                    borderRadius: BorderRadius.circular(
+                      DialogKitLayout.cornerRadius,
+                    ),
                     boxShadow: DialogKitLayout.dialogCardShadows(scheme),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(DialogKitLayout.cornerRadius),
+                    borderRadius: BorderRadius.circular(
+                      DialogKitLayout.cornerRadius,
+                    ),
                     child: Material(
                       color: surface,
                       child: Padding(
@@ -457,21 +469,18 @@ class _FullscreenActionRow extends StatelessWidget {
         children: [
           if (primaryFirst) ...[
             Expanded(child: primary),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.xs),
             Expanded(child: secondary),
           ] else ...[
             Expanded(child: secondary),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.xs),
             Expanded(child: primary),
           ],
         ],
       );
     }
     if (primary != null) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [primary],
-      );
+      return Row(mainAxisAlignment: MainAxisAlignment.end, children: [primary]);
     }
     if (secondary != null) {
       return Row(
