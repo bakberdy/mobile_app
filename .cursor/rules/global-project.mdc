@@ -1,0 +1,18 @@
+---
+description: Global project rules for null safety, code comments, and Failure vs Exception boundaries.
+alwaysApply: true
+---
+
+# Global Project Rules
+
+## Null Safety
+- Never use `!` to force-unwrap a nullable value without first checking it with `if`, `?.`, `??`, pattern matching, or another explicit null-safe guard.
+
+## Comments
+- Do not leave comments in source code.
+- Only keep comments that are required by tooling or generated code conventions.
+
+## Failure And Exception Boundaries
+- `Failure` is the business-layer error model. Use it outside the data layer.
+- `Exception` is the data-layer error model. Do not expose exceptions to domain or presentation layers.
+- Catch data-layer exceptions and map them to `Failure` before returning across repository boundaries.

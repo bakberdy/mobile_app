@@ -100,6 +100,12 @@ abstract class AppLocalizations {
     Locale('ru'),
   ];
 
+  /// No description provided for @addTodo.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Todo'**
+  String get addTodo;
+
   /// No description provided for @apiFailureDefaultMessage.
   ///
   /// In en, this message translates to:
@@ -112,11 +118,29 @@ abstract class AppLocalizations {
   /// **'An unexpected error occurred'**
   String get baseDefaultMessage;
 
+  /// No description provided for @clearForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear form'**
+  String get clearForm;
+
   /// No description provided for @continueToLogin.
   ///
   /// In en, this message translates to:
   /// **'Continue to Login'**
   String get continueToLogin;
+
+  /// No description provided for @createdAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get createdAtLabel;
+
+  /// No description provided for @createTodo.
+  ///
+  /// In en, this message translates to:
+  /// **'Create todo'**
+  String get createTodo;
 
   /// No description provided for @dark.
   ///
@@ -124,11 +148,23 @@ abstract class AppLocalizations {
   /// **'Dark'**
   String get dark;
 
+  /// No description provided for @deleteTodo.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete todo'**
+  String get deleteTodo;
+
   /// No description provided for @dismiss.
   ///
   /// In en, this message translates to:
   /// **'Dismiss'**
   String get dismiss;
+
+  /// No description provided for @editTodo.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit todo'**
+  String get editTodo;
 
   /// No description provided for @english.
   ///
@@ -142,6 +178,12 @@ abstract class AppLocalizations {
   /// **'Error'**
   String get errorTitle;
 
+  /// No description provided for @exampleTodosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Todo Example'**
+  String get exampleTodosTitle;
+
   /// No description provided for @kazakh.
   ///
   /// In en, this message translates to:
@@ -154,6 +196,24 @@ abstract class AppLocalizations {
   /// **'Light'**
   String get light;
 
+  /// No description provided for @markTodoDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done'**
+  String get markTodoDone;
+
+  /// No description provided for @markTodoUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as not done'**
+  String get markTodoUndone;
+
+  /// No description provided for @noTodosYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No todos yet'**
+  String get noTodosYet;
+
   /// No description provided for @notSelected.
   ///
   /// In en, this message translates to:
@@ -165,6 +225,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong on handling the data'**
   String get parseFailureDefaultMessage;
+
+  /// No description provided for @refreshTodos.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh todos'**
+  String get refreshTodos;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get requiredField;
 
   /// No description provided for @russian.
   ///
@@ -195,6 +267,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Theme Mode'**
   String get themeMode;
+
+  /// No description provided for @todoDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get todoDescriptionLabel;
+
+  /// No description provided for @todoDoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get todoDoneLabel;
+
+  /// No description provided for @todoFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Todo form'**
+  String get todoFormTitle;
+
+  /// No description provided for @todoListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Todo list'**
+  String get todoListTitle;
+
+  /// No description provided for @todoTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get todoTitleLabel;
+
+  /// No description provided for @updateTodo.
+  ///
+  /// In en, this message translates to:
+  /// **'Update todo'**
+  String get updateTodo;
 }
 
 class _AppLocalizationsDelegate

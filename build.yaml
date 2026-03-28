@@ -11,3 +11,8 @@ targets:
         options:
           auto_register: true
           generate_for_injectable: true
+      flutter_gen_runner:
+        options:
+          output: lib/gen/
+          line_length: 120
+          

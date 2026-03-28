@@ -1,4 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile_app/src/features/example/domain/entity/example_todo.dart';
+import 'package:mobile_app/src/features/example/presentation/screens/example_todo_editor_screen.dart';
+import 'package:mobile_app/src/features/example/presentation/screens/example_todos_screen.dart';
 import 'package:mobile_app/src/features/navigation/screens/main_navigation_screen.dart';
 import 'package:mobile_app/src/features/user_config/presentation/screens/user_config_example_screen.dart';
 import 'auth_guard.dart';
@@ -14,7 +18,8 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(page: UserConfigExampleRoute.page, initial: true),
+    AutoRoute(page: ExampleTodosRoute.page, initial: true),
+    AutoRoute(page: ExampleTodoEditorRoute.page),
 
     // AutoRoute(
     //   initial: false,

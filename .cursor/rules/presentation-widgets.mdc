@@ -6,11 +6,12 @@ alwaysApply: false
 
 # Presentation Widget Rules
 
-- One public widget class per file. Extract private helper widgets only when they own meaningful structure or behavior; do not create tiny wrappers that only return a `Text` or similarly trivial subtree.
+- Exactly one widget class per file. Never place two widget classes in the same file, even if one is private. If a widget owns meaningful structure or behavior, extract it into its own file instead of keeping it as a helper widget beside another widget.
 - Widget names must clearly describe what the widget does.
 - Every changeable UI value must come from constructor arguments or project tokens. Keep the API minimal: do not add parameters that are unused or not truly configurable.
 - Never hardcode user-visible text, colors, asset paths, or other mutable design values.
 - Use `context.l10n` for text, `context.colorScheme` for colors, and `context.assets` for assets.
+- Input fields must not use `TextEditingController`. Input state lives in BLoC, widgets receive current value and validation from state, and report changes via callbacks.
 - If spacing or corner radius already fits the design, use `AppSpacing` and `AppRadii` instead of raw numbers.
 - Avoid unscoped magic numbers for layout and styling. Prefer theme tokens, named constants, or constructor parameters when a value may change.
 - Avoid methods that return widgets. Prefer inline composition or a private widget class when extraction is justified.

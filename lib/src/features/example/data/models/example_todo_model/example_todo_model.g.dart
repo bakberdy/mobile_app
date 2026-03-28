@@ -7,6 +7,7 @@ part of 'example_todo_model.dart';
 // **************************************************************************
 
 TodoModel _$TodoModelFromJson(Map<String, dynamic> json) => TodoModel(
+  id: json['id'] as String,
   createdAt: DateTime.parse(json['created_at'] as String),
   title: json['title'] as String,
   description: json['description'] as String,
@@ -14,6 +15,7 @@ TodoModel _$TodoModelFromJson(Map<String, dynamic> json) => TodoModel(
 );
 
 Map<String, dynamic> _$TodoModelToJson(TodoModel instance) => <String, dynamic>{
+  'id': instance.id,
   'created_at': instance.createdAt.toIso8601String(),
   'title': instance.title,
   'description': instance.description,

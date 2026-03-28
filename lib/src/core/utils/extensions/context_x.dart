@@ -27,6 +27,6 @@ extension ContextExtensions on BuildContext {
 final class AppContextAssets {
   const AppContextAssets();
 
-  $AssetsIconsGen get icons => AppAssets.icons;
-  $AssetsImagesGen get images => AppAssets.images;
+  $AssetsIconsGen get icons => Assets.icons;
+  $AssetsImagesGen get images => Assets.images;
 }

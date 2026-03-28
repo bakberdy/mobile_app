@@ -1,0 +1,39 @@
+---
+description: Screen rules for feature presentation screens.
+globs: lib/src/features/**/presentation/screens/**/*_screen.dart
+alwaysApply: false
+---
+
+# Presentation Screen Rules
+
+## Structure
+- Never use helper methods that return widgets. Build UI inline or extract it into a widget file.
+- One class per file. The only allowed exception is the paired `_<ScreenName>Content` widget that lives with its screen wrapper.
+- Never keep extra private widgets in the same file besides `_<ScreenName>Content`.
+- Keep every screen file under 200 lines when possible. If it grows, extract reusable parts into `presentation/widgets/`.
+
+## Screen Responsibilities
+- All `BlocProvider`, bloc event dispatching, `BlocBuilder`, `BlocListener`, `BlocConsumer`, `context.watch`, and `context.select` usage must stay in the screen file.
+- Screens may coordinate UI state and navigation only. Do not place business logic, data shaping, validation rules, or domain decisions in screens.
+- Prefer `context.select` or `context.watch` when a small piece of state is consumed directly after `build()` instead of wrapping that area with a builder.
+
+```dart
+// ✅ GOOD
+@override
+Widget build(BuildContext context) {
+  final title = context.select((ExampleBloc bloc) => bloc.state.title);
+  return ExampleView(title: title);
+}
+```
+
+## UI Composition
+- Never hardcode user-visible text, colors, or asset paths in screens.
+- Use `context.l10n` for text, `context.colorScheme` for colors, and project asset accessors such as `context.assets`.
+- Input fields must not use `TextEditingController`. Input state lives in BLoC, screens dispatch change events, and UI reads current value and validation from state.
+- Reuse default spacing constants when they already exist. Do not repeat hardcoded spacing values.
+- Prefer shared components from `lib/src/components/` such as base buttons, dialogs, sheets, and other project primitives before creating custom UI.
+- Prefer concise APIs like `EdgeInsets.all()` or `EdgeInsets.symmetric()` when all involved insets are the same.
+- Use `Stack` only for truly layered UI. Do not use it to manually position ordinary layouts that should be solved with regular layout widgets.
+
+## State And Status
+- Prefer `state_status` extensions from `lib/src/core/bloc/state_status.dart` instead of manual status comparisons when they cover the use case.

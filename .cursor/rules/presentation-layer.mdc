@@ -84,3 +84,6 @@ See `presentation-components.mdc` for the full `FailureType` switch example, but
 Files must be prefixed with the feature name. Screens use `_screen.dart` suffix, never `_page.dart`.
 - ✅ `user_config_example_screen.dart`, `user_config_theme_dropdown.dart`
 - ❌ `example_screen.dart`, `theme_dropdown.dart`, `user_config_example_page.dart`
+
+
+- one widget,screen one file. Never keep two classes into the one file

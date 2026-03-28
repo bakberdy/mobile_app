@@ -29,6 +29,24 @@ import 'package:mobile_app/src/core/storage/secure_storage/flutter_secure_storag
     as _i71;
 import 'package:mobile_app/src/core/storage/secure_storage/secure_storage.dart'
     as _i1022;
+import 'package:mobile_app/src/features/example/data/datasource/example_local_data_source.dart'
+    as _i402;
+import 'package:mobile_app/src/features/example/data/repository/example_repository_impl.dart'
+    as _i24;
+import 'package:mobile_app/src/features/example/domain/repository/example_repository.dart'
+    as _i220;
+import 'package:mobile_app/src/features/example/domain/usecases/example_create_todo_use_case.dart'
+    as _i567;
+import 'package:mobile_app/src/features/example/domain/usecases/example_get_todos_use_case.dart'
+    as _i760;
+import 'package:mobile_app/src/features/example/domain/usecases/example_remove_todo_use_case.dart'
+    as _i536;
+import 'package:mobile_app/src/features/example/domain/usecases/example_update_todo_use_case.dart'
+    as _i1002;
+import 'package:mobile_app/src/features/example/presentation/bloc/todo_editor_bloc/example_todo_editor_bloc.dart'
+    as _i328;
+import 'package:mobile_app/src/features/example/presentation/bloc/todos_bloc/example_todos_bloc.dart'
+    as _i946;
 import 'package:mobile_app/src/features/user_config/data/datasource/user_config_local_data_source.dart'
     as _i357;
 import 'package:mobile_app/src/features/user_config/data/datasource/user_config_remote_data_source.dart'
@@ -89,6 +107,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i480.AuthGuard>(
       () => appModule.authGuard(gh<_i464.TokenStorage>()),
     );
+    gh.lazySingleton<_i402.ExampleLocalDataSource>(
+      () => _i402.ExampleLocalDataSourceImpl(gh<_i581.LocalStorage>()),
+    );
     gh.singleton<_i357.UserConfigLocalDataSource>(
       () => _i357.UserConfigLocalDataSourceImpl(
         localStorage: gh<_i581.LocalStorage>(),
@@ -108,6 +129,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i3.AppRouter>(
       () => appModule.appRouter(gh<_i480.AuthGuard>()),
     );
+    gh.lazySingleton<_i220.ExampleRepository>(
+      () => _i24.ExampleRepositoryImpl(gh<_i402.ExampleLocalDataSource>()),
+    );
     gh.lazySingleton<_i10.GetAppThemeModeUsecase>(
       () => _i10.GetAppThemeModeUsecase(gh<_i656.UserConfigRepository>()),
     );
@@ -120,6 +144,26 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i605.SetThemeUsecase>(
       () => _i605.SetThemeUsecase(gh<_i656.UserConfigRepository>()),
     );
+    gh.lazySingleton<_i567.CreateTodoUseCase>(
+      () => _i567.CreateTodoUseCase(gh<_i220.ExampleRepository>()),
+    );
+    gh.lazySingleton<_i760.GetTodosUseCase>(
+      () => _i760.GetTodosUseCase(gh<_i220.ExampleRepository>()),
+    );
+    gh.lazySingleton<_i536.RemoveTodoUseCase>(
+      () => _i536.RemoveTodoUseCase(gh<_i220.ExampleRepository>()),
+    );
+    gh.lazySingleton<_i1002.UpdateTodoUseCase>(
+      () => _i1002.UpdateTodoUseCase(gh<_i220.ExampleRepository>()),
+    );
+    gh.factory<_i946.ExampleTodosBloc>(
+      () => _i946.ExampleTodosBloc(
+        gh<_i760.GetTodosUseCase>(),
+        gh<_i567.CreateTodoUseCase>(),
+        gh<_i1002.UpdateTodoUseCase>(),
+        gh<_i536.RemoveTodoUseCase>(),
+      ),
+    );
     gh.factory<_i622.LocaleBloc>(
       () => _i622.LocaleBloc(
         gh<_i366.GetLocaleUsecase>(),
@@ -130,6 +174,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i198.ThemeBloc(
         gh<_i10.GetAppThemeModeUsecase>(),
         gh<_i605.SetThemeUsecase>(),
+      ),
+    );
+    gh.factory<_i328.ExampleTodoEditorBloc>(
+      () => _i328.ExampleTodoEditorBloc(
+        gh<_i567.CreateTodoUseCase>(),
+        gh<_i1002.UpdateTodoUseCase>(),
       ),
     );
     return this;

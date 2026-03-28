@@ -1,4 +1,4 @@
-// dart format width=80
+// dart format width=120
 
 /// GENERATED CODE - DO NOT MODIFY BY HAND
 /// *****************************************************
@@ -18,8 +18,7 @@ class $AssetsIconsGen {
   AssetGenImage get filter => const AssetGenImage('assets/icons/filter.png');
 
   /// File path: assets/icons/location_point.png
-  AssetGenImage get locationPoint =>
-      const AssetGenImage('assets/icons/location_point.png');
+  AssetGenImage get locationPoint => const AssetGenImage('assets/icons/location_point.png');
 
   /// File path: assets/icons/route.png
   AssetGenImage get route => const AssetGenImage('assets/icons/route.png');
@@ -35,27 +34,21 @@ class $AssetsImagesGen {
   const $AssetsImagesGen();
 
   /// File path: assets/images/onboarding_bg.png
-  AssetGenImage get onboardingBg =>
-      const AssetGenImage('assets/images/onboarding_bg.png');
+  AssetGenImage get onboardingBg => const AssetGenImage('assets/images/onboarding_bg.png');
 
   /// List of all assets
   List<AssetGenImage> get values => [onboardingBg];
 }
 
-class AppAssets {
-  const AppAssets._();
+class Assets {
+  const Assets._();
 
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
 }
 
 class AssetGenImage {
-  const AssetGenImage(
-    this._assetName, {
-    this.size,
-    this.flavors = const {},
-    this.animation,
-  });
+  const AssetGenImage(this._assetName, {this.size, this.flavors = const {}, this.animation});
 
   final String _assetName;
 
@@ -126,11 +119,7 @@ class AssetGenImage {
 }
 
 class AssetGenImageAnimation {
-  const AssetGenImageAnimation({
-    required this.isAnimation,
-    required this.duration,
-    required this.frames,
-  });
+  const AssetGenImageAnimation({required this.isAnimation, required this.duration, required this.frames});
 
   final bool isAnimation;
   final Duration duration;
