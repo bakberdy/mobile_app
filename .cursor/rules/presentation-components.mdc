@@ -6,111 +6,28 @@ alwaysApply: false
 
 # Presentation Components
 
-## Failure display
-Listen to `state.failure` in `BlocListener`. Use `failure.message ?? failure.defaultMessage(context)` — never a generic fallback key.
-`failure.defaultMessage(context)` (`core/error/failure_x.dart`) returns the correct localized message per failure type.
+## Description
+Rules for using shared presentation primitives such as failure UI, buttons, dialogs, and bottom sheets. This rule defines which project components to use and how they map to presentation behavior.
 
-| `FailureType` | Component | Call |
-|---------------|-----------|------|
-| `snackbar` | `BaseSnackbar` | `.error / .warning / .info / .success(context, message:)` |
-| `banner` | `BaseDialog` | `BaseDialog.showBanner(context, message:)` |
-| `alert` | `BaseDialog` | `BaseDialog.showBasic(context, ...)` |
-| `fullScreenError` | `BaseDialog` | `BaseDialog.showFullscreen(context, ...)` |
-| `inlineError` | — | Mapped to `FieldState.error` in BLoC — nothing to do in UI |
-| `silent` | — | No UI (cancelled request / analytics only) |
+## Responsibilities
+- Render failures with the correct shared component for each `FailureType`.
+- Use `failure.message ?? failure.defaultMessage(context)` when showing failure UI.
+- Use project button components instead of raw Flutter buttons.
+- Use project dialog and bottom-sheet components instead of calling Flutter APIs directly.
+- Keep the component choice consistent with the intent of the interaction.
+- Follow `presentation-bloc.mdc` for inline field-error mapping rules.
 
-```dart
-BlocListener<ThemeBloc, ThemeState>(
-  listenWhen: (prev, curr) => curr.failure != null && prev.failure != curr.failure,
-  listener: (context, state) {
-    final failure = state.failure;
-    if (failure == null) return;
-    final message = failure.message ?? failure.defaultMessage(context);
-    switch (failure.type) {
-      case FailureType.snackbar:
-        BaseSnackbar.error(context, message: message);
-      case FailureType.banner:
-        BaseDialog.showBanner(context, message: message);
-      case FailureType.alert:
-        BaseDialog.showBasic(context,
-          title: context.l10n.errorTitle,
-          description: message,
-          primaryLabel: context.l10n.ok,
-          barrierDismissible: false,
-        );
-      case FailureType.fullScreenError:
-        BaseDialog.showFullscreen(context,
-          title: context.l10n.errorTitle,
-          bodyText: message,
-          primaryLabel: context.l10n.retry,
-          onPrimary: () => context.read<ThemeBloc>().add(const ThemeStarted()),
-          barrierDismissible: false,
-        );
-      case FailureType.inlineError:
-        break;
-      case FailureType.silent:
-        break;
-    }
-  },
-)
-```
+## Green Flags
+- `FailureType.snackbar` uses `BaseSnackbar`.
+- `FailureType.banner`, `FailureType.alert`, and `FailureType.fullScreenError` use the matching `BaseDialog` API.
+- `FailureType.silent` shows no UI.
+- Buttons use `BaseFilledButton`, `BaseElevatedButton`, `BaseOutlinedButton`, `BaseTextButton`, or `BaseIconButton`.
+- Dialogs use `BaseDialog` and sheets use `BaseBottomSheet`.
+- Button loading and disabled states are driven by feature state.
 
-## Buttons — always use project components
-Never use raw Flutter buttons (`FilledButton`, `ElevatedButton`, `OutlinedButton`, `TextButton`, `IconButton`).
-
-| Component | Factories | Default `expand` |
-|-----------|-----------|-----------------|
-| `BaseFilledButton` | `.primary()`, `.secondary()` | `true` / `false` |
-| `BaseElevatedButton` | `.primary()`, `.secondary()` | `true` / `false` |
-| `BaseOutlinedButton` | `.primary()`, `.secondary()` | `true` / `false` |
-| `BaseTextButton` | `.primary()`, `.secondary()` | `false` / `false` |
-| `BaseIconButton` | `.standard()`, `.primary()`, `.secondary()` | n/a |
-
-All accept `loading: bool` and `disabled: bool`. Pass `null` to `onPressed` to implicitly disable.
-
-```dart
-// ✅ GOOD
-BaseFilledButton.primary(
-  onPressed: () => context.read<UserConfigEditBloc>().add(const UserConfigSavePressed()),
-  label: context.l10n.save,
-  loading: state.status == StateStatus.loading,
-)
-BaseIconButton.standard(icon: const Icon(Icons.close), onPressed: () => context.router.maybePop())
-
-// ❌ BAD
-FilledButton(onPressed: _onSave, child: Text('Save'))
-```
-
-## Dialogs and bottom sheets
-Never call `showDialog` or `showModalBottomSheet` directly. Use project components from `lib/src/components/dialogs/`.
-
-- **`BaseDialog`** — confirmations, critical errors, blocking choices
-- **`BaseBottomSheet`** — selection lists, option menus, non-blocking contextual actions
-
-```dart
-// Dialog
-BaseDialog.showBasic(context,
-  title: context.l10n.confirmTitle,
-  description: context.l10n.confirmDescription,
-  primaryLabel: context.l10n.confirm,
-  onPrimary: _onConfirm,
-  secondaryLabel: context.l10n.cancel,
-  barrierDismissible: false,
-);
-
-// Bottom sheet — selection (returns chosen index)
-final index = await BaseBottomSheet.showSelect(context,
-  title: context.l10n.selectLanguage,
-  options: [context.l10n.english, context.l10n.russian, context.l10n.kazakh],
-  selectedIndex: state.selectedLocaleIndex,
-);
-
-// Bottom sheet — list of actions
-BaseBottomSheet.showList(context,
-  title: context.l10n.options,
-  items: [
-    BaseDialogListItem(label: context.l10n.edit, onTap: _onEdit),
-    BaseDialogListItem(label: context.l10n.delete, onTap: _onDelete),
-  ],
-);
-```
+## Red Flags
+- Showing failure UI with the wrong component for a `FailureType`.
+- Falling back to a generic hardcoded error message instead of using `failure.defaultMessage(context)` when needed.
+- Using raw Flutter buttons such as `FilledButton`, `ElevatedButton`, `OutlinedButton`, `TextButton`, or `IconButton`.
+- Calling `showDialog` or `showModalBottomSheet` directly instead of using project components.
+- Mixing component responsibilities with unrelated business logic.

@@ -1,0 +1,45 @@
+---
+description: Rules for files inside presentation bloc folders.
+globs: lib/src/features/**/presentation/bloc/**/*.dart
+alwaysApply: false
+---
+
+# Presentation BLoC Rules
+
+## Description
+Rules for files inside `presentation/bloc/`. This rule defines how feature BLoCs, events, and states are structured, connected, and scoped.
+
+## Responsibilities
+- Use `Bloc<Event, State>`, never `Cubit`.
+- Keep this folder limited to bloc, event, and state files.
+- Keep bloc, event, and state in separate files.
+- Connect split files with `part` in the bloc file and `part of` in the event and state files.
+- Declare generated parts such as `part 'feature_name_bloc.freezed.dart';` in the bloc file.
+- Keep shared imports in the bloc file when using `part` / `part of`.
+- Use `@freezed sealed class` for events and states.
+- Use named event factories such as `ExampleEvent.started()`.
+- Add a `bloc_concurrency` transformer to every async `on<...>()` handler.
+- Import only from `flutter_bloc`, `bloc_concurrency`, `injectable`, `freezed_annotation`, `core/bloc/`, and the same feature's `domain/`.
+- Model async flow with `StateStatus` and top-level errors with `Failure?`.
+- Use `FieldState<T>` for editable fields.
+- Map `FailureType.inlineError` to the matching `FieldState` instead of top-level `failure`.
+- Prefix file names with the feature name.
+- Follow `presentation-layer.mdc` for shared naming and cross-presentation boundaries.
+
+## Green Flags
+- `user_config_theme_bloc.dart`, `user_config_theme_event.dart`, and `user_config_theme_state.dart` live as separate files in the bloc folder.
+- The bloc file owns `part` declarations and shared imports.
+- Events and states are Freezed sealed classes with named factories.
+- Async handlers use the right `bloc_concurrency` transformer.
+- State uses `StateStatus`, `Failure?`, and `FieldState<T>` where needed.
+
+## Red Flags
+- Extending `Cubit` or skipping a dedicated event/state type.
+- Keeping bloc, event, and state in one file or not wiring split files with `part` / `part of`.
+- Declaring Freezed generated parts in the wrong file or scattering imports across split files without need.
+- Putting business logic, analytics, repository implementation details, or data-layer imports in BLoC files.
+- Writing manual event/state classes instead of Freezed sealed classes.
+- Registering async handlers without a concurrency transformer.
+- Using `String? errorMessage` instead of `Failure?`.
+- Surfacing inline validation failures as top-level screen errors.
+- Naming files generically like `bloc.dart`, `state.dart`, or `theme_bloc.dart`.

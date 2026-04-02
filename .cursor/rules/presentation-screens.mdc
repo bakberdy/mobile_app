@@ -6,34 +6,30 @@ alwaysApply: false
 
 # Presentation Screen Rules
 
-## Structure
-- Never use helper methods that return widgets. Build UI inline or extract it into a widget file.
-- One class per file. The only allowed exception is the paired `_<ScreenName>Content` widget that lives with its screen wrapper.
-- Never keep extra private widgets in the same file besides `_<ScreenName>Content`.
+## Description
+Rules for files inside `presentation/screens/`. Screens own feature-level UI orchestration, BLoC connection, and navigation, while keeping rendering predictable and side effects controlled.
+
+## Responsibilities
+- Keep screen structure simple: no helper methods that return widgets, and no extra private widgets in the same file besides the paired `_<ScreenName>Content`.
 - Keep every screen file under 200 lines when possible. If it grows, extract reusable parts into `presentation/widgets/`.
+- Keep all `BlocProvider`, event dispatching, `BlocBuilder`, `BlocListener`, `BlocConsumer`, `context.watch`, and `context.select` usage in the screen file.
+- Let screens coordinate UI state and navigation only. Do not place business logic, data shaping, validation rules, or domain decisions in screens.
+- Keep side effects such as navigation, dialogs, snackbars, banners, and bottom sheets in `BlocListener` or `BlocConsumer.listener`, never in builders.
+- Keep builders pure and render-only.
+- Reuse shared components and spacing tokens before creating screen-specific UI.
+- Handle the expected UI states clearly: loading, empty, content, and error when the feature needs them.
+- Follow `presentation-layer.mdc` for shared localization, context extension, null-safety, and form-state rules.
 
-## Screen Responsibilities
-- All `BlocProvider`, bloc event dispatching, `BlocBuilder`, `BlocListener`, `BlocConsumer`, `context.watch`, and `context.select` usage must stay in the screen file.
-- Screens may coordinate UI state and navigation only. Do not place business logic, data shaping, validation rules, or domain decisions in screens.
-- Prefer `context.select` or `context.watch` when a small piece of state is consumed directly after `build()` instead of wrapping that area with a builder.
+## Green Flags
+- The screen file owns the feature's `BlocProvider` and state subscription points.
+- `BlocListener` handles navigation and transient UI such as dialogs or snackbars.
+- `BlocBuilder` or `context.select` is used only to render state.
+- A large screen extracts reusable visual pieces into `presentation/widgets/`.
+- The screen clearly renders loading, empty, content, and error states when applicable.
 
-```dart
-// ✅ GOOD
-@override
-Widget build(BuildContext context) {
-  final title = context.select((ExampleBloc bloc) => bloc.state.title);
-  return ExampleView(title: title);
-}
-```
-
-## UI Composition
-- Never hardcode user-visible text, colors, or asset paths in screens.
-- Use `context.l10n` for text, `context.colorScheme` for colors, and project asset accessors such as `context.assets`.
-- Input fields must not use `TextEditingController`. Input state lives in BLoC, screens dispatch change events, and UI reads current value and validation from state.
-- Reuse default spacing constants when they already exist. Do not repeat hardcoded spacing values.
-- Prefer shared components from `lib/src/components/` such as base buttons, dialogs, sheets, and other project primitives before creating custom UI.
-- Prefer concise APIs like `EdgeInsets.all()` or `EdgeInsets.symmetric()` when all involved insets are the same.
-- Use `Stack` only for truly layered UI. Do not use it to manually position ordinary layouts that should be solved with regular layout widgets.
-
-## State And Status
-- Prefer `state_status` extensions from `lib/src/core/bloc/state_status.dart` instead of manual status comparisons when they cover the use case.
+## Red Flags
+- Helper methods that return widgets instead of inline composition or extracted widget files.
+- Extra private widgets in the same screen file besides `_<ScreenName>Content`.
+- Dispatching events, showing dialogs, navigating, or opening sheets from builder code.
+- Putting business logic, validation rules, or data shaping in the screen.
+- Solving ordinary layouts with `Stack` when standard layout widgets are enough.

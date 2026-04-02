@@ -6,43 +6,31 @@ alwaysApply: false
 
 # Presentation Widget Rules
 
-- Exactly one widget class per file. Never place two widget classes in the same file, even if one is private. If a widget owns meaningful structure or behavior, extract it into its own file instead of keeping it as a helper widget beside another widget.
-- Widget names must clearly describe what the widget does.
-- Every changeable UI value must come from constructor arguments or project tokens. Keep the API minimal: do not add parameters that are unused or not truly configurable.
-- Never hardcode user-visible text, colors, asset paths, or other mutable design values.
-- Use `context.l10n` for text, `context.colorScheme` for colors, and `context.assets` for assets.
-- Input fields must not use `TextEditingController`. Input state lives in BLoC, widgets receive current value and validation from state, and report changes via callbacks.
-- If spacing or corner radius already fits the design, use `AppSpacing` and `AppRadii` instead of raw numbers.
-- Avoid unscoped magic numbers for layout and styling. Prefer theme tokens, named constants, or constructor parameters when a value may change.
-- Avoid methods that return widgets. Prefer inline composition or a private widget class when extraction is justified.
-- In vertically scrollable layouts, avoid fixed widths. In horizontally scrollable layouts, avoid fixed heights. Prefer `Padding`, `Expanded`, `Flexible`, alignment, and constraints.
-- Use `MediaQuery.sizeOf(context)` for screen-relative sizing and `LayoutBuilder` for parent-relative sizing.
+## Description
+Rules for files inside `presentation/widgets/`. Widgets are reusable visual building blocks that receive data and callbacks from screens instead of owning feature orchestration.
+
+## Responsibilities
+- Keep exactly one widget class per file.
+- Use clear widget names that describe purpose.
+- Pass all changeable UI values through constructor arguments or project tokens.
+- Keep input state outside widgets. Widgets receive current value and validation and report changes via callbacks.
+- Do not access feature BLoCs directly. Pass data in and expose callbacks out.
+- Do not own navigation. Screens handle router calls and widgets expose intent callbacks such as `onTap`, `onRetry`, or `onDelete`.
+- Prefer `AppSpacing` and `AppRadii` over raw design values when they fit.
+- Avoid magic numbers when a token, named constant, or parameter would be clearer.
+- Prefer inline composition over widget-returning helper methods.
+- Use layout constraints that fit scroll direction and parent size.
 - Prefer `const` constructors and widgets whenever possible.
+- Follow `presentation-layer.mdc` for shared localization, context extension, null-safety, and form-state rules.
 
-```dart
-// ❌ BAD
-class MyWidgetHeader extends StatelessWidget {
-  const MyWidgetHeader({super.key});
+## Green Flags
+- A widget file contains one clearly named widget class.
+- The widget receives text, state, and actions through constructor parameters.
+- A text field widget exposes `onChanged` and receives current value and error text from above.
+- Reusable widgets stay visual and stateless from the feature orchestration perspective.
 
-  @override
-  Widget build(BuildContext context) => const Text('Title');
-}
-```
-
-```dart
-// ✅ GOOD
-class ProfilePromoCard extends StatelessWidget {
-  const ProfilePromoCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.imageProvider,
-    required this.onPressed,
-  });
- 
-  final String title;
-  final String description;
-  final ImageProvider imageProvider;
-  final VoidCallback onPressed;
-}
-```
+## Red Flags
+- Two widget classes in one file.
+- Calling `context.read`, `context.watch`, `context.select`, `BlocBuilder`, `BlocListener`, or router APIs inside reusable feature widgets.
+- Owning navigation or feature decisions inside a widget instead of exposing callbacks.
+- Using widget-returning helper methods instead of inline composition or a dedicated widget file.
