@@ -1,9 +1,6 @@
 ---
-description: Core folder rules: ApiClient usage, StateStatus, FieldState semantics, Failure type routing, analytics conventions.
-globs: lib/src/core/**/*.dart
-alwaysApply: false
+alwaysApply: true
 ---
-
 # Core Rules
 
 ## ApiClient

@@ -20,7 +20,7 @@ dependencies:
   dartz: ^0.10.1
   shared_preferences: ^2.5.4
   intl: ^0.20.2
-  connectivity_plus: ^7.0.0
+  connectivity_plus: ">=7.0.0 <7.1.0"
   flutter_localizations:
     sdk: flutter
   flutter_secure_storage: ^10.0.0
@@ -44,11 +44,11 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
   network_image_mock: ^2.1.1
-  auto_route_generator: ^10.4.0
-  build_runner: ^2.10.5
-  freezed: ^3.2.3
-  injectable_generator: ^2.6.2
-  json_serializable: ^6.8.0
+  auto_route_generator: ^10.5.0
+  build_runner: ^2.13.0
+  freezed: ^3.2.5
+  injectable_generator: ^2.12.0
+  json_serializable: ^6.13.0
   intl_utils: ^2.8.14
   flutter_gen_runner: ^5.13.0+1
 
