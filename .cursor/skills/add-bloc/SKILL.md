@@ -33,7 +33,8 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:<package>/src/core/bloc/state_status.dart';
+import 'package:<package>/src/core/bloc/field_state/field_state.dart';
+import 'package:<package>/src/core/bloc/state_status/state_status.dart';
 import 'package:<package>/src/core/error/error.dart';
 import 'package:<package>/src/core/usecases/use_case.dart';
 import 'package:<package>/src/features/<feature>/domain/usecases/<feature>_<action>_use_case.dart';
@@ -54,13 +55,18 @@ class <Topic>Bloc extends Bloc<<Topic>Event, <Topic>State> {
   }
 
   Future<void> _onStarted(<Topic>Started event, Emitter<<Topic>State> emit) async {
-    emit(state.copyWith(status: StateStatus.loading, failure: null));
+    emit(state.copyWith(status: StateStatus.loading()));
 
     final result = await _<action>UseCase(const NoParams());
 
     result.fold(
-      (failure) => emit(state.copyWith(status: StateStatus.error, failure: failure)),
-      (data) => emit(state.copyWith(status: StateStatus.success, data: data, failure: null)),
+      (failure) => emit(state.copyWith(status: StateStatus.error(failure))),
+      (data) => emit(
+        state.copyWith(
+          status: StateStatus.success(),
+          data: data,
+        ),
+      ),
     );
   }
 }
@@ -105,8 +111,7 @@ part of '<feature>_<topic>_bloc.dart';
 sealed class <Topic>State with _$<Topic>State {
   const factory <Topic>State({
     ReturnType? data,
-    @Default(StateStatus.initial) StateStatus status,
-    Failure? failure,           // ✅ typed Failure — never String? errorMessage
+    @Default(StateStatus.initial()) StateStatus status,
   }) = _<Topic>State;
 }
 ```
@@ -116,15 +121,14 @@ sealed class <Topic>State with _$<Topic>State {
 @freezed
 sealed class <Topic>State with _$<Topic>State {
   const factory <Topic>State({
-    @Default(StateStatus.initial) StateStatus status,
-    Failure? failure,
+    @Default(StateStatus.initial()) StateStatus status,
     @Default(FieldState(value: '')) FieldState<String> nameField,
     @Default(FieldState(value: '')) FieldState<String> emailField,
   }) = _<Topic>State;
 }
 ```
 
-**Inline validation errors** — map `FailureType.inlineError` to the specific `FieldState`, not to `failure`:
+**Inline validation errors** — map `FailureType.inlineError` to the specific `FieldState`, not to `StateStatus.error`:
 ```dart
 result.fold(
   (failure) {
@@ -133,10 +137,10 @@ result.fold(
         nameField: state.nameField.copyWith(status: FieldStatus.invalid, error: failure.message),
       ));
     } else {
-      emit(state.copyWith(status: StateStatus.error, failure: failure));
+      emit(state.copyWith(status: StateStatus.error(failure)));
     }
   },
-  (_) => emit(state.copyWith(status: StateStatus.success, failure: null)),
+  (_) => emit(state.copyWith(status: StateStatus.success())),
 );
 ```
 
@@ -170,11 +174,9 @@ Verify `<feature>_<topic>_bloc.freezed.dart` was generated. Fix any analyzer iss
 - [ ] `@Injectable()` — never `@LazySingleton` or `@Singleton`
 - [ ] Every async `on<>` has a `bloc_concurrency` transformer
 - [ ] Events: `@freezed sealed class` with `part of` — no manual subclasses
-- [ ] State uses `Failure? failure` — no `String? errorMessage`
-- [ ] State uses `@Default(StateStatus.initial) StateStatus status`
+- [ ] State uses `@Default(StateStatus.initial()) StateStatus status` — global errors use `StateStatus.error(Failure)`, not `String? errorMessage`
 - [ ] Input fields use `FieldState<T>`, not `TextEditingController`
-- [ ] `FailureType.inlineError` mapped to field, not top-level `failure`
+- [ ] `FailureType.inlineError` mapped to field, not `StateStatus.error`
 - [ ] No `data/` imports, no `Analytics.track()`
 - [ ] All files prefixed with feature name (`<feature>_<topic>_bloc.dart`)
 - [ ] `build_runner` ran and generated file exists
-s

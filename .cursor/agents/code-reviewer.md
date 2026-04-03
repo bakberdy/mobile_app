@@ -122,7 +122,7 @@ Determine the layer from the file path, then apply the corresponding rules below
 - ❌ `@Injectable()` annotation missing or wrong (must not be `@LazySingleton`) → CRITICAL
 - ❌ Async `on<Event>` handler missing `transformer:` (droppable / sequential / restartable) → CRITICAL
 - ❌ Events not using `@freezed sealed class` → CRITICAL
-- ❌ State uses `String? errorMessage` instead of `Failure? failure` → CRITICAL (flagged as known violation in existing user_config blocs)
+- ❌ State uses `String? errorMessage` for global errors instead of `StateStatus.error(Failure)` (or `FieldState` for inline) → CRITICAL
 - ❌ State uses `TextEditingController` → CRITICAL
 - ❌ `Analytics.track(...)` present → CRITICAL
 - ❌ Imports from `data/` layer → CRITICAL
@@ -186,7 +186,6 @@ Determine the layer from the file path, then apply the corresponding rules below
 
 The following violations exist in the current codebase and are tracked as tech debt. Flag them as 🟡 WARNING so they are visible but not blocking:
 
-- `theme_state.dart` and `locale_state.dart`: use `String? errorMessage` instead of `Failure? failure`
 - `theme_bloc.dart`, `locale_bloc.dart`: async handlers missing `bloc_concurrency` transformers
 - `theme_bloc.dart`, `locale_bloc.dart`: file names missing feature prefix (`user_config_`)
 - `user_config_example_screen.dart`: missing wrapper/content split, uses raw buttons, has hardcoded strings

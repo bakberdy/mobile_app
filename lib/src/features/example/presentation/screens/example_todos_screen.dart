@@ -8,7 +8,7 @@ import 'package:mobile_app/src/components/dialogs/base_snackbar.dart';
 import 'package:mobile_app/src/config/di/injection.dart';
 import 'package:mobile_app/src/config/router/app_router.dart';
 import 'package:mobile_app/src/config/theme/app_spacing.dart';
-import 'package:mobile_app/src/core/bloc/state_status.dart';
+import 'package:mobile_app/src/core/bloc/state_status/state_status.dart';
 import 'package:mobile_app/src/core/error/error.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 import 'package:mobile_app/src/features/example/domain/entity/example_todo.dart';
@@ -33,11 +33,17 @@ class _ExampleTodosScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ExampleTodosBloc, ExampleTodosState>(
-      listenWhen: (prev, curr) => curr.failure != null && prev.failure != curr.failure,
-      listener: _handleFailure,
+    return BlocConsumer<ExampleTodosBloc, ExampleTodosState>( 
+      listener: (context, state) {
+        switch (state.status) {
+          case ErrorStateStatus(: final failure):
+            _handleFailure(context, failure);
+          default:
+            break;
+        }
+      },
       builder: (context, state) {
-        final isLoading = state.status == StateStatus.loading;
+        final isLoading = state.status.isLoading;
 
         return Scaffold(
           appBar: AppBar(title: Text(context.l10n.exampleTodosTitle)),
@@ -111,10 +117,7 @@ class _ExampleTodosScreenContent extends StatelessWidget {
     );
   }
 
-  void _handleFailure(BuildContext context, ExampleTodosState state) {
-    final failure = state.failure;
-    if (failure == null) return;
-
+  void _handleFailure(BuildContext context, Failure failure) {
     final message = failure.message ?? failure.defaultMessage(context);
     switch (failure.type) {
       case FailureType.snackbar:

@@ -56,13 +56,17 @@ import 'package:mobile_app/src/features/user_config/data/repository/user_config_
 import 'package:mobile_app/src/features/user_config/domain/repository/user_config_repository.dart'
     as _i656;
 import 'package:mobile_app/src/features/user_config/domain/usecases/get_app_theme_mode_use_case.dart'
-    as _i10;
+    as _i622;
+import 'package:mobile_app/src/features/user_config/domain/usecases/get_environment_use_case.dart'
+    as _i155;
 import 'package:mobile_app/src/features/user_config/domain/usecases/get_locale_use_case.dart'
-    as _i366;
+    as _i565;
+import 'package:mobile_app/src/features/user_config/domain/usecases/set_environment_use_case.dart'
+    as _i504;
 import 'package:mobile_app/src/features/user_config/domain/usecases/set_locale_use_case.dart'
-    as _i111;
+    as _i481;
 import 'package:mobile_app/src/features/user_config/domain/usecases/set_theme_use_case.dart'
-    as _i605;
+    as _i173;
 import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart'
     as _i622;
 import 'package:mobile_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart'
@@ -132,17 +136,35 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i220.ExampleRepository>(
       () => _i24.ExampleRepositoryImpl(gh<_i402.ExampleLocalDataSource>()),
     );
-    gh.lazySingleton<_i10.GetAppThemeModeUsecase>(
-      () => _i10.GetAppThemeModeUsecase(gh<_i656.UserConfigRepository>()),
+    gh.lazySingleton<_i622.GetAppThemeModeUseCase>(
+      () => _i622.GetAppThemeModeUseCase(gh<_i656.UserConfigRepository>()),
     );
-    gh.lazySingleton<_i366.GetLocaleUsecase>(
-      () => _i366.GetLocaleUsecase(gh<_i656.UserConfigRepository>()),
+    gh.lazySingleton<_i155.GetEnvironmentUseCase>(
+      () => _i155.GetEnvironmentUseCase(gh<_i656.UserConfigRepository>()),
     );
-    gh.lazySingleton<_i111.SetLocaleUsecase>(
-      () => _i111.SetLocaleUsecase(gh<_i656.UserConfigRepository>()),
+    gh.lazySingleton<_i565.GetLocaleUseCase>(
+      () => _i565.GetLocaleUseCase(gh<_i656.UserConfigRepository>()),
     );
-    gh.lazySingleton<_i605.SetThemeUsecase>(
-      () => _i605.SetThemeUsecase(gh<_i656.UserConfigRepository>()),
+    gh.lazySingleton<_i504.SetEnvironmentUseCase>(
+      () => _i504.SetEnvironmentUseCase(gh<_i656.UserConfigRepository>()),
+    );
+    gh.lazySingleton<_i481.SetLocaleUseCase>(
+      () => _i481.SetLocaleUseCase(gh<_i656.UserConfigRepository>()),
+    );
+    gh.lazySingleton<_i173.SetThemeUseCase>(
+      () => _i173.SetThemeUseCase(gh<_i656.UserConfigRepository>()),
+    );
+    gh.factory<_i198.ThemeBloc>(
+      () => _i198.ThemeBloc(
+        gh<_i622.GetAppThemeModeUseCase>(),
+        gh<_i173.SetThemeUseCase>(),
+      ),
+    );
+    gh.factory<_i622.LocaleBloc>(
+      () => _i622.LocaleBloc(
+        gh<_i565.GetLocaleUseCase>(),
+        gh<_i481.SetLocaleUseCase>(),
+      ),
     );
     gh.lazySingleton<_i567.CreateTodoUseCase>(
       () => _i567.CreateTodoUseCase(gh<_i220.ExampleRepository>()),
@@ -162,18 +184,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i567.CreateTodoUseCase>(),
         gh<_i1002.UpdateTodoUseCase>(),
         gh<_i536.RemoveTodoUseCase>(),
-      ),
-    );
-    gh.factory<_i622.LocaleBloc>(
-      () => _i622.LocaleBloc(
-        gh<_i366.GetLocaleUsecase>(),
-        gh<_i111.SetLocaleUsecase>(),
-      ),
-    );
-    gh.factory<_i198.ThemeBloc>(
-      () => _i198.ThemeBloc(
-        gh<_i10.GetAppThemeModeUsecase>(),
-        gh<_i605.SetThemeUsecase>(),
       ),
     );
     gh.factory<_i328.ExampleTodoEditorBloc>(

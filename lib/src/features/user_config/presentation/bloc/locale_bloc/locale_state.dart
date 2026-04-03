@@ -4,7 +4,6 @@ part of 'locale_bloc.dart';
 sealed class LocaleState with _$LocaleState {
   const factory LocaleState({
     String? languageCode,
-    @Default(StateStatus.initial) StateStatus status,
-    String? errorMessage,
+    @Default(StateStatus.initial()) StateStatus status,
   }) = _LocaleState;
 }

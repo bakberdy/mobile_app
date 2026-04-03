@@ -2,9 +2,8 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mobile_app/src/core/bloc/state_status.dart';
-import 'package:mobile_app/src/core/bloc/states/field_state.dart';
-import 'package:mobile_app/src/core/error/error.dart';
+import 'package:mobile_app/src/core/bloc/state_status/state_status.dart';
+import 'package:mobile_app/src/core/bloc/field_state/field_state.dart';
 import 'package:mobile_app/src/features/example/domain/entity/example_todo.dart';
 import 'package:mobile_app/src/features/example/domain/usecases/example_create_todo_use_case.dart';
 import 'package:mobile_app/src/features/example/domain/usecases/example_update_todo_use_case.dart';
@@ -17,7 +16,7 @@ part 'example_todo_editor_bloc.freezed.dart';
 class ExampleTodoEditorBloc
     extends Bloc<ExampleTodoEditorEvent, ExampleTodoEditorState> {
   ExampleTodoEditorBloc(this._createTodoUseCase, this._updateTodoUseCase)
-    : super(const ExampleTodoEditorState()) {
+    : super(ExampleTodoEditorState()) {
     on<ExampleTodoEditorStarted>(_onStarted);
     on<ExampleTodoEditorTitleChanged>(_onTitleChanged);
     on<ExampleTodoEditorDescriptionChanged>(_onDescriptionChanged);
@@ -50,8 +49,7 @@ class ExampleTodoEditorBloc
           status: FieldStatus.valid,
         ),
         formVersion: state.formVersion + 1,
-        failure: null,
-        status: StateStatus.initial,
+        status: StateStatus.initial(),
       ),
     );
   }
@@ -69,7 +67,6 @@ class ExampleTodoEditorBloc
           status: trimmedValue.isEmpty ? FieldStatus.pure : FieldStatus.valid,
           error: null,
         ),
-        failure: null,
       ),
     );
   }
@@ -87,7 +84,6 @@ class ExampleTodoEditorBloc
           status: trimmedValue.isEmpty ? FieldStatus.pure : FieldStatus.valid,
           error: null,
         ),
-        failure: null,
       ),
     );
   }
@@ -103,7 +99,6 @@ class ExampleTodoEditorBloc
           isDirty: true,
           status: FieldStatus.valid,
         ),
-        failure: null,
       ),
     );
   }
@@ -112,7 +107,7 @@ class ExampleTodoEditorBloc
     ExampleTodoEditorSubmitted event,
     Emitter<ExampleTodoEditorState> emit,
   ) async {
-    if (state.status == StateStatus.loading || state.status == StateStatus.success) {
+    if (state.status.isLoading || state.status.isSuccess) {
       return;
     }
 
@@ -141,7 +136,7 @@ class ExampleTodoEditorBloc
       return;
     }
 
-    emit(state.copyWith(status: StateStatus.loading, failure: null));
+    emit(state.copyWith(status: StateStatus.loading()));
 
     final currentTodo = state.todo;
     final createdAt = state.createdAt ?? currentTodo?.createdAt ?? DateTime.now();
@@ -159,9 +154,9 @@ class ExampleTodoEditorBloc
 
     result.fold(
       (failure) => emit(
-        state.copyWith(status: StateStatus.error, failure: failure),
+        state.copyWith(status: StateStatus.error(failure)),
       ),
-      (_) => emit(state.copyWith(status: StateStatus.success, failure: null)),
+      (_) => emit(state.copyWith(status: StateStatus.success())),
     );
   }
 }

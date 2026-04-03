@@ -104,9 +104,9 @@ Bullet list of which layers are needed and why (skip layers that are not needed)
   - `FeatureEvent.started()` → `FeatureStarted`
   - `FeatureEvent.itemSelected(Item item)` → `FeatureItemSelected`
 - State fields (list each with type and default):
-  - `StateStatus status = StateStatus.initial`
-  - `Failure? failure`
-  - `List<Entity> items = []`
+  - `@Default(StateStatus.initial()) StateStatus status`
+  - `List<Entity> items = []` (and other domain fields)
+  - Global errors: use `StateStatus.error(Failure)` — not a separate `Failure?` unless the feature explicitly needs it
 - Input fields (if form): list `FieldState<T>` entries
 - Event transformers: specify droppable / sequential / restartable for each async handler
 

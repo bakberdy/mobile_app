@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mobile_app/src/core/bloc/state_status.dart';
+import 'package:mobile_app/src/core/bloc/state_status/state_status.dart';
 import 'package:mobile_app/src/core/error/error.dart';
 import 'package:mobile_app/src/core/usecases/use_case.dart';
 import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
@@ -36,7 +36,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
   }
 
   Future<void> _onStarted(LocaleStarted event, Emitter<LocaleState> emit) async {
-    emit(state.copyWith(status: StateStatus.loading, errorMessage: null));
+    emit(state.copyWith(status: StateStatus.loading()));
 
     final result = await _getLocaleUseCase(const NoParams());
 
@@ -44,8 +44,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
       (Failure failure) {
         emit(
           state.copyWith(
-            status: StateStatus.error,
-            errorMessage: failure.message,
+            status: StateStatus.error(failure),
           ),
         );
       },
@@ -54,8 +53,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
           emit(
             state.copyWith(
               languageCode: languageCode,
-              status: StateStatus.success,
-              errorMessage: null,
+              status: StateStatus.success(),
             ),
           );
         } else {
@@ -64,8 +62,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
           emit(
             state.copyWith(
               languageCode: event.deviceLanguageCode,
-              status: StateStatus.success,
-              errorMessage: null,
+              status: StateStatus.success(),
             ),
           );
         }
@@ -84,8 +81,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
     emit(
       state.copyWith(
         languageCode: event.languageCode,
-        status: StateStatus.loading,
-        errorMessage: null,
+        status: StateStatus.loading(),
       ),
     );
 
@@ -97,13 +93,12 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
       (Failure failure) {
         emit(
           state.copyWith(
-            status: StateStatus.error,
-            errorMessage: failure.message,
+            status: StateStatus.error(failure),
           ),
         );
       },
       (_) {
-        emit(state.copyWith(status: StateStatus.success));
+        emit(state.copyWith(status: StateStatus.success()));
       },
     );
   }

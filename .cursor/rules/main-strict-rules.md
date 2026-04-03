@@ -45,7 +45,7 @@ This project follows **Clean Architecture** with strict layer isolation. Detaile
 ### BLoC
 - Always `Bloc<Event, State>` — **never** `Cubit`
 - Use `bloc_concurrency` transformers for async events
-- State holds `Failure?` as a typed field — never a raw `String? errorMessage`
+- Global errors use `StateStatus.error(Failure)` — never a raw `String? errorMessage` on state
 - Input fields use `FieldState<T>` — never `TextEditingController`
 - Screen = wrapper (`@RoutePage`, provides BLoC) + `_ScreenContent` (all UI) — both in one file
 - `@RoutePage()` only on the wrapper — never on `_ScreenContent`

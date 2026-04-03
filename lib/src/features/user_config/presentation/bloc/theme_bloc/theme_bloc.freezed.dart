@@ -243,7 +243,7 @@ as AppThemeMode,
 /// @nodoc
 mixin _$ThemeState {
 
- AppThemeMode? get themeMode; AppThemeMode? get systemThemeMode; AppThemeMode? get appliedThemeMode; StateStatus get status; String? get errorMessage;
+ AppThemeMode? get themeMode; AppThemeMode? get systemThemeMode; AppThemeMode? get appliedThemeMode; StateStatus get status;
 /// Create a copy of ThemeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -254,16 +254,16 @@ $ThemeStateCopyWith<ThemeState> get copyWith => _$ThemeStateCopyWithImpl<ThemeSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeState&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.systemThemeMode, systemThemeMode) || other.systemThemeMode == systemThemeMode)&&(identical(other.appliedThemeMode, appliedThemeMode) || other.appliedThemeMode == appliedThemeMode)&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeState&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.systemThemeMode, systemThemeMode) || other.systemThemeMode == systemThemeMode)&&(identical(other.appliedThemeMode, appliedThemeMode) || other.appliedThemeMode == appliedThemeMode)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,themeMode,systemThemeMode,appliedThemeMode,status,errorMessage);
+int get hashCode => Object.hash(runtimeType,themeMode,systemThemeMode,appliedThemeMode,status);
 
 @override
 String toString() {
-  return 'ThemeState(themeMode: $themeMode, systemThemeMode: $systemThemeMode, appliedThemeMode: $appliedThemeMode, status: $status, errorMessage: $errorMessage)';
+  return 'ThemeState(themeMode: $themeMode, systemThemeMode: $systemThemeMode, appliedThemeMode: $appliedThemeMode, status: $status)';
 }
 
 
@@ -274,11 +274,11 @@ abstract mixin class $ThemeStateCopyWith<$Res>  {
   factory $ThemeStateCopyWith(ThemeState value, $Res Function(ThemeState) _then) = _$ThemeStateCopyWithImpl;
 @useResult
 $Res call({
- AppThemeMode? themeMode, AppThemeMode? systemThemeMode, AppThemeMode? appliedThemeMode, StateStatus status, String? errorMessage
+ AppThemeMode? themeMode, AppThemeMode? systemThemeMode, AppThemeMode? appliedThemeMode, StateStatus status
 });
 
 
-
+$StateStatusCopyWith<$Res> get status;
 
 }
 /// @nodoc
@@ -291,17 +291,25 @@ class _$ThemeStateCopyWithImpl<$Res>
 
 /// Create a copy of ThemeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? themeMode = freezed,Object? systemThemeMode = freezed,Object? appliedThemeMode = freezed,Object? status = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? themeMode = freezed,Object? systemThemeMode = freezed,Object? appliedThemeMode = freezed,Object? status = null,}) {
   return _then(_self.copyWith(
 themeMode: freezed == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode?,systemThemeMode: freezed == systemThemeMode ? _self.systemThemeMode : systemThemeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode?,appliedThemeMode: freezed == appliedThemeMode ? _self.appliedThemeMode : appliedThemeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as StateStatus,
   ));
 }
-
+/// Create a copy of ThemeState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
+  });
+}
 }
 
 
@@ -310,14 +318,13 @@ as String?,
 
 
 class _ThemeState implements ThemeState {
-  const _ThemeState({this.themeMode, this.systemThemeMode, this.appliedThemeMode, this.status = StateStatus.initial, this.errorMessage});
+  const _ThemeState({this.themeMode, this.systemThemeMode, this.appliedThemeMode, this.status = const StateStatus.initial()});
   
 
 @override final  AppThemeMode? themeMode;
 @override final  AppThemeMode? systemThemeMode;
 @override final  AppThemeMode? appliedThemeMode;
 @override@JsonKey() final  StateStatus status;
-@override final  String? errorMessage;
 
 /// Create a copy of ThemeState
 /// with the given fields replaced by the non-null parameter values.
@@ -329,16 +336,16 @@ _$ThemeStateCopyWith<_ThemeState> get copyWith => __$ThemeStateCopyWithImpl<_The
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeState&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.systemThemeMode, systemThemeMode) || other.systemThemeMode == systemThemeMode)&&(identical(other.appliedThemeMode, appliedThemeMode) || other.appliedThemeMode == appliedThemeMode)&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeState&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.systemThemeMode, systemThemeMode) || other.systemThemeMode == systemThemeMode)&&(identical(other.appliedThemeMode, appliedThemeMode) || other.appliedThemeMode == appliedThemeMode)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,themeMode,systemThemeMode,appliedThemeMode,status,errorMessage);
+int get hashCode => Object.hash(runtimeType,themeMode,systemThemeMode,appliedThemeMode,status);
 
 @override
 String toString() {
-  return 'ThemeState(themeMode: $themeMode, systemThemeMode: $systemThemeMode, appliedThemeMode: $appliedThemeMode, status: $status, errorMessage: $errorMessage)';
+  return 'ThemeState(themeMode: $themeMode, systemThemeMode: $systemThemeMode, appliedThemeMode: $appliedThemeMode, status: $status)';
 }
 
 
@@ -349,11 +356,11 @@ abstract mixin class _$ThemeStateCopyWith<$Res> implements $ThemeStateCopyWith<$
   factory _$ThemeStateCopyWith(_ThemeState value, $Res Function(_ThemeState) _then) = __$ThemeStateCopyWithImpl;
 @override @useResult
 $Res call({
- AppThemeMode? themeMode, AppThemeMode? systemThemeMode, AppThemeMode? appliedThemeMode, StateStatus status, String? errorMessage
+ AppThemeMode? themeMode, AppThemeMode? systemThemeMode, AppThemeMode? appliedThemeMode, StateStatus status
 });
 
 
-
+@override $StateStatusCopyWith<$Res> get status;
 
 }
 /// @nodoc
@@ -366,18 +373,26 @@ class __$ThemeStateCopyWithImpl<$Res>
 
 /// Create a copy of ThemeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? themeMode = freezed,Object? systemThemeMode = freezed,Object? appliedThemeMode = freezed,Object? status = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? themeMode = freezed,Object? systemThemeMode = freezed,Object? appliedThemeMode = freezed,Object? status = null,}) {
   return _then(_ThemeState(
 themeMode: freezed == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode?,systemThemeMode: freezed == systemThemeMode ? _self.systemThemeMode : systemThemeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode?,appliedThemeMode: freezed == appliedThemeMode ? _self.appliedThemeMode : appliedThemeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as StateStatus,
   ));
 }
 
-
+/// Create a copy of ThemeState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
+  });
+}
 }
 
 // dart format on

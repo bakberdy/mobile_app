@@ -89,19 +89,19 @@ class RoutesSearchBloc extends Bloc<RoutesSearchEvent, RoutesSearchState> {
     _cancelToken?.cancel();          // cancel previous in-flight request
     _cancelToken = ApiCancelToken(); // fresh token for this request
 
-    emit(state.copyWith(status: StateStatus.loading, failure: null));
+    emit(state.copyWith(status: StateStatus.loading()));
     final result = await _searchUseCase(
       SearchRoutesParams(query: event.query, cancelToken: _cancelToken),
     );
     result.fold(
       (failure) {
         if (failure.type == FailureType.silent) {
-          emit(state.copyWith(status: StateStatus.initial)); // cancelled — reset silently
+          emit(state.copyWith(status: StateStatus.initial()));
           return;
         }
-        emit(state.copyWith(status: StateStatus.error, failure: failure));
+        emit(state.copyWith(status: StateStatus.error(failure)));
       },
-      (routes) => emit(state.copyWith(status: StateStatus.success, routes: routes)),
+      (routes) => emit(state.copyWith(status: StateStatus.success(), routes: routes)),
     );
   }
 
@@ -126,4 +126,4 @@ result.fold((failure) => emit(state.copyWith(failure: failure)), ...); // snackb
 - Cancel the previous token at the **start** of every new request
 - Always override `close()` — this is the screen-dismissal hook
 - `restartable()` stops event processing but does **not** cancel the HTTP request — you still need the token
-- On fold: `FailureType.silent` → emit `StateStatus.initial`, do not show any UI
+- On fold: `FailureType.silent` → emit `StateStatus.initial()`, do not show any UI

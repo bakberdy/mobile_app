@@ -9,11 +9,11 @@ alwaysApply: true
 - Inject `ApiClient` via constructor — never create it ad hoc inside a repository
 
 ## StateStatus
-`lib/src/core/bloc/state_status.dart` provides `initial | loading | success | error`.
-Use this enum for all async status in BLoC states. Only introduce a custom enum if these four values are genuinely insufficient.
+`lib/src/core/bloc/state_status/state_status.dart` defines a Freezed sealed class: `StateStatus.initial()`, `StateStatus.loading()`, `StateStatus.success()`, and `StateStatus.error(Failure failure)`.
+Use it for all async status in BLoC states. For **reads**, prefer `StateStatusX` on `package:.../state_status/state_status.dart`: `state.status.isInitial`, `.isLoading`, `.isSuccess`, `.isError`. For **errors with a `Failure`**, use `switch (state.status) { case ErrorStateStatus(:final failure): ... }`. Emit with factories: `StateStatus.loading()`, etc. Only introduce a custom status model if these four variants are genuinely insufficient.
 
 ## FieldState
-`lib/src/core/bloc/states/field_state.dart` — use for every form/input field in BLoC state:
+`lib/src/core/bloc/field_state/field_state.dart` — use for every form/input field in BLoC state:
 
 | Field | Type | Meaning |
 |-------|------|---------|

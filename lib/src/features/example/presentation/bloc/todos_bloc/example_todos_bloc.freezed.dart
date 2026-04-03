@@ -569,7 +569,7 @@ as Todo,
 /// @nodoc
 mixin _$ExampleTodosState {
 
- List<Todo> get todos; StateStatus get status; Failure? get failure; FieldState<String> get titleField; FieldState<String> get descriptionField; FieldState<bool> get isDoneField; String? get editingTodoId; int get formVersion;
+ List<Todo> get todos; StateStatus get status; FieldState<String> get titleField; FieldState<String> get descriptionField; FieldState<bool> get isDoneField; String? get editingTodoId; int get formVersion;
 /// Create a copy of ExampleTodosState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -580,16 +580,16 @@ $ExampleTodosStateCopyWith<ExampleTodosState> get copyWith => _$ExampleTodosStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExampleTodosState&&const DeepCollectionEquality().equals(other.todos, todos)&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.editingTodoId, editingTodoId) || other.editingTodoId == editingTodoId)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExampleTodosState&&const DeepCollectionEquality().equals(other.todos, todos)&&(identical(other.status, status) || other.status == status)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.editingTodoId, editingTodoId) || other.editingTodoId == editingTodoId)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(todos),status,failure,titleField,descriptionField,isDoneField,editingTodoId,formVersion);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(todos),status,titleField,descriptionField,isDoneField,editingTodoId,formVersion);
 
 @override
 String toString() {
-  return 'ExampleTodosState(todos: $todos, status: $status, failure: $failure, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, editingTodoId: $editingTodoId, formVersion: $formVersion)';
+  return 'ExampleTodosState(todos: $todos, status: $status, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, editingTodoId: $editingTodoId, formVersion: $formVersion)';
 }
 
 
@@ -600,11 +600,11 @@ abstract mixin class $ExampleTodosStateCopyWith<$Res>  {
   factory $ExampleTodosStateCopyWith(ExampleTodosState value, $Res Function(ExampleTodosState) _then) = _$ExampleTodosStateCopyWithImpl;
 @useResult
 $Res call({
- List<Todo> todos, StateStatus status, Failure? failure, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, String? editingTodoId, int formVersion
+ List<Todo> todos, StateStatus status, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, String? editingTodoId, int formVersion
 });
 
 
-$FailureCopyWith<$Res>? get failure;$FieldStateCopyWith<String, $Res> get titleField;$FieldStateCopyWith<String, $Res> get descriptionField;$FieldStateCopyWith<bool, $Res> get isDoneField;
+$StateStatusCopyWith<$Res> get status;$FieldStateCopyWith<String, $Res> get titleField;$FieldStateCopyWith<String, $Res> get descriptionField;$FieldStateCopyWith<bool, $Res> get isDoneField;
 
 }
 /// @nodoc
@@ -617,12 +617,11 @@ class _$ExampleTodosStateCopyWithImpl<$Res>
 
 /// Create a copy of ExampleTodosState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? todos = null,Object? status = null,Object? failure = freezed,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? editingTodoId = freezed,Object? formVersion = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? todos = null,Object? status = null,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? editingTodoId = freezed,Object? formVersion = null,}) {
   return _then(_self.copyWith(
 todos: null == todos ? _self.todos : todos // ignore: cast_nullable_to_non_nullable
 as List<Todo>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
+as StateStatus,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,descriptionField: null == descriptionField ? _self.descriptionField : descriptionField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,isDoneField: null == isDoneField ? _self.isDoneField : isDoneField // ignore: cast_nullable_to_non_nullable
 as FieldState<bool>,editingTodoId: freezed == editingTodoId ? _self.editingTodoId : editingTodoId // ignore: cast_nullable_to_non_nullable
@@ -634,13 +633,10 @@ as int,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$FailureCopyWith<$Res>? get failure {
-    if (_self.failure == null) {
-    return null;
-  }
-
-  return $FailureCopyWith<$Res>(_self.failure!, (value) {
-    return _then(_self.copyWith(failure: value));
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
   });
 }/// Create a copy of ExampleTodosState
 /// with the given fields replaced by the non-null parameter values.
@@ -678,7 +674,7 @@ $FieldStateCopyWith<bool, $Res> get isDoneField {
 
 
 class _ExampleTodosState implements ExampleTodosState {
-  const _ExampleTodosState({final  List<Todo> todos = const <Todo>[], this.status = StateStatus.initial, this.failure, this.titleField = const FieldState(value: ''), this.descriptionField = const FieldState(value: ''), this.isDoneField = const FieldState(value: false), this.editingTodoId, this.formVersion = 0}): _todos = todos;
+  const _ExampleTodosState({final  List<Todo> todos = const <Todo>[], this.status = const StateStatus.initial(), this.titleField = const FieldState(value: ''), this.descriptionField = const FieldState(value: ''), this.isDoneField = const FieldState(value: false), this.editingTodoId, this.formVersion = 0}): _todos = todos;
   
 
  final  List<Todo> _todos;
@@ -689,7 +685,6 @@ class _ExampleTodosState implements ExampleTodosState {
 }
 
 @override@JsonKey() final  StateStatus status;
-@override final  Failure? failure;
 @override@JsonKey() final  FieldState<String> titleField;
 @override@JsonKey() final  FieldState<String> descriptionField;
 @override@JsonKey() final  FieldState<bool> isDoneField;
@@ -706,16 +701,16 @@ _$ExampleTodosStateCopyWith<_ExampleTodosState> get copyWith => __$ExampleTodosS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExampleTodosState&&const DeepCollectionEquality().equals(other._todos, _todos)&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.editingTodoId, editingTodoId) || other.editingTodoId == editingTodoId)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExampleTodosState&&const DeepCollectionEquality().equals(other._todos, _todos)&&(identical(other.status, status) || other.status == status)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.editingTodoId, editingTodoId) || other.editingTodoId == editingTodoId)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_todos),status,failure,titleField,descriptionField,isDoneField,editingTodoId,formVersion);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_todos),status,titleField,descriptionField,isDoneField,editingTodoId,formVersion);
 
 @override
 String toString() {
-  return 'ExampleTodosState(todos: $todos, status: $status, failure: $failure, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, editingTodoId: $editingTodoId, formVersion: $formVersion)';
+  return 'ExampleTodosState(todos: $todos, status: $status, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, editingTodoId: $editingTodoId, formVersion: $formVersion)';
 }
 
 
@@ -726,11 +721,11 @@ abstract mixin class _$ExampleTodosStateCopyWith<$Res> implements $ExampleTodosS
   factory _$ExampleTodosStateCopyWith(_ExampleTodosState value, $Res Function(_ExampleTodosState) _then) = __$ExampleTodosStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<Todo> todos, StateStatus status, Failure? failure, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, String? editingTodoId, int formVersion
+ List<Todo> todos, StateStatus status, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, String? editingTodoId, int formVersion
 });
 
 
-@override $FailureCopyWith<$Res>? get failure;@override $FieldStateCopyWith<String, $Res> get titleField;@override $FieldStateCopyWith<String, $Res> get descriptionField;@override $FieldStateCopyWith<bool, $Res> get isDoneField;
+@override $StateStatusCopyWith<$Res> get status;@override $FieldStateCopyWith<String, $Res> get titleField;@override $FieldStateCopyWith<String, $Res> get descriptionField;@override $FieldStateCopyWith<bool, $Res> get isDoneField;
 
 }
 /// @nodoc
@@ -743,12 +738,11 @@ class __$ExampleTodosStateCopyWithImpl<$Res>
 
 /// Create a copy of ExampleTodosState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? todos = null,Object? status = null,Object? failure = freezed,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? editingTodoId = freezed,Object? formVersion = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? todos = null,Object? status = null,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? editingTodoId = freezed,Object? formVersion = null,}) {
   return _then(_ExampleTodosState(
 todos: null == todos ? _self._todos : todos // ignore: cast_nullable_to_non_nullable
 as List<Todo>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
+as StateStatus,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,descriptionField: null == descriptionField ? _self.descriptionField : descriptionField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,isDoneField: null == isDoneField ? _self.isDoneField : isDoneField // ignore: cast_nullable_to_non_nullable
 as FieldState<bool>,editingTodoId: freezed == editingTodoId ? _self.editingTodoId : editingTodoId // ignore: cast_nullable_to_non_nullable
@@ -761,13 +755,10 @@ as int,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$FailureCopyWith<$Res>? get failure {
-    if (_self.failure == null) {
-    return null;
-  }
-
-  return $FailureCopyWith<$Res>(_self.failure!, (value) {
-    return _then(_self.copyWith(failure: value));
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
   });
 }/// Create a copy of ExampleTodosState
 /// with the given fields replaced by the non-null parameter values.

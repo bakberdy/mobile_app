@@ -341,7 +341,7 @@ String toString() {
 /// @nodoc
 mixin _$ExampleTodoEditorState {
 
- Todo? get todo; DateTime? get createdAt; StateStatus get status; Failure? get failure; FieldState<String> get titleField; FieldState<String> get descriptionField; FieldState<bool> get isDoneField; int get formVersion;
+ Todo? get todo; DateTime? get createdAt; StateStatus get status; FieldState<String> get titleField; FieldState<String> get descriptionField; FieldState<bool> get isDoneField; int get formVersion;
 /// Create a copy of ExampleTodoEditorState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -352,16 +352,16 @@ $ExampleTodoEditorStateCopyWith<ExampleTodoEditorState> get copyWith => _$Exampl
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExampleTodoEditorState&&(identical(other.todo, todo) || other.todo == todo)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExampleTodoEditorState&&(identical(other.todo, todo) || other.todo == todo)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,todo,createdAt,status,failure,titleField,descriptionField,isDoneField,formVersion);
+int get hashCode => Object.hash(runtimeType,todo,createdAt,status,titleField,descriptionField,isDoneField,formVersion);
 
 @override
 String toString() {
-  return 'ExampleTodoEditorState(todo: $todo, createdAt: $createdAt, status: $status, failure: $failure, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, formVersion: $formVersion)';
+  return 'ExampleTodoEditorState(todo: $todo, createdAt: $createdAt, status: $status, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, formVersion: $formVersion)';
 }
 
 
@@ -372,11 +372,11 @@ abstract mixin class $ExampleTodoEditorStateCopyWith<$Res>  {
   factory $ExampleTodoEditorStateCopyWith(ExampleTodoEditorState value, $Res Function(ExampleTodoEditorState) _then) = _$ExampleTodoEditorStateCopyWithImpl;
 @useResult
 $Res call({
- Todo? todo, DateTime? createdAt, StateStatus status, Failure? failure, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, int formVersion
+ Todo? todo, DateTime? createdAt, StateStatus status, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, int formVersion
 });
 
 
-$FailureCopyWith<$Res>? get failure;$FieldStateCopyWith<String, $Res> get titleField;$FieldStateCopyWith<String, $Res> get descriptionField;$FieldStateCopyWith<bool, $Res> get isDoneField;
+$StateStatusCopyWith<$Res> get status;$FieldStateCopyWith<String, $Res> get titleField;$FieldStateCopyWith<String, $Res> get descriptionField;$FieldStateCopyWith<bool, $Res> get isDoneField;
 
 }
 /// @nodoc
@@ -389,13 +389,12 @@ class _$ExampleTodoEditorStateCopyWithImpl<$Res>
 
 /// Create a copy of ExampleTodoEditorState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? todo = freezed,Object? createdAt = freezed,Object? status = null,Object? failure = freezed,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? formVersion = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? todo = freezed,Object? createdAt = freezed,Object? status = null,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? formVersion = null,}) {
   return _then(_self.copyWith(
 todo: freezed == todo ? _self.todo : todo // ignore: cast_nullable_to_non_nullable
 as Todo?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
+as StateStatus,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,descriptionField: null == descriptionField ? _self.descriptionField : descriptionField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,isDoneField: null == isDoneField ? _self.isDoneField : isDoneField // ignore: cast_nullable_to_non_nullable
 as FieldState<bool>,formVersion: null == formVersion ? _self.formVersion : formVersion // ignore: cast_nullable_to_non_nullable
@@ -406,13 +405,10 @@ as int,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$FailureCopyWith<$Res>? get failure {
-    if (_self.failure == null) {
-    return null;
-  }
-
-  return $FailureCopyWith<$Res>(_self.failure!, (value) {
-    return _then(_self.copyWith(failure: value));
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
   });
 }/// Create a copy of ExampleTodoEditorState
 /// with the given fields replaced by the non-null parameter values.
@@ -450,13 +446,12 @@ $FieldStateCopyWith<bool, $Res> get isDoneField {
 
 
 class _ExampleTodoEditorState implements ExampleTodoEditorState {
-  const _ExampleTodoEditorState({this.todo, this.createdAt, this.status = StateStatus.initial, this.failure, this.titleField = const FieldState(value: ''), this.descriptionField = const FieldState(value: ''), this.isDoneField = const FieldState(value: false), this.formVersion = 0});
+  const _ExampleTodoEditorState({this.todo, this.createdAt, this.status = const StateStatus.initial(), this.titleField = const FieldState(value: ''), this.descriptionField = const FieldState(value: ''), this.isDoneField = const FieldState(value: false), this.formVersion = 0});
   
 
 @override final  Todo? todo;
 @override final  DateTime? createdAt;
 @override@JsonKey() final  StateStatus status;
-@override final  Failure? failure;
 @override@JsonKey() final  FieldState<String> titleField;
 @override@JsonKey() final  FieldState<String> descriptionField;
 @override@JsonKey() final  FieldState<bool> isDoneField;
@@ -472,16 +467,16 @@ _$ExampleTodoEditorStateCopyWith<_ExampleTodoEditorState> get copyWith => __$Exa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExampleTodoEditorState&&(identical(other.todo, todo) || other.todo == todo)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExampleTodoEditorState&&(identical(other.todo, todo) || other.todo == todo)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.titleField, titleField) || other.titleField == titleField)&&(identical(other.descriptionField, descriptionField) || other.descriptionField == descriptionField)&&(identical(other.isDoneField, isDoneField) || other.isDoneField == isDoneField)&&(identical(other.formVersion, formVersion) || other.formVersion == formVersion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,todo,createdAt,status,failure,titleField,descriptionField,isDoneField,formVersion);
+int get hashCode => Object.hash(runtimeType,todo,createdAt,status,titleField,descriptionField,isDoneField,formVersion);
 
 @override
 String toString() {
-  return 'ExampleTodoEditorState(todo: $todo, createdAt: $createdAt, status: $status, failure: $failure, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, formVersion: $formVersion)';
+  return 'ExampleTodoEditorState(todo: $todo, createdAt: $createdAt, status: $status, titleField: $titleField, descriptionField: $descriptionField, isDoneField: $isDoneField, formVersion: $formVersion)';
 }
 
 
@@ -492,11 +487,11 @@ abstract mixin class _$ExampleTodoEditorStateCopyWith<$Res> implements $ExampleT
   factory _$ExampleTodoEditorStateCopyWith(_ExampleTodoEditorState value, $Res Function(_ExampleTodoEditorState) _then) = __$ExampleTodoEditorStateCopyWithImpl;
 @override @useResult
 $Res call({
- Todo? todo, DateTime? createdAt, StateStatus status, Failure? failure, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, int formVersion
+ Todo? todo, DateTime? createdAt, StateStatus status, FieldState<String> titleField, FieldState<String> descriptionField, FieldState<bool> isDoneField, int formVersion
 });
 
 
-@override $FailureCopyWith<$Res>? get failure;@override $FieldStateCopyWith<String, $Res> get titleField;@override $FieldStateCopyWith<String, $Res> get descriptionField;@override $FieldStateCopyWith<bool, $Res> get isDoneField;
+@override $StateStatusCopyWith<$Res> get status;@override $FieldStateCopyWith<String, $Res> get titleField;@override $FieldStateCopyWith<String, $Res> get descriptionField;@override $FieldStateCopyWith<bool, $Res> get isDoneField;
 
 }
 /// @nodoc
@@ -509,13 +504,12 @@ class __$ExampleTodoEditorStateCopyWithImpl<$Res>
 
 /// Create a copy of ExampleTodoEditorState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? todo = freezed,Object? createdAt = freezed,Object? status = null,Object? failure = freezed,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? formVersion = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? todo = freezed,Object? createdAt = freezed,Object? status = null,Object? titleField = null,Object? descriptionField = null,Object? isDoneField = null,Object? formVersion = null,}) {
   return _then(_ExampleTodoEditorState(
 todo: freezed == todo ? _self.todo : todo // ignore: cast_nullable_to_non_nullable
 as Todo?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
+as StateStatus,titleField: null == titleField ? _self.titleField : titleField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,descriptionField: null == descriptionField ? _self.descriptionField : descriptionField // ignore: cast_nullable_to_non_nullable
 as FieldState<String>,isDoneField: null == isDoneField ? _self.isDoneField : isDoneField // ignore: cast_nullable_to_non_nullable
 as FieldState<bool>,formVersion: null == formVersion ? _self.formVersion : formVersion // ignore: cast_nullable_to_non_nullable
@@ -527,13 +521,10 @@ as int,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$FailureCopyWith<$Res>? get failure {
-    if (_self.failure == null) {
-    return null;
-  }
-
-  return $FailureCopyWith<$Res>(_self.failure!, (value) {
-    return _then(_self.copyWith(failure: value));
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
   });
 }/// Create a copy of ExampleTodoEditorState
 /// with the given fields replaced by the non-null parameter values.

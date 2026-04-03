@@ -41,11 +41,11 @@ Then in the bloc, handle this failure by updating the relevant `FieldState<T>` (
 
 ## Bloc: storing and handling failures
 
-- In bloc state, keep the full **`Failure`** when you need to show a message or send analytics (e.g. `Failure? failure` and `StateStatus`).
+- In bloc state, use **`StateStatus`**; put recoverable screen-level errors on **`StateStatus.error(Failure)`** so the UI can read `Failure` from that variant.
 - **Analytics:** when you receive a `Failure` in the bloc, report it to your analytics.
 - **Global vs inline:**
-  - For **global** errors (snackbar, toast, banner, etc.): emit `state.copyWith(status: StateStatus.error, failure: failure)`.
-  - For **inline** errors (forms): do **not** put the failure in the global `failure` field. Instead, map the failure (e.g. from `failure.data`) into the corresponding `FieldState<T>.error` and emit updated field states.
+  - For **global** errors (snackbar, toast, banner, etc.): emit `state.copyWith(status: StateStatus.error(failure))`.
+  - For **inline** errors (forms): do **not** use `StateStatus.error` for field validation. Map the failure (e.g. from `failure.data`) into the corresponding `FieldState<T>.error` and emit updated field states.
 
 ---
 
@@ -56,33 +56,28 @@ Then in the bloc, handle this failure by updating the relevant `FieldState<T>` (
 When the bloc state has a global error, show it based on `Failure.type`:
 
 ```dart
-if (state.someStatus == StateStatus.error && state.failure != null) {
-  final failure = state.failure!;
-  final message = failure.message ?? failure.defaultMessage(context);
-  switch (failure.type) {
-    case FailureType.snackbar:
-      context.showSnackBar(message, type: SnackBarType.error);
-      break;
-    case FailureType.banner:
-      // show banner
-      break;
-    case FailureType.alert:
-      // show dialog
-      break;
-    case FailureType.fullScreenError:
-      // show full-screen error
-      break;
-    case FailureType.silent:
-      // no UI, e.g. analytics only
-      break;
-    case FailureType.inlineError:
-      // handle in BlocBuilder via FieldState (see below)
-      break;
-  }
+switch (state.status) {
+  case ErrorStateStatus(:final failure):
+    final message = failure.message ?? failure.defaultMessage(context);
+    switch (failure.type) {
+      case FailureType.snackbar:
+        context.showSnackBar(message, type: SnackBarType.error);
+        break;
+      case FailureType.banner:
+        break;
+      case FailureType.alert:
+        break;
+      case FailureType.fullScreenError:
+        break;
+      case FailureType.silent:
+        break;
+      case FailureType.inlineError:
+        break;
+    }
+  default:
+    break;
 }
 ```
-
-(Adjust `state.someStatus` and `state.failure` to your actual state field names.)
 
 ### Inline / field errors (BlocBuilder)
 

@@ -32,7 +32,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:<package>/src/config/di/injection.dart';
-import 'package:<package>/src/core/bloc/state_status.dart';
+import 'package:<package>/src/core/bloc/state_status/state_status.dart';
 import 'package:<package>/src/core/error/error.dart';
 import 'package:<package>/src/core/utils/extensions/context_x.dart';
 import 'package:<package>/src/components/buttons/base_filled_button.dart';
@@ -59,8 +59,14 @@ class _<Name>ScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<<Topic>Bloc, <Topic>State>(
-      listenWhen: (prev, curr) => curr.failure != null && prev.failure != curr.failure,
-      listener: _handleFailure,
+      listener: (context, state) {
+        switch (state.status) {
+          case ErrorStateStatus(:final failure):
+            _handleFailure(context, failure);
+          default:
+            break;
+        }
+      },
       builder: (context, state) => Scaffold(
         appBar: AppBar(title: Text(context.l10n.<titleKey>)),
         body: ...,
@@ -68,9 +74,7 @@ class _<Name>ScreenContent extends StatelessWidget {
     );
   }
 
-  void _handleFailure(BuildContext context, <Topic>State state) {
-    final failure = state.failure;
-    if (failure == null) return;
+  void _handleFailure(BuildContext context, Failure failure) {
     final message = failure.message ?? failure.defaultMessage(context);
     switch (failure.type) {
       case FailureType.snackbar:
@@ -130,7 +134,7 @@ Never use raw Flutter buttons. Always use project components from `lib/src/compo
 BaseFilledButton.primary(
   label: context.l10n.save,
   onPressed: () => context.read<<Topic>Bloc>().add(const <Topic>SavePressed()),
-  loading: state.status == StateStatus.loading,
+  loading: state.status.isLoading,
 )
 BaseIconButton.standard(icon: const Icon(Icons.close), onPressed: context.router.maybePop)
 
@@ -179,10 +183,10 @@ BlocBuilder<<Topic>Bloc, <Topic>State>(
 ### Null safety — no force unwraps
 ```dart
 // ❌ BAD
-final failure = state.failure!;
+final failure = someNullableFailure!;
 
 // ✅ GOOD
-final failure = state.failure;
+final failure = someNullableFailure;
 if (failure == null) return;
 ```
 
@@ -207,7 +211,7 @@ context.colorScheme.error, context.colorScheme.primary
 - [ ] Wrapper: `@RoutePage()`, `StatelessWidget`, only provides BLoC(s)
 - [ ] Content: private `_<Name>ScreenContent`, all UI lives here
 - [ ] `BlocProvider.create` uses `sl<Bloc>()..add(InitialEvent())` — never in `initState`
-- [ ] Failure handled via `BlocListener`/`BlocConsumer` with full `switch(failure.type)`
+- [ ] Failure handled via `BlocListener`/`BlocConsumer` by matching `ErrorStateStatus` / `state.status` and full `switch(failure.type)`
 - [ ] `failure.message ?? failure.defaultMessage(context)` — no hardcoded fallback
 - [ ] All visible strings use `context.l10n.<key>` — add keys to all 3 ARB files if new
 - [ ] Only project buttons (`BaseFilledButton`, etc.) — no raw Flutter buttons

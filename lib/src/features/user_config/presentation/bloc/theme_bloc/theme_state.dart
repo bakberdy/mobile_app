@@ -6,7 +6,6 @@ sealed class ThemeState with _$ThemeState {
     AppThemeMode? themeMode,
     AppThemeMode? systemThemeMode,
     AppThemeMode? appliedThemeMode,
-    @Default(StateStatus.initial) StateStatus status,
-    String? errorMessage,
+    @Default(StateStatus.initial()) StateStatus status,
   }) = _ThemeState;
 }

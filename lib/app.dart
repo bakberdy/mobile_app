@@ -1,7 +1,9 @@
 import 'package:app_log/app_log.dart';
+import 'package:app_log/app_log_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_app/app_config.dart';
 import 'package:mobile_app/src/config/router/app_router.dart';
 import 'package:mobile_app/src/config/theme/app_theme.dart';
 import 'package:mobile_app/src/config/di/injection.dart';
@@ -29,14 +31,29 @@ class App extends StatelessWidget {
       ],
       child: AppThemeScope(
         builder: (context, themeMode, child) {
+          final appRouter = sl<AppRouter>();
           return BlocBuilder<LocaleBloc, LocaleState>(
             builder: (context, localeState) {
               return MaterialApp.router(
                 builder: (context, child) {
-                  if ()
+                  if (AppConfig.instance.environment != 'production') {
+                    return Stack(
+                      children: [
+                        ?child,
+                        Positioned(
+                          bottom: 20,
+                          right: 20,
+                          child: LogViewerButton(
+                            navigatorKey: appRouter.navigatorKey,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return child ?? const SizedBox.shrink();
                 },
                 debugShowCheckedModeBanner: false,
-                routerConfig: sl<AppRouter>().config(
+                routerConfig: appRouter.config(
                   navigatorObservers: () => [
                     // AnalyticsPageObserver(),
                     AutoRouteLogObserver(),

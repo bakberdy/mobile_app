@@ -20,9 +20,9 @@ Rules for files inside `presentation/bloc/`. This rule defines how feature BLoCs
 - Use named event factories such as `ExampleEvent.started()`.
 - Add a `bloc_concurrency` transformer to every async `on<...>()` handler.
 - Import only from `flutter_bloc`, `bloc_concurrency`, `injectable`, `freezed_annotation`, `core/bloc/`, and the same feature's `domain/`.
-- Model async flow with `StateStatus` and top-level errors with `Failure?`.
+- Model async flow with `StateStatus`; put screen-level errors on `StateStatus.error(Failure)` (no parallel `Failure?` on state unless a feature explicitly needs it).
 - Use `FieldState<T>` for editable fields.
-- Map `FailureType.inlineError` to the matching `FieldState` instead of top-level `failure`.
+- Map `FailureType.inlineError` to the matching `FieldState` instead of `StateStatus.error`.
 - Prefix file names with the feature name.
 - Follow `presentation-layer.mdc` for shared naming and cross-presentation boundaries.
 
@@ -31,7 +31,7 @@ Rules for files inside `presentation/bloc/`. This rule defines how feature BLoCs
 - The bloc file owns `part` declarations and shared imports.
 - Events and states are Freezed sealed classes with named factories.
 - Async handlers use the right `bloc_concurrency` transformer.
-- State uses `StateStatus`, `Failure?`, and `FieldState<T>` where needed.
+- State uses `StateStatus`, and `FieldState<T>` where needed; failures for global UI use the `Failure` inside `StateStatus.error`.
 
 ## Red Flags
 - Extending `Cubit` or skipping a dedicated event/state type.
@@ -40,6 +40,6 @@ Rules for files inside `presentation/bloc/`. This rule defines how feature BLoCs
 - Putting business logic, analytics, repository implementation details, or data-layer imports in BLoC files.
 - Writing manual event/state classes instead of Freezed sealed classes.
 - Registering async handlers without a concurrency transformer.
-- Using `String? errorMessage` instead of `Failure?`.
+- Using `String? errorMessage` instead of typed `Failure` on `StateStatus.error` or `FieldState.error`.
 - Surfacing inline validation failures as top-level screen errors.
 - Naming files generically like `bloc.dart`, `state.dart`, or `theme_bloc.dart`.

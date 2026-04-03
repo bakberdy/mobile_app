@@ -101,7 +101,8 @@ BLoC emits state; the UI listens and navigates. BLoC must not hold a router refe
 ```dart
 // ✅ GOOD
 BlocListener<LoginBloc, LoginState>(
-  listenWhen: (prev, curr) => curr.status == StateStatus.success && prev.status != curr.status,
+  listenWhen: (prev, curr) =>
+      curr.status.isSuccess && !prev.status.isSuccess,
   listener: (context, state) => context.router.replaceAll([const MainNavigationRoute()]),
   child: ...,
 )

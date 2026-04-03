@@ -18,8 +18,9 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(page: ExampleTodosRoute.page, initial: true),
-    AutoRoute(page: ExampleTodoEditorRoute.page),
+    // AutoRoute(page: ExampleTodosRoute.page, initial: true),
+    // AutoRoute(page: ExampleTodoEditorRoute.page),
+    AutoRoute(page: UserConfigExampleRoute.page, initial: true),
 
     // AutoRoute(
     //   initial: false,

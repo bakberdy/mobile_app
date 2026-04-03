@@ -177,7 +177,7 @@ as String,
 /// @nodoc
 mixin _$LocaleState {
 
- String? get languageCode; StateStatus get status; String? get errorMessage;
+ String? get languageCode; StateStatus get status;
 /// Create a copy of LocaleState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -188,16 +188,16 @@ $LocaleStateCopyWith<LocaleState> get copyWith => _$LocaleStateCopyWithImpl<Loca
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocaleState&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocaleState&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,languageCode,status,errorMessage);
+int get hashCode => Object.hash(runtimeType,languageCode,status);
 
 @override
 String toString() {
-  return 'LocaleState(languageCode: $languageCode, status: $status, errorMessage: $errorMessage)';
+  return 'LocaleState(languageCode: $languageCode, status: $status)';
 }
 
 
@@ -208,11 +208,11 @@ abstract mixin class $LocaleStateCopyWith<$Res>  {
   factory $LocaleStateCopyWith(LocaleState value, $Res Function(LocaleState) _then) = _$LocaleStateCopyWithImpl;
 @useResult
 $Res call({
- String? languageCode, StateStatus status, String? errorMessage
+ String? languageCode, StateStatus status
 });
 
 
-
+$StateStatusCopyWith<$Res> get status;
 
 }
 /// @nodoc
@@ -225,15 +225,23 @@ class _$LocaleStateCopyWithImpl<$Res>
 
 /// Create a copy of LocaleState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,Object? status = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,Object? status = null,}) {
   return _then(_self.copyWith(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
 as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as StateStatus,
   ));
 }
-
+/// Create a copy of LocaleState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
+  });
+}
 }
 
 
@@ -242,12 +250,11 @@ as String?,
 
 
 class _LocaleState implements LocaleState {
-  const _LocaleState({this.languageCode, this.status = StateStatus.initial, this.errorMessage});
+  const _LocaleState({this.languageCode, this.status = const StateStatus.initial()});
   
 
 @override final  String? languageCode;
 @override@JsonKey() final  StateStatus status;
-@override final  String? errorMessage;
 
 /// Create a copy of LocaleState
 /// with the given fields replaced by the non-null parameter values.
@@ -259,16 +266,16 @@ _$LocaleStateCopyWith<_LocaleState> get copyWith => __$LocaleStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocaleState&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocaleState&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,languageCode,status,errorMessage);
+int get hashCode => Object.hash(runtimeType,languageCode,status);
 
 @override
 String toString() {
-  return 'LocaleState(languageCode: $languageCode, status: $status, errorMessage: $errorMessage)';
+  return 'LocaleState(languageCode: $languageCode, status: $status)';
 }
 
 
@@ -279,11 +286,11 @@ abstract mixin class _$LocaleStateCopyWith<$Res> implements $LocaleStateCopyWith
   factory _$LocaleStateCopyWith(_LocaleState value, $Res Function(_LocaleState) _then) = __$LocaleStateCopyWithImpl;
 @override @useResult
 $Res call({
- String? languageCode, StateStatus status, String? errorMessage
+ String? languageCode, StateStatus status
 });
 
 
-
+@override $StateStatusCopyWith<$Res> get status;
 
 }
 /// @nodoc
@@ -296,16 +303,24 @@ class __$LocaleStateCopyWithImpl<$Res>
 
 /// Create a copy of LocaleState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,Object? status = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,Object? status = null,}) {
   return _then(_LocaleState(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
 as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as StateStatus,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as StateStatus,
   ));
 }
 
-
+/// Create a copy of LocaleState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StateStatusCopyWith<$Res> get status {
+  
+  return $StateStatusCopyWith<$Res>(_self.status, (value) {
+    return _then(_self.copyWith(status: value));
+  });
+}
 }
 
 // dart format on

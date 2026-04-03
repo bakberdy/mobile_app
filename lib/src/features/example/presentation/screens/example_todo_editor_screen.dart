@@ -8,7 +8,7 @@ import 'package:mobile_app/src/components/dialogs/base_snackbar.dart';
 import 'package:mobile_app/src/config/di/injection.dart';
 import 'package:mobile_app/src/config/theme/app_radii.dart';
 import 'package:mobile_app/src/config/theme/app_spacing.dart';
-import 'package:mobile_app/src/core/bloc/state_status.dart';
+import 'package:mobile_app/src/core/bloc/state_status/state_status.dart';
 import 'package:mobile_app/src/core/error/error.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 import 'package:mobile_app/src/features/example/domain/entity/example_todo.dart';
@@ -37,25 +37,20 @@ class _ExampleTodoEditorScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ExampleTodoEditorBloc, ExampleTodoEditorState>(
-      listenWhen: (prev, curr) =>
-          (curr.failure != null && prev.failure != curr.failure) ||
-          (prev.status != StateStatus.success &&
-              curr.status == StateStatus.success),
       listener: (context, state) {
-        final failure = state.failure;
-        if (failure != null) {
-          _handleFailure(context, failure);
-        }
-
-        if (state.status == StateStatus.success) {
-          context.router.maybePop(true);
+        switch (state.status) {
+          case SuccessStateStatus():
+            context.router.maybePop(true);
+          case ErrorStateStatus(: final failure):
+            _handleFailure(context, failure);
+          default:
+            break;
         }
       },
       builder: (context, state) {
         final isEditing = state.todo != null;
-        final isLoading = state.status == StateStatus.loading;
-        final isSubmitDisabled =
-            isLoading || state.status == StateStatus.success;
+        final isLoading = state.status.isLoading;
+        final isSubmitDisabled = isLoading || state.status.isSuccess;
         final createdAt = state.createdAt ?? DateTime.now();
         final dateLabel = DateFormat.yMMMMd(
           context.languageCode,
