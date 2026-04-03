@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/error/error.dart';
@@ -20,7 +22,6 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
     this._remoteDataSource,
     this._networkInfo,
   );
-  
 
   @override
   FutureEither<AppThemeMode?> getAppThemeMode() async {
@@ -28,29 +29,28 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
       final storageKey = LocalStorageConsts.themeModeKey;
       final isConnected = await _networkInfo.isConnected;
       final localTheme = await _safeReadLocal(storageKey);
-      final remoteTheme = await _safeReadRemote(
-        key: storageKey,
-        isConnected: isConnected,
-      );
-
-      final resolvedTheme = _resolveTheme(
-        localRaw: localTheme,
-        remoteRaw: remoteTheme,
-      );
-
-      if (resolvedTheme != null) {
-        await _bestEffortSync(
-          key: storageKey,
-          resolvedValue: resolvedTheme.name,
-          localValue: localTheme,
-          remoteValue: remoteTheme,
-          isConnected: isConnected,
-        );
+      if (!isConnected) {
+        return Right(AppThemeMode.fromString(localTheme));
       }
 
-      return Right(resolvedTheme);
+      unawaited(_syncThemeMode());
+
+      return Right(AppThemeMode.fromString(localTheme));
     } on Exception catch (e) {
       return Left(e.toFailure(source: '$runtimeType.getAppThemeMode'));
+    }
+  }
+
+  Future<void> _syncThemeMode() async {
+    final storageKey = LocalStorageConsts.themeModeKey;
+    final localTheme = await _safeReadLocal(storageKey);
+    final remoteTheme = await _safeReadRemote(key: storageKey);
+
+    if (localTheme != null && localTheme != remoteTheme) {
+      await _remoteDataSource.setUserConfig<String>(
+        key: storageKey,
+        value: localTheme,
+      );
     }
   }
 
@@ -60,40 +60,40 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
       final storageKey = LocalStorageConsts.localeKey;
       final isConnected = await _networkInfo.isConnected;
       final localLocale = await _safeReadLocal(storageKey);
-      final remoteLocale = await _safeReadRemote(
-        key: storageKey,
-        isConnected: isConnected,
-      );
 
-      final resolvedLocale = _resolveLocale(
-        localRaw: localLocale,
-        remoteRaw: remoteLocale,  
-      );
-
-      if (resolvedLocale != null) {
-        await _bestEffortSync(
-          key: storageKey,
-          resolvedValue: resolvedLocale,
-          localValue: localLocale,
-          remoteValue: remoteLocale,
-          isConnected: isConnected,
-        );
+      if (!isConnected) {
+        return Right(localLocale);
       }
 
-      return Right(resolvedLocale);
+      unawaited(_syncLocale());
+
+      return Right(localLocale);
     } on Exception catch (e) {
       return Left(e.toFailure(source: '$runtimeType.getLocale'));
+    }
+  }
+
+  Future<void> _syncLocale() async {
+    final storageKey = LocalStorageConsts.localeKey;
+    final localLocale = await _safeReadLocal(storageKey);
+    final remoteLocale = await _safeReadRemote(key: storageKey);
+
+    if (localLocale != null && localLocale != remoteLocale) {
+      await _remoteDataSource.setUserConfig<String>(
+        key: storageKey,
+        value: localLocale,
+      );
     }
   }
 
   @override
   FutureEither<void> setLocale(String locale) async {
     try {
-      await _setOfflineFirst(
+      await _localDataSource.setUserConfig(
         key: LocalStorageConsts.localeKey,
         value: locale,
       );
-
+      unawaited(_syncLocale());
       return Right(null);
     } on Exception catch (e) {
       return Left(e.toFailure(source: '$runtimeType.setLocale'));
@@ -103,10 +103,11 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   @override
   FutureEither<void> setTheme(AppThemeMode themeMode) async {
     try {
-      await _setOfflineFirst(
+      await _localDataSource.setUserConfig(
         key: LocalStorageConsts.themeModeKey,
         value: themeMode.name,
       );
+      unawaited(_syncThemeMode());
 
       return Right(null);
     } on Exception catch (e) {
@@ -122,14 +123,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
     }
   }
 
-  Future<String?> _safeReadRemote({
-    required String key,
-    required bool isConnected,
-  }) async {
-    if (!isConnected) {
-      return null;
-    }
-
+  Future<String?> _safeReadRemote({required String key}) async {
     try {
       return await _remoteDataSource.getUserConfig(key: key);
     } on Exception {
@@ -137,81 +131,20 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
     }
   }
 
-  Future<void> _bestEffortSync({
-    required String key,
-    required String resolvedValue,
-    required String? localValue,
-    required String? remoteValue,
-    required bool isConnected,
-  }) async {
-    if (localValue != resolvedValue) {
-      try {
-        await _localDataSource.setUserConfig(key: key, value: resolvedValue);
-      } on Exception {
-        // Best-effort sync.
-      }
-    }
-
-    if (isConnected && remoteValue != resolvedValue) {
-      try {
-        await _remoteDataSource.setUserConfig(
-          key: key,
-          value: resolvedValue,
-        );
-      } on Exception {
-        // Best-effort sync.
-      }
-    }
+  @override
+  FutureEither<String?> getEnvironment() async {
+    return Right(await _safeReadLocal(LocalStorageConsts.environmentKey));
   }
 
-  Future<void> _setOfflineFirst({
-    required String key,
-    required String value,
-  }) async {
-    await _localDataSource.setUserConfig(key: key, value: value);
-
-    if (!await _networkInfo.isConnected) {
-      return;
-    }
-
+  @override
+  FutureEither<void> setEnvironment(String environment) async {
+    final storageKey = LocalStorageConsts.environmentKey;
     try {
-      await _remoteDataSource.setUserConfig(key: key, value: value);
-    } on Exception {
-      // Best-effort sync.
+      await _localDataSource.setUserConfig(key: storageKey, value: environment);
+
+      return Right(null);
+    } on Exception catch (e) {
+      return Left(e.toFailure(source: '$runtimeType.setEnvironment'));
     }
-  }
-
-  String? _resolveLocale({
-    required String? localRaw,
-    required String? remoteRaw,
-  }) {
-    final local = localRaw?.trim();
-    if (local != null && local.isNotEmpty) {
-      return local;
-    }
-
-    final remote = remoteRaw?.trim();
-    if (remote != null && remote.isNotEmpty) {
-      return remote;
-    }
-
-    return null; // No saved locale — first launch; caller uses device locale.
-  }
-
-  AppThemeMode? _resolveTheme({
-    required String? localRaw,
-    required String? remoteRaw,
-  }) {
-    final local = AppThemeMode.fromString(localRaw);
-    if (local != null) {
-      return local;
-    }
-
-    final remote = AppThemeMode.fromString(remoteRaw);
-    if (remote != null) {
-      return remote;
-    }
-
-    return null;
   }
 }

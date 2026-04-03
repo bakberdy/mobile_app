@@ -8,8 +8,8 @@ import 'package:mobile_app/src/core/bloc/state_status.dart';
 import 'package:mobile_app/src/core/error/error.dart';
 import 'package:mobile_app/src/core/usecases/use_case.dart';
 import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
-import 'package:mobile_app/src/features/user_config/domain/usecases/get_locale_usecase.dart';
-import 'package:mobile_app/src/features/user_config/domain/usecases/set_locale_usecase.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/get_locale_use_case.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/set_locale_use_case.dart';
 
 part 'locale_event.dart';
 part 'locale_state.dart';
@@ -17,11 +17,11 @@ part 'locale_bloc.freezed.dart';
 
 @Injectable()
 class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
-  final GetLocaleUsecase _getLocaleUsecase;
-  final SetLocaleUsecase _setLocaleUsecase;
+  final GetLocaleUseCase _getLocaleUseCase;
+  final SetLocaleUseCase _setLocaleUseCase;
   static const List<Locale> _supportedLanguageCodes = LocaleConstants.supportedLocales;
 
-  LocaleBloc(this._getLocaleUsecase, this._setLocaleUsecase)
+  LocaleBloc(this._getLocaleUseCase, this._setLocaleUseCase)
     : super(const LocaleState()) {
     on<LocaleStarted>(_onStarted);
     on<LocaleChanged>(_onLocaleChanged);
@@ -38,7 +38,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
   Future<void> _onStarted(LocaleStarted event, Emitter<LocaleState> emit) async {
     emit(state.copyWith(status: StateStatus.loading, errorMessage: null));
 
-    final result = await _getLocaleUsecase(const NoParams());
+    final result = await _getLocaleUseCase(const NoParams());
 
     result.fold(
       (Failure failure) {
@@ -60,7 +60,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
           );
         } else {
           // First launch: nothing stored yet — persist and emit device locale.
-          await _setLocaleUsecase(SetLocaleUsecaseParams(locale: event.deviceLanguageCode));
+          await _setLocaleUseCase(SetLocaleUseCaseParams(locale: event.deviceLanguageCode));
           emit(
             state.copyWith(
               languageCode: event.deviceLanguageCode,
@@ -89,8 +89,8 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
       ),
     );
 
-    final result = await _setLocaleUsecase(
-      SetLocaleUsecaseParams(locale: event.languageCode),
+    final result = await _setLocaleUseCase(
+      SetLocaleUseCaseParams(locale: event.languageCode),
     );
 
     result.fold(

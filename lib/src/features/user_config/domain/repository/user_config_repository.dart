@@ -6,4 +6,6 @@ abstract class UserConfigRepository {
   FutureEither<AppThemeMode?> getAppThemeMode();
   FutureEither<void> setLocale(String locale);
   FutureEither<String?> getLocale();
+  FutureEither<String?> getEnvironment();
+  FutureEither<void> setEnvironment(String environment);
 }

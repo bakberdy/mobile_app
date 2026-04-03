@@ -6,31 +6,36 @@ import 'package:mobile_app/src/core/utils/typedef.dart';
 import 'package:mobile_app/src/features/user_config/domain/analytics/user_config_events.dart';
 import 'package:mobile_app/src/features/user_config/domain/repository/user_config_repository.dart';
 
+class SetLocaleUseCaseParams {
+  final String locale;
+
+  const SetLocaleUseCaseParams({required this.locale});
+}
+
 @LazySingleton()
-class GetLocaleUsecase extends UseCase<String?, NoParams> {
+class SetLocaleUseCase extends UseCase<void, SetLocaleUseCaseParams> {
   final UserConfigRepository _repo;
 
-  GetLocaleUsecase(this._repo);
+  SetLocaleUseCase(this._repo);
 
   @override
-  FutureEither<String?> call(NoParams params) async {
-    final result = await _repo.getLocale();
-    return result.fold(
-      (failure) {
-        Analytics.track(
-          GetAppLocaleUsecaseEvent.failure(
-            properties: {
+  FutureEither<void> call(SetLocaleUseCaseParams params) {
+    return _repo.setLocale(params.locale).then(
+      (result) {
+        return result.fold(
+          (failure) {
+            Analytics.track(SetAppLocaleUseCaseEvent.failure(properties: {
               AnalyticsPropertyKeys.failureMessage: failure.message,
               AnalyticsPropertyKeys.failureType: failure.type.name,
               AnalyticsPropertyKeys.failureSource: failure.source,
-            },
-          ),
+            }));
+            return result;
+          },
+          (success) {
+            Analytics.track(SetAppLocaleUseCaseEvent.success());
+            return result;
+          },
         );
-        return result;
-      },
-      (success) {
-        Analytics.track(GetAppLocaleUsecaseEvent.success());
-        return result;
       },
     );
   }

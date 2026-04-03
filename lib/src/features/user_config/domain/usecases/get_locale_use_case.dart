@@ -4,39 +4,33 @@ import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
 import 'package:mobile_app/src/core/usecases/use_case.dart';
 import 'package:mobile_app/src/core/utils/typedef.dart';
 import 'package:mobile_app/src/features/user_config/domain/analytics/user_config_events.dart';
-import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
 import 'package:mobile_app/src/features/user_config/domain/repository/user_config_repository.dart';
 
-class SetThemeUsecaseParams {
-  final AppThemeMode themeMode;
-
-  const SetThemeUsecaseParams({required this.themeMode});
-}
-
 @LazySingleton()
-class SetThemeUsecase extends UseCase<void, SetThemeUsecaseParams> {
+class GetLocaleUseCase extends UseCase<String?, NoParams> {
   final UserConfigRepository _repo;
 
-  SetThemeUsecase(this._repo);
+  GetLocaleUseCase(this._repo);
 
   @override
-  FutureEither<void> call(SetThemeUsecaseParams params) {
-    return _repo.setTheme(params.themeMode).then(
-      (result) {
-        return result.fold(
-          (failure) {
-            Analytics.track(SetAppThemeModeUsecaseEvent.failure(properties: {
+  FutureEither<String?> call(NoParams params) async {
+    final result = await _repo.getLocale();
+    return result.fold(
+      (failure) {
+        Analytics.track(
+          GetAppLocaleUseCaseEvent.failure(
+            properties: {
               AnalyticsPropertyKeys.failureMessage: failure.message,
               AnalyticsPropertyKeys.failureType: failure.type.name,
               AnalyticsPropertyKeys.failureSource: failure.source,
-            }));
-            return result;
-          },
-          (success) {
-            Analytics.track(SetAppThemeModeUsecaseEvent.success());
-            return result;
-          },
+            },
+          ),
         );
+        return result;
+      },
+      (success) {
+        Analytics.track(GetAppLocaleUseCaseEvent.success());
+        return result;
       },
     );
   }

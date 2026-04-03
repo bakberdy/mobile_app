@@ -32,6 +32,9 @@ class App extends StatelessWidget {
           return BlocBuilder<LocaleBloc, LocaleState>(
             builder: (context, localeState) {
               return MaterialApp.router(
+                builder: (context, child) {
+                  if ()
+                },
                 debugShowCheckedModeBanner: false,
                 routerConfig: sl<AppRouter>().config(
                   navigatorObservers: () => [

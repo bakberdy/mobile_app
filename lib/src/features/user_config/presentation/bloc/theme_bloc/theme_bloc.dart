@@ -7,8 +7,8 @@ import 'package:mobile_app/src/core/bloc/state_status.dart';
 import 'package:mobile_app/src/core/error/error.dart';
 import 'package:mobile_app/src/core/usecases/use_case.dart';
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
-import 'package:mobile_app/src/features/user_config/domain/usecases/get_app_theme_mode_usecase.dart';
-import 'package:mobile_app/src/features/user_config/domain/usecases/set_theme_usecase.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/get_app_theme_mode_use_case.dart';
+import 'package:mobile_app/src/features/user_config/domain/usecases/set_theme_use_case.dart';
 
 part 'theme_event.dart';
 part 'theme_state.dart';
@@ -30,10 +30,10 @@ AppThemeMode _resolveAppliedThemeMode(
 
 @Injectable()
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
-  final GetAppThemeModeUsecase _getAppThemeModeUsecase;
-  final SetThemeUsecase _setThemeUsecase;
+  final GetAppThemeModeUseCase _getAppThemeModeUseCase;
+  final SetThemeUseCase _setThemeUseCase;
 
-  ThemeBloc(this._getAppThemeModeUsecase, this._setThemeUsecase)
+  ThemeBloc(this._getAppThemeModeUseCase, this._setThemeUseCase)
     : super(const ThemeState()) {
     on<ThemeStarted>(_onStarted);
     on<ThemeModeChanged>(_onModeChanged);
@@ -55,7 +55,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   Future<void> _onStarted(ThemeStarted event, Emitter<ThemeState> emit) async {
     emit(state.copyWith(status: StateStatus.loading, errorMessage: null));
 
-    final result = await _getAppThemeModeUsecase(const NoParams());
+    final result = await _getAppThemeModeUseCase(const NoParams());
 
     result.fold(
       (Failure failure) {
@@ -82,8 +82,8 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
           );
         } else {
           // First launch: nothing stored yet — persist and emit system theme.
-          await _setThemeUsecase(
-            const SetThemeUsecaseParams(themeMode: AppThemeMode.system),
+          await _setThemeUseCase(
+            const SetThemeUseCaseParams(themeMode: AppThemeMode.system),
           );
           emit(
             state.copyWith(
@@ -119,8 +119,8 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
       ),
     );
 
-    final result = await _setThemeUsecase(
-      SetThemeUsecaseParams(themeMode: event.mode),
+    final result = await _setThemeUseCase(
+      SetThemeUseCaseParams(themeMode: event.mode),
     );
 
     result.fold(

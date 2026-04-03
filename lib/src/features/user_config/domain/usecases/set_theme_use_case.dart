@@ -7,31 +7,36 @@ import 'package:mobile_app/src/features/user_config/domain/analytics/user_config
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
 import 'package:mobile_app/src/features/user_config/domain/repository/user_config_repository.dart';
 
+class SetThemeUseCaseParams {
+  final AppThemeMode themeMode;
+
+  const SetThemeUseCaseParams({required this.themeMode});
+}
+
 @LazySingleton()
-class GetAppThemeModeUsecase extends UseCase<AppThemeMode?, NoParams> {
+class SetThemeUseCase extends UseCase<void, SetThemeUseCaseParams> {
   final UserConfigRepository _repo;
 
-  GetAppThemeModeUsecase(this._repo);
+  SetThemeUseCase(this._repo);
 
   @override
-  FutureEither<AppThemeMode?> call(NoParams params) async {
-    final result = await _repo.getAppThemeMode();
-    return result.fold(
-      (failure) {
-        Analytics.track(
-          GetAppThemeModeUsecaseEvent.failure(
-            properties: {
+  FutureEither<void> call(SetThemeUseCaseParams params) {
+    return _repo.setTheme(params.themeMode).then(
+      (result) {
+        return result.fold(
+          (failure) {
+            Analytics.track(SetAppThemeModeUseCaseEvent.failure(properties: {
               AnalyticsPropertyKeys.failureMessage: failure.message,
               AnalyticsPropertyKeys.failureType: failure.type.name,
               AnalyticsPropertyKeys.failureSource: failure.source,
-            },
-          ),
+            }));
+            return result;
+          },
+          (success) {
+            Analytics.track(SetAppThemeModeUseCaseEvent.success());
+            return result;
+          },
         );
-        return result;
-      },
-      (success) {
-        Analytics.track(GetAppThemeModeUsecaseEvent.success());
-        return result;
       },
     );
   }

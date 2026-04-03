@@ -55,13 +55,13 @@ import 'package:mobile_app/src/features/user_config/data/repository/user_config_
     as _i613;
 import 'package:mobile_app/src/features/user_config/domain/repository/user_config_repository.dart'
     as _i656;
-import 'package:mobile_app/src/features/user_config/domain/usecases/get_app_theme_mode_usecase.dart'
+import 'package:mobile_app/src/features/user_config/domain/usecases/get_app_theme_mode_use_case.dart'
     as _i10;
-import 'package:mobile_app/src/features/user_config/domain/usecases/get_locale_usecase.dart'
+import 'package:mobile_app/src/features/user_config/domain/usecases/get_locale_use_case.dart'
     as _i366;
-import 'package:mobile_app/src/features/user_config/domain/usecases/set_locale_usecase.dart'
+import 'package:mobile_app/src/features/user_config/domain/usecases/set_locale_use_case.dart'
     as _i111;
-import 'package:mobile_app/src/features/user_config/domain/usecases/set_theme_usecase.dart'
+import 'package:mobile_app/src/features/user_config/domain/usecases/set_theme_use_case.dart'
     as _i605;
 import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart'
     as _i622;
