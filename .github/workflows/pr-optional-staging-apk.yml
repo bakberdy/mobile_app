@@ -1,0 +1,30 @@
+name: pr-optional-staging-apk
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - dev
+      - staging
+      - main
+    push:
+      branches:
+        - dev
+        - staging
+        - main
+
+jobs:
+  analyze:
+    uses: ./.github/workflows/analyzer-check.yml
+
+  approve-staging-apk:
+    needs: analyze
+    environment: optional-staging-apk
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ok
+
+  staging-apk:
+    needs: approve-staging-apk
+    uses: ./.github/workflows/android-build-staging.yml
+    secrets: inherit
