@@ -2,6 +2,20 @@ name: analyzer-check
 on:
   workflow_call:
 
+  push:
+    branches:
+      - dev
+      - staging
+      - main
+
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - dev
+      - staging
+      - main
+      
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
