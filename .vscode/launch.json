@@ -13,6 +13,7 @@
                 "--dart-define-from-file=config/config.prod.json"
             ]
         },
+        
         {
             "name": "mobile_app (dev)",
             "request": "launch",

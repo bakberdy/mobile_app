@@ -1,4 +1,4 @@
 {
-    "base_api_url": "https://base_api_url",
-    "environment": "environment_name"
+    "API_URL": "YOUR_API_URL",
+    "ENVIRONMENT": "YOUR_ENVIRONMENT"
 }
