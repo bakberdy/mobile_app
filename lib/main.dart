@@ -12,19 +12,13 @@ void main() async {
   await configureDependencies();
 
   AppLogConfig.init();
-  // Crashlytics.initialize([
-  //   ConsoleCrashProvider(),
-  // ], enableCrashlytics: AppConfig.instance.enableCrashlytics);
-  // Analytics.initialize([
-  //   ConsoleAnalyticsProvider(),
-  // ], enableAnalytics: AppConfig.instance.enableAnalytics);
   Bloc.observer = BlocLogObserver();
 
   Analytics.track(AnalyticsEvent(name: AnalyticsEventNames.appOpened));
   final config = AppConfig.instance;
   appLog('App started');
-  appLog('environment: ${config.environment}');
-  appLog('base_api_url: ${config.baseUrl}');
+  appLog('ENVIRONMENT: ${config.environment}');
+  appLog('API_URL: ${config.baseUrl}');
 
   runApp(const App());
 }

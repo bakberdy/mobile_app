@@ -1,5 +1,5 @@
 ---
-description: How to run the app and how to add new environment values (API keys, URLs, flags) through config JSON files and AppConfig.
+description: How to run the app and how to add new environment values (API keys, URLs, flags) through dart-define, config JSON, and AppConfig.
 globs: "{lib/app_config.dart,config/*.json,lib/src/**/*.dart}"
 alwaysApply: false
 ---
@@ -7,42 +7,47 @@ alwaysApply: false
 # App Configuration
 
 ## Running the app
-All launch configurations are in `.vscode/launch.json`. Use the correct one for your environment:
+Launch configurations are in `.vscode/launch.json`. Each app target passes `--dart-define=API_URL=…` and `--dart-define=ENVIRONMENT=…` (same keys as `String.fromEnvironment` in `lib/app_config.dart`).
 
-| Launch name | Config file loaded | Use for |
-|---|---|---|
-| `mobile_app (dev)` | `config/config.dev.json` | Daily development |
-| `mobile_app (staging)` | `config/config.stage.json` | Staging / QA |
-| `mobile_app` | `config/config.prod.json` | Production builds |
-| `mobile_app (Widgetbook)` | — | Component catalogue only |
+| Launch name | Use for |
+|---|---|
+| `mobile_app (dev)` | Daily development |
+| `mobile_app (staging)` | Staging / QA |
+| `mobile_app` | Production-like local runs |
+| `mobile_app (Widgetbook)` | Component catalogue only |
 
-Config files live in the **`config/`** folder at the project root and are injected at compile time via `--dart-define-from-file`.
+Reference copies of values for `--dart-define-from-file` live under `config/config.*.json`; JSON keys must be `API_URL` and `ENVIRONMENT`.
+
+## CI (GitHub Actions)
+- **Staging** (`staging` branch): `android-build-staging.yml` — secrets `STAGING_API_URL`, `STAGING_ENVIRONMENT`.
+- **Production** (`main` branch): `android-build-production.yml` — secrets `PRODUCTION_API_URL`, `PRODUCTION_ENVIRONMENT`.
+
+Both pass `--dart-define=API_URL=…` and `--dart-define=ENVIRONMENT=…` to `flutter build apk`.
 
 ## Adding a new environment value (API key, URL, toggle)
 
 Follow all 4 steps every time — skipping any step will leave an environment without the value.
 
-**Step 1 — Add the key to every env config file:**
+**Step 1 — Add the key to every env config file and mirror in `launch.json` `toolArgs` (and CI secrets / workflow `dart-define` flags) where needed:**
 ```json
-// config/config.dev.json   config/config.stage.json   config/config.prod.json
 {
-  "base_api_url": "...",
-  "environment": "...",
-  "my_new_key": "actual-value-for-this-env"
+  "API_URL": "...",
+  "ENVIRONMENT": "...",
+  "MY_NEW_API_KEY": "actual-value-for-this-env"
 }
 ```
 
 **Step 2 — Add a placeholder (no real value) to `config/config.example.json`:**
 ```json
 {
-  "my_new_key": "YOUR_MY_NEW_KEY"
+  "MY_NEW_API_KEY": "YOUR_MY_NEW_KEY"
 }
 ```
 
 **Step 3 — Read it in `lib/app_config.dart` via `String.fromEnvironment`:**
 ```dart
 static const String _myNewKey = String.fromEnvironment(
-  'my_new_key',         // must match the JSON key exactly
+  'MY_NEW_API_KEY',
   defaultValue: 'not-provided',
 );
 ```
@@ -59,7 +64,7 @@ required this.myNewKey,
 ```
 
 ## Rules
-- ❌ Never hardcode API keys, base URLs, or environment flags anywhere in Dart code
-- ❌ Never commit real secrets to `config.example.json`
-- ✅ All three env files (`dev`, `stage`, `prod`) must always have the same set of keys
-- ✅ Inject `AppConfig` via DI (`AppModule`) — never call `AppConfig.instance` directly outside `app_module.dart`
+- Never hardcode API keys, base URLs, or environment flags in Dart source outside `AppConfig` compile-time injection.
+- Never commit real secrets to `config.example.json`.
+- Keep the same set of keys across `config.dev.json`, `config.stage.json`, and `config.prod.json`.
+- Inject `AppConfig` via DI (`AppModule`) — never call `AppConfig.instance` directly outside `app_module.dart`.

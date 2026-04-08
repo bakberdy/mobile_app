@@ -1,12 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
 
 class AppConfig {
-  // Compile-time environment values injected via --dart-define / --dart-define-from-file.
   static const String _baseUrl = String.fromEnvironment(
-    'base_api_url',
+    'API_URL',
     defaultValue: 'not-provided',
   );
-  static const String _environment = String.fromEnvironment(
-    'environment',
+  static const String _environmentFromDefine = String.fromEnvironment(
+    'ENVIRONMENT',
     defaultValue: 'not-provided',
   );
 
@@ -22,7 +22,7 @@ class AppConfig {
 
   static final AppConfig instance = AppConfig._internal(
     baseUrl: _baseUrl,
-    environment: _environment,
+    environment: _environmentFromDefine,
     enableLogging: true,
     enableAnalytics: true,
     enableCrashlytics: true,

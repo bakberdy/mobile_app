@@ -1,0 +1,68 @@
+name: android-build-staging
+
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - "lib/**"
+      - "android/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/android-build-staging.yml"
+
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - staging
+    paths:
+      - "lib/**"
+      - "android/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/android-build-staging.yml"
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - run: flutter pub get
+
+      - name: Build APK
+        env:
+          CFG_API_URL: ${{ secrets.STAGING_API_URL }}
+          CFG_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
+        run: |
+          flutter build apk --release --flavor staging \
+            --dart-define=API_URL="$CFG_API_URL" \
+            --dart-define=ENVIRONMENT="$CFG_ENVIRONMENT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-staging-release-apk
+          path: build/app/outputs/flutter-apk/app-staging-release.apk
+          if-no-files-found: error
