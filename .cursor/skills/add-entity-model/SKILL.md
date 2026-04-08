@@ -1,6 +1,6 @@
 ---
 name: add-entity-model
-description: Creates a domain entity (Equatable, no Freezed) and optionally a data model (extends entity, json_serializable, no Freezed) for a feature. Use when the user wants to add an entity, domain class, data model, JSON model, or API response model.
+description: Creates a domain entity (default Equatable; optional Freezed only when needed under entity/<name>/) and optionally a data model (extends entity, json_serializable, no Freezed). Use when the user wants to add an entity, domain class, data model, JSON model, or API response model.
 ---
 
 # Add Entity + Model
@@ -20,15 +20,21 @@ description: Creates a domain entity (Equatable, no Freezed) and optionally a da
 lib/src/features/<feature>/
   domain/
     entity/
-      <feature>_<name>.dart          ← entity
+      <feature>_<name>.dart           ← Equatable entity (default)
+      <distinct_name>.dart           ← distinctive name (e.g. app_theme_mode.dart)
+      <entity_snake_name>/           ← only if using Freezed (see below)
+        <entity_snake_name>.dart
+        <entity_snake_name>.freezed.dart
   data/
     models/
-      <feature>_<name>_model.dart    ← model (only if JSON needed)
+      <feature>_<name>_model/        ← model folder (only if JSON needed)
 ```
 
 ---
 
-## Entity — `domain/entity/<feature>_<name>.dart`
+## Entity — Equatable (default)
+
+Path: `domain/entity/<feature>_<name>.dart` or `domain/entity/<distinct_name>.dart`
 
 For a **data class** (most common):
 
@@ -68,19 +74,48 @@ enum <Name> {
 }
 ```
 
+---
+
+## Entity — Freezed (only when needed)
+
+Use only for sealed unions, many variants, or when generated `copyWith` / equality is clearly worth the cost. **Never** place `@freezed` in a single file directly under `entity/`.
+
+Path: `domain/entity/<entity_snake_name>/<entity_snake_name>.dart` plus generated `part`:
+
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part '<entity_snake_name>.freezed.dart';
+
+@freezed
+class <Name> with _$<Name> {
+  const factory <Name>({
+    required String id,
+    required String title,
+    @Default(false) bool done,
+  }) = _<Name>;
+}
+```
+
+Run `dart run build_runner build -d` so `<entity_snake_name>.freezed.dart` is generated next to the main file.
+
+**`build.yaml` (project root)** sets Freezed `from_json`, `to_json`, `when`, and `map` to **`false`**. Do not add **`@JsonSerializable`**, **`json_annotation`**, or Freezed **`.fromJson`/`.toJson`** on entities. Do not call **`.map`** or **`.when`** on Freezed types — use **`switch`** / pattern matching. Put **`fromJson`/`toJson`** only on **`data/models`** classes.
+
 ### Entity rules
 | ✅ Do | ❌ Never |
 |-------|---------|
-| Extends `Equatable`, declares `props` | Add `Entity` suffix to class or file name |
-| Pure Dart — no Flutter, no JSON | Use `@freezed` / `freezed_annotation` |
-| Prefix file with feature name | Add `fromJson` / `toJson` |
-| Keep in `domain/entity/` | Import from `data/` layer |
+| Default: `Equatable` + `props`, or enum | Add `Entity` suffix to class or file name |
+| Freezed only with subfolder `entity/<entity_snake_name>/` | `@freezed` on a file directly in `entity/` (no subfolder) |
+| Pure Dart — no Flutter; JSON only in models | `json_annotation`, `@JsonSerializable`, entity `fromJson` / `toJson`, or `.map`/`.when` on Freezed |
+| File layout per `model-entity-separation.mdc` | Import from `data/` layer |
 
 ---
 
 ## Model — `data/models/<feature>_<name>_model.dart`
 
 Create only when the entity is received from or sent to an API.
+
+Import the entity from its real path — flat `entity/<feature>_<name>.dart` or `entity/<entity_snake_name>/<entity_snake_name>.dart` when Freezed.
 
 ```dart
 import 'package:json_annotation/json_annotation.dart';
@@ -146,10 +181,10 @@ Verify `<feature>_<name>_model.g.dart` is generated in `data/models/`.
 
 ## Checklist
 
-- [ ] Entity in `domain/entity/`, file prefixed with feature name
-- [ ] Entity extends `Equatable` with `props` list (or is an enum)
+- [ ] Entity under `domain/entity/` — Equatable or enum in a single file, or Freezed only in `entity/<snake_name>/` with `part`
+- [ ] Equatable entities: `props` defined; enums: N/A; Freezed: generated `*.freezed.dart` present after build_runner
 - [ ] No `Entity` suffix on class or file name
-- [ ] No `@freezed`, no `fromJson`, no `toJson` on entity
+- [ ] No `fromJson` / `toJson` on entity; `@freezed` only if justified and only under `entity/<snake_name>/` with `part`
 - [ ] Model in `data/models/`, file prefixed with feature name, suffix `_model.dart`
 - [ ] Model **extends** the entity class — not a standalone class
 - [ ] Model has `fromJson`, `toJson`, and `fromEntity()` constructor

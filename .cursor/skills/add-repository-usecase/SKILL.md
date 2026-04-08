@@ -57,7 +57,7 @@ Event name format: `<method_name>_use_case_success` / `<method_name>_use_case_fa
 
 ## Step 3 — UseCase
 
-File: `lib/src/features/<feature>/domain/usecases/<feature>_<method>_use_case.dart`
+File: `lib/src/features/<feature>/domain/usecases/<verb>_<noun>_use_case.dart` (no feature prefix in the file name — e.g. `get_app_theme_mode_use_case.dart`)
 
 **No parameters (`NoParams`):**
 ```dart
@@ -111,7 +111,7 @@ class <MethodName>Params {
 
 Naming rules:
 - Class: `<MethodName>UseCase` — suffix is `UseCase` (capital C), never `Usecase`
-- File: `<feature>_<method>_use_case.dart` — two words `use_case` (never `usecase`)
+- File: snake_case of the action, ending in `_use_case.dart` — never `usecase` as one word; do not repeat the feature slug in the filename
 
 ---
 

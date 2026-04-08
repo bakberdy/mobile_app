@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/error/error.dart';
 import 'package:mobile_app/src/core/network/network_info.dart';
 import 'package:mobile_app/src/core/utils/typedef.dart';
-import 'package:mobile_app/src/features/user_config/consts/local_storage_consts.dart';
+import 'package:mobile_app/src/features/user_config/configs/local_storage_consts.dart';
 import 'package:mobile_app/src/features/user_config/data/datasource/user_config_local_data_source.dart';
 import 'package:mobile_app/src/features/user_config/data/datasource/user_config_remote_data_source.dart';
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';

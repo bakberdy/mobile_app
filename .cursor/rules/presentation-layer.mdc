@@ -19,6 +19,7 @@ Shared rules for every file under `presentation/`. This rule keeps only cross-cu
 - `presentation-bloc.mdc` for `presentation/bloc/`
 - `presentation-screens.mdc` for `presentation/screens/`
 - `presentation-widgets.mdc` for `presentation/widgets/`
+- Optional `presentation/theme/` (or similar) for app-wide presentation helpers scoped to the feature, e.g. `InheritedWidget` / theme bridges (`user_config` uses `app_theme_scope.dart`)
 - `presentation-components.mdc` for shared presentation primitives and failure UI
 - `core.mdc` for shared context extension conventions
 

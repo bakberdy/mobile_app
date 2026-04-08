@@ -9,14 +9,25 @@ alwaysApply: false
 ## Imports
 - ❌ NO `flutter/` imports — domain is pure Dart
 - ❌ NO imports from any feature's `data/` layer
-- ✅ Only: `dart:*`, `dartz`, `injectable`, `equatable`, own `core/` (error, usecases, monitoring/analytics)
-- ❌ NO `freezed_annotation` on domain classes — use `Equatable` instead
+- ✅ Default: `dart:*`, `dartz`, `injectable`, `equatable`, own `core/` (error, usecases, monitoring/analytics)
+- `freezed_annotation` is allowed **only** for entities that use Freezed under the folder rule in `model-entity-separation.mdc` (not for use cases, repositories, or flat files in `entity/`)
+- Freezed entities must follow **`build.yaml`**: no Freezed **`fromJson`/`toJson`**, no **`.map`/`.when`** — see `model-entity-separation.mdc`
 
 ## File naming
-All files inside a feature MUST be prefixed with the **feature name**. Domain classes have **no `Entity` suffix** — on the class name or the file name.
+Domain classes have **no `Entity` suffix** on the class name or file name.
 
-- ✅ `user_config_repository.dart`, `user_config_get_app_theme_mode_use_case.dart`, `routes_route.dart`, `routes_route_type.dart`
-- ❌ `repository.dart`, `get_app_theme_mode.dart`, `routes_route_entity.dart`, `RouteEntity`
+**Repository and analytics** — file name uses the feature prefix (the contract is feature-owned):
+- ✅ `user_config_repository.dart`, `user_config_events.dart`, `routes_route.dart` (routes feature)
+- ❌ `repository.dart`, `events.dart`
+
+**Use cases** — one file per use case under `domain/usecases/`. File name is **snake_case from the class**, without repeating the feature prefix (the feature folder already scopes imports):
+- ✅ `get_app_theme_mode_use_case.dart`, `set_theme_use_case.dart`, `get_locale_use_case.dart`
+- ❌ `user_config_get_app_theme_mode_use_case.dart` (redundant), `get_theme.dart` (missing `_use_case` suffix)
+
+**Entities** — under `domain/entity/`. Prefer `Equatable` (or enums). Use **Freezed** only when it clearly helps (e.g. sealed unions, many immutable variants). If you use Freezed, the entity **must** live in its own subfolder — see `model-entity-separation.mdc`. Otherwise prefer a clear file name; use a feature prefix when the same concept could exist in multiple features:
+- ✅ `app_theme_mode.dart` (`AppThemeMode` enum), `routes_route.dart` (`Route`)
+- ✅ `domain/entity/example_todo/example_todo.dart` (`@freezed` + `part` + generated file in that folder)
+- ❌ `routes_route_entity.dart`, `AppThemeModeEntity`, `@freezed` directly as `entity/foo.dart` (no subfolder)
 
 Class naming:
 - ✅ `Route`, `RouteType`, `AppThemeMode`, `GetRouteRequestParameters`
@@ -26,9 +37,8 @@ Class naming:
 Class must end with `UseCase` (not `Usecase`). File must end with `_use_case.dart` (not `_usecase.dart`).
 
 ```dart
-// ❌ BAD — current violation in user_config
+// ❌ BAD
 class GetAppThemeModeUsecase ...          // file: get_app_theme_mode_usecase.dart
-class GetLocaleUsecase ...                // file: get_locale_usecase.dart
 
 // ✅ GOOD
 class GetAppThemeModeUseCase ...          // file: get_app_theme_mode_use_case.dart

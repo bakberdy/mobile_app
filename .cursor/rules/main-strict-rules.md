@@ -24,8 +24,10 @@ This project follows **Clean Architecture** with strict layer isolation. Detaile
 - BLoC never calls `Analytics.track(...)` — only UseCases do
 
 ### Model vs Domain class
-- Domain classes (`domain/entity/`) — `Equatable`, no Freezed, no JSON, **no `Entity` suffix**
-  - ✅ `Route`, `RouteType` extends `Equatable` — ❌ `RouteEntity`, `@freezed class Route`
+- Domain classes (`domain/entity/`) — default **`Equatable`** (or enums), no JSON, **no `Entity` suffix**
+  - **Freezed** only when it clearly helps (unions, heavy `copyWith`); then **`domain/entity/<snake_name>/<snake_name>.dart`** + `part '*.freezed.dart'` — ❌ `@freezed` as a single file directly under `entity/`
+  - **`build.yaml`** disables Freezed **`from_json` / `to_json` / `map` / `when`** — no JSON on Freezed domain types; no **`.map`/`.when`**; use **`data/models`** + Dart **`switch`**
+  - ✅ `Route` extends `Equatable` — ❌ `RouteEntity`
 - Models (`data/models/`) — extend domain class, `@JsonSerializable`, no Freezed
   - `RouteModel extends Route` — model IS the domain class (no `toEntity()` needed)
   - `fromEntity()` named constructor lives inside the model (for write-back to API)
@@ -44,7 +46,7 @@ This project follows **Clean Architecture** with strict layer isolation. Detaile
 
 ### BLoC
 - Always `Bloc<Event, State>` — **never** `Cubit`
-- Use `bloc_concurrency` transformers for async events
+- Use `bloc_concurrency` **only** when overlapping async work can race (search, refresh spam, cancel tokens, ordered writes); **simple** BLoCs may omit transformers
 - Global errors use `StateStatus.error(Failure)` — never a raw `String? errorMessage` on state
 - Input fields use `FieldState<T>` — never `TextEditingController`
 - Screen = wrapper (`@RoutePage`, provides BLoC) + `_ScreenContent` (all UI) — both in one file

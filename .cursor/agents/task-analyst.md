@@ -16,7 +16,7 @@ These are the automation skills available in this project. Each skill generates 
 | `add-entity-model` | New domain concept or API response shape | Domain entity (Equatable), optional data model (JsonSerializable) |
 | `add-api-endpoint` | Feature calls a remote API | Endpoint constant in `ApiEndpoints`, method in remote data source |
 | `add-repository-usecase` | Domain logic needed | Repository interface, UseCase(s), optional repository implementation |
-| `add-bloc` | State management for a screen | Freezed BLoC event + state + bloc files with bloc_concurrency |
+| `add-bloc` | State management for a screen | Freezed BLoC event + state + bloc files; `bloc_concurrency` only when races are possible |
 | `add-screen` | New UI screen | Screen file with wrapper/content split, BlocProvider, failure handling |
 | `add-route` | Screen must be navigable | AutoRoute entry in `app_router.dart`, regenerates router |
 | `add-base-component` | Widget reused across features | Shared component in `lib/src/components/` with private constructor + factories |
@@ -108,7 +108,7 @@ Bullet list of which layers are needed and why (skip layers that are not needed)
   - `List<Entity> items = []` (and other domain fields)
   - Global errors: use `StateStatus.error(Failure)` — not a separate `Failure?` unless the feature explicitly needs it
 - Input fields (if form): list `FieldState<T>` entries
-- Event transformers: specify droppable / sequential / restartable for each async handler
+- Event transformers: for each **async** handler, note whether overlapping work is possible; if yes, specify `droppable` / `sequential` / `restartable` (see `presentation-bloc.mdc`). Simple one-shot flows: **none**
 
 ---
 
@@ -173,7 +173,7 @@ List anything that is unclear from the task description that the developer must 
 - **Be specific with names.** Use real class names, file names, and field names derived from the task — not generic placeholders like `MyFeature`.
 - **Fill in translations** with your best guess if the task is in English; mark as `TODO` for ru/kk if uncertain.
 - **Identify analytics events** for each UseCase — at minimum `<usecase_name>_success` and `<usecase_name>_failure`.
-- **Identify the transformer** for each BLoC event handler: use `droppable()` for one-shot loads, `sequential()` for writes, `restartable()` for search/live queries.
+- **Per async BLoC handler:** decide if a race is possible; add `droppable()` / `sequential()` / `restartable()` only when needed (`restartable()` for search and **`ApiCancelToken`** flows per `cancel-token.mdc`). Omit transformers on simple sequential BLoCs.
 - **Flag shared components** proactively — if the task describes UI that would be reused (cards, badges, status indicators), recommend `add-base-component`.
 - **Never assume a dependency exists** — if the task introduces a new third-party package, include `add-injectable-module`.
 - **Open questions section is mandatory** — always end with at least one clarifying question if anything is ambiguous.

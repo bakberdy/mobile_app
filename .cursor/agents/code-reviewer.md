@@ -42,12 +42,15 @@ Determine the layer from the file path, then apply the corresponding rules below
 
 - ❌ Class name has `Entity` suffix → CRITICAL
 - ❌ File name has `entity` suffix (e.g. `route_entity.dart`) → CRITICAL
-- ❌ `@freezed` or `freezed_annotation` import present → CRITICAL
+- ❌ `@freezed` or `freezed_annotation` in a file that is **not** inside `domain/entity/<snake_name>/<snake_name>.dart` (with matching `part '<snake_name>.freezed.dart'`) → CRITICAL  
+  (Freezed is allowed only in that subfolder layout; see `model-entity-separation.mdc`.)
 - ❌ `fromJson` / `toJson` present → CRITICAL
+- ❌ `json_annotation` import or `@JsonSerializable` in `domain/entity/` → CRITICAL (JSON belongs in `data/models`; Freezed JSON is disabled in `build.yaml`)
+- ❌ Freezed **`.map(`** or **`.when(`** used as the Freezed API on domain entities → CRITICAL (not generated — see `build.yaml` / `model-entity-separation.mdc`; use `switch`)
 - ❌ Flutter import present → CRITICAL
-- ❌ Does not extend `Equatable` (for data classes) and has no `props` → CRITICAL
+- ❌ Data class neither extends `Equatable` with `props` nor is a valid `@freezed` entity in `entity/<snake_name>/` (enums exempt) → CRITICAL
 - ❌ Imports from any `data/` layer → CRITICAL
-- File must be prefixed with feature name → CRITICAL if missing
+- ❌ Non-Freezed entity file naming violates `domain-layer.mdc` (feature-prefixed or distinctive basename) → CRITICAL
 
 ---
 
@@ -120,8 +123,10 @@ Determine the layer from the file path, then apply the corresponding rules below
 
 - ❌ Extends `Cubit` → CRITICAL
 - ❌ `@Injectable()` annotation missing or wrong (must not be `@LazySingleton`) → CRITICAL
-- ❌ Async `on<Event>` handler missing `transformer:` (droppable / sequential / restartable) → CRITICAL
+- ❌ **Race-prone** async `on<Event>` (overlapping same handler, search-as-you-type, parallel list refresh, or **`ApiCancelToken`** / new request invalidates previous) **without** `transformer:` (`droppable` / `sequential` / `restartable` as appropriate) → CRITICAL
+- Simple sequential async (e.g. one `Started` load, no overlapping events) **without** `transformer:` → ✅ PASS (see `presentation-bloc.mdc`)
 - ❌ Events not using `@freezed sealed class` → CRITICAL
+- ❌ Freezed **`.map(`** or **`.when(`** on event/state types, or Freezed JSON on BLoC types → CRITICAL (`build.yaml` disables these; use `switch` — see `presentation-bloc.mdc`)
 - ❌ State uses `String? errorMessage` for global errors instead of `StateStatus.error(Failure)` (or `FieldState` for inline) → CRITICAL
 - ❌ State uses `TextEditingController` → CRITICAL
 - ❌ `Analytics.track(...)` present → CRITICAL
@@ -129,7 +134,7 @@ Determine the layer from the file path, then apply the corresponding rules below
 - ❌ `ApiCancelToken` placed in Freezed state (must be a BLoC field) → CRITICAL
 - ❌ `close()` not overridden when `_cancelToken` is present → CRITICAL
 - ❌ `FailureType.silent` fold branch not present when cancel token is used → CRITICAL
-- ❌ Files not prefixed with feature name → CRITICAL
+- ❌ Topic folder layout violated (`presentation/bloc/<topic>_bloc/` with `part` / `part of`) → CRITICAL
 - Event file must be `part of` the bloc file → CRITICAL if separate import
 
 ---
@@ -186,7 +191,6 @@ Determine the layer from the file path, then apply the corresponding rules below
 
 The following violations exist in the current codebase and are tracked as tech debt. Flag them as 🟡 WARNING so they are visible but not blocking:
 
-- `theme_bloc.dart`, `locale_bloc.dart`: async handlers missing `bloc_concurrency` transformers
-- `theme_bloc.dart`, `locale_bloc.dart`: file names missing feature prefix (`user_config_`)
 - `user_config_example_screen.dart`: missing wrapper/content split, uses raw buttons, has hardcoded strings
-- UseCase files in `user_config`: use `Usecase` suffix instead of `UseCase`, and `_usecase.dart` instead of `_use_case.dart`
+
+BLoC files under `presentation/bloc/<topic>_bloc/<topic>_bloc.dart` intentionally omit the feature prefix in the filename; the feature folder provides scope.

@@ -16,8 +16,8 @@ This project uses `injectable` + `get_it`. All wiring is code-generated into `li
 |-------|-----------|-----------|
 | **BLoC** | `@Injectable()` | Factory — new instance every time |
 | **UseCase** | `@LazySingleton()` | Created on first use, shared |
-| **Repository impl** | `@LazySingleton(as: RepoInterface)` | Created on first use; `as:` binds impl to interface |
-| **Data source impl** | `@LazySingleton(as: DataSourceInterface)` | Created on first use; `as:` binds impl to interface |
+| **Repository impl** | `@LazySingleton(as: RepoInterface)` or `@Singleton(as: RepoInterface)` | Prefer lazy; `user_config` uses `@Singleton` alongside its data sources |
+| **Data source impl** | `@LazySingleton(as: DataSourceInterface)` or `@Singleton(as: DataSourceInterface)` | Match lifecycle with sibling repository when needed |
 | **External / platform deps** | `@module` in `AppModule` | Declared explicitly |
 
 Default to `@LazySingleton` for everything except BLoCs. Only use `@singleton` (eager) in `AppModule` when a dependency must be ready before anything else (e.g. `SharedPreferences` with `@preResolve`).
@@ -31,15 +31,15 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> { ... }
 @LazySingleton()
 class GetAppThemeModeUseCase extends UseCase<AppThemeMode?, NoParams> { ... }
 
-// ✅ GOOD — Repository impl bound to its interface
-@LazySingleton(as: UserConfigRepository)
+// ✅ GOOD — Repository impl bound to its interface (@LazySingleton is default; @Singleton when matching other eager deps)
+@Singleton(as: UserConfigRepository)
 class UserConfigRepositoryImpl implements UserConfigRepository { ... }
 
 // ✅ GOOD — Data source impl bound to its interface
-@LazySingleton(as: UserConfigLocalDataSource)
+@Singleton(as: UserConfigLocalDataSource)
 class UserConfigLocalDataSourceImpl implements UserConfigLocalDataSource { ... }
 
-// ❌ BAD — BLoC as singleton: all screens share the same stale instance
+// ❌ BAD — BLoC as @LazySingleton or @Singleton: all screens share one stale instance
 @LazySingleton()
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> { ... }
 

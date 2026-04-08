@@ -8,6 +8,8 @@ alwaysApply: false
 
 Use `ApiCancelToken` (`core/api/models/api_cancel_token.dart`) for any request that is slow, large, or user-interruptible: search queries, file uploads/downloads, paginated fetches, map/media data.
 
+Overlapping requests and cancellation make this **race-prone**. The BLoC handler that dispatches token-backed calls **must** use `restartable()` from `bloc_concurrency` (this overrides the “simple BLoC may omit transformers” rule in `presentation-bloc.mdc`).
+
 ## Data source
 Add `ApiCancelToken? cancelToken` as a named optional parameter and forward it to `ApiClient`:
 

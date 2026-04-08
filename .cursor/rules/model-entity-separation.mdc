@@ -1,5 +1,5 @@
 ---
-description: Model vs Entity separation: entities use Equatable (no Freezed), models extend entities and use json_serializable (no Freezed).
+description: Model vs Entity separation: entities default to Equatable; optional Freezed only under entity/<name>/ and aligned with build.yaml (no Freezed fromJson/toJson/map/when); models use json_serializable (no Freezed).
 globs: lib/src/features/**/*.dart
 alwaysApply: false
 ---
@@ -7,7 +7,8 @@ alwaysApply: false
 # Model vs Entity Separation
 
 ## Core principle
-- **Domain class** → `domain/entity/`, plain Dart + `Equatable`, no JSON, no Freezed, no suffix
+- **Domain class** → `domain/entity/`, plain Dart, **no JSON**, no `Entity` suffix — default **`Equatable`** (or enums)
+- **Freezed on entities** → only when justified (see below); **must** use `domain/entity/<entity_snake_name>/` with the main file + `part '*.freezed.dart'` inside that folder — never a lone `@freezed` file directly under `entity/`
 - **Model** → `data/models/<model_name>/`, extends domain class, `@JsonSerializable`, no Freezed
 
 The domain never knows how data is serialized.
@@ -27,11 +28,52 @@ lib/src/features/routes/
         routes_route_model.dart  ← @JsonSerializable class RouteModel extends Route
 ```
 
-- Domain class file: `<feature_name>_<name>.dart` — class `<Name>` (no suffix)
+```
+lib/src/features/user_config/
+  domain/
+    entity/
+      app_theme_mode.dart        ← enum AppThemeMode (distinct type name; feature folder scopes it)
+```
+
+```
+lib/src/features/<feature>/
+  domain/
+    entity/
+      example_todo/
+        example_todo.dart        ← @freezed class ExampleTodo with _$ExampleTodo; part 'example_todo.freezed.dart';
+        example_todo.freezed.dart
+```
+
+- **Equatable entity** (default): single file — prefer `<feature_name>_<name>.dart` when the concept name could collide across features; otherwise a distinctive name such as `app_theme_mode.dart`.
+- **Freezed entity** (exception): folder `entity/<entity_snake_name>/` where `<entity_snake_name>` matches the primary Dart basename (e.g. `ExampleTodo` → `example_todo/` and `example_todo.dart`). Keep generated `*.freezed.dart` next to the main file in that folder.
+- Class `<Name>` (no `Entity` suffix)
 - Model folder: `data/models/<feature_name>_<name>_model/`
 - Model file: `data/models/<feature_name>_<name>_model/<feature_name>_<name>_model.dart` — class `<Name>Model`
 
-## Domain class — Equatable, no Freezed, no JSON
+## When to use Freezed on an entity
+Prefer **`Equatable`** for ordinary immutable data classes. Use **`@freezed`** only when there is a concrete benefit, for example:
+- A **union** of variants where **`copyWith`**, canonical **equality**, and **pattern matching** (`switch` / `case`) are enough
+- **Many** fields where generated `copyWith` / equality reduces noise and mistakes
+
+If none of that applies, use `Equatable`. **Do not** put `@freezed` on `data/models` classes — models stay `json_serializable` only.
+
+## Freezed must match `build.yaml` (no JSON, no `map` / `when`)
+The project root **`build.yaml`** configures the Freezed builder with:
+
+- `from_json: false`
+- `to_json: false`
+- `when: false`
+- `map: false`
+
+Therefore:
+
+- ❌ Never add **`fromJson` / `toJson`**, **`@JsonSerializable`**, or **`json_annotation`** on domain Freezed entities — wire JSON only in **`data/models`** via `RouteModel`-style classes.
+- ❌ Never call **`.map`** or **`.when`** on Freezed domain types — those members are **not generated**. Use Dart **`switch`** (including exhaustiveness on sealed variants), **`if` / `is`**, or small hand-written helpers instead.
+- Keep **`build.yaml`** as the single source of truth for these flags — do not re-enable Freezed JSON or `map`/`when` generation to push serialization into domain or BLoC types.
+
+BLoC event/state Freezed types use the same `build.yaml` settings: no Freezed **`fromJson`/`toJson`**, and no **`.map`/`.when`** — use **`switch`** on concrete event/state subclasses, `copyWith`, and equality helpers instead.
+
+## Domain class — default: Equatable, no JSON
 
 ```dart
 // ✅ GOOD — lib/src/features/routes/domain/entity/routes_route.dart
@@ -63,7 +105,24 @@ class RouteEntity extends Equatable { ... }  // Entity suffix
 class Route {                                 // No Equatable — equality broken
   @override bool operator ==(Object other) => ...  // manual equality, skip Equatable
 
-@freezed abstract class Route with _$Route { ... } // Freezed on entity — forbidden
+// ❌ BAD — Freezed at entity root without a subfolder
+// lib/.../domain/entity/routes_route.dart:
+// @freezed abstract class Route with _$Route { ... }
+
+// ✅ GOOD — Freezed only under entity/<snake_name>/
+// lib/.../domain/entity/example_todo/example_todo.dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'example_todo.freezed.dart';
+
+@freezed
+class ExampleTodo with _$ExampleTodo {
+  const factory ExampleTodo({
+    required String id,
+    required String title,
+    @Default(false) bool done,
+  }) = _ExampleTodo;
+}
 ```
 
 ## Data Model — extends domain class, json_serializable, no Freezed
@@ -124,12 +183,13 @@ Use `RouteModel.fromEntity(route)` when serializing a domain object for a write 
 
 | Rule | Domain class | Model |
 |------|-------------|-------|
-| Location | `domain/entity/` | `data/models/<feature_name>_<name>_model/` |
+| Location | `domain/entity/` (Freezed: `domain/entity/<snake_name>/`) | `data/models/<feature_name>_<name>_model/` |
 | Class suffix | ❌ None (no `Entity`) | ✅ `Model` |
-| Extends | `Equatable` | Domain class (e.g. `Route`) |
-| Freezed | ❌ Never | ❌ Never |
-| `Equatable` + `props` | ✅ Always | inherited from domain class |
-| `fromJson` / `toJson` | ❌ Never | ✅ Always |
+| Extends | `Equatable` (default) or `@freezed` in subfolder only | Domain class (e.g. `Route`) |
+| Freezed | ✅ Only when needed; only inside `entity/<snake_name>/` with `part '*.freezed.dart'` | ❌ Never |
+| `Equatable` + `props` | ✅ Default for non-enum data classes; skip if using `@freezed` in subfolder | inherited from domain class |
+| `fromJson` / `toJson` | ❌ Never (including Freezed + JSON — disabled in `build.yaml`) | ✅ Always (model only) |
+| Freezed `.map` / `.when` | ❌ Not generated (`build.yaml`) — do not use | — |
 | `@JsonKey` | ❌ Never | ✅ Allowed |
 | `fromEntity()` constructor | ❌ Never | ✅ Named constructor inside model |
 | `toEntity()` method | not needed — model IS domain class | — |

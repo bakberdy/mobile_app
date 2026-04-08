@@ -11,26 +11,50 @@ Rules for files inside `presentation/bloc/`. This rule defines how feature BLoCs
 
 ## Responsibilities
 - Use `Bloc<Event, State>`, never `Cubit`.
-- Keep this folder limited to bloc, event, and state files.
+- Keep this folder limited to bloc, event, and state files (one **topic** per subfolder — see layout below).
 - Keep bloc, event, and state in separate files.
 - Connect split files with `part` in the bloc file and `part of` in the event and state files.
-- Declare generated parts such as `part 'feature_name_bloc.freezed.dart';` in the bloc file.
+- Declare generated parts such as `part '<topic>_bloc.freezed.dart';` in the bloc file.
 - Keep shared imports in the bloc file when using `part` / `part of`.
 - Use `@freezed sealed class` for events and states.
+- Root **`build.yaml`** disables Freezed **`from_json` / `to_json` / `map` / `when`** — do not use Freezed **JSON** or **`.map`/`.when`** on event/state types; branch with **`switch`** / concrete subclasses and use **`copyWith`** where needed (same policy as `model-entity-separation.mdc`).
 - Use named event factories such as `ExampleEvent.started()`.
-- Add a `bloc_concurrency` transformer to every async `on<...>()` handler.
-- Import only from `flutter_bloc`, `bloc_concurrency`, `injectable`, `freezed_annotation`, `core/bloc/`, and the same feature's `domain/`.
+- Use **`bloc_concurrency`** transformers **only when** an async handler can **overlap** with itself or another handler such that **out-of-order completion** or **duplicate work** would break UX or state (see below). **Simple** BLoCs (one-shot load on start, rare sequential user actions, no overlapping requests) may register async handlers **without** a transformer — do not add `droppable` / `sequential` / `restartable` “by default.”
+- Import **`bloc_concurrency`** only in files that actually pass a `transformer:` to `on<...>()`.
+- Import only from `flutter_bloc`, `injectable`, `freezed_annotation`, `core/bloc/`, and the same feature's `domain/`, plus `bloc_concurrency` when used.
 - Model async flow with `StateStatus`; put screen-level errors on `StateStatus.error(Failure)` (no parallel `Failure?` on state unless a feature explicitly needs it).
 - Use `FieldState<T>` for editable fields.
 - Map `FailureType.inlineError` to the matching `FieldState` instead of `StateStatus.error`.
-- Prefix file names with the feature name.
 - Follow `presentation-layer.mdc` for shared naming and cross-presentation boundaries.
 
+## `bloc_concurrency` — when it is needed
+
+| Situation | Typical transformer |
+|-----------|---------------------|
+| User can fire the **same** async event **again** before the previous run finishes (refresh button, pull-to-refresh spam) | `droppable()` |
+| **Search / debounced input** — only the latest query should win | `restartable()` |
+| **Writes** that must not interleave (save, submit in order) | `sequential()` |
+| **`ApiCancelToken`** — new request cancels the previous | `restartable()` (see `cancel-token.mdc`) |
+| **Single** `Started` load, theme/locale toggles that are effectively sequential, no overlapping calls | **None** — omit `transformer:` |
+
+If you are unsure, default to **no** transformer until a real overlap appears; add one when you observe races or flaky ordering.
+
+## Folder and file layout
+Place each BLoC in its own subfolder named `<topic>_bloc/`. File names use the **topic** (not the feature prefix — the feature path already scopes the code):
+
+```
+presentation/bloc/theme_bloc/
+  theme_bloc.dart      ← class ThemeBloc, part declarations
+  theme_event.dart
+  theme_state.dart
+  theme_bloc.freezed.dart   ← generated
+```
+
 ## Green Flags
-- `user_config_theme_bloc.dart`, `user_config_theme_event.dart`, and `user_config_theme_state.dart` live as separate files in the bloc folder.
+- `presentation/bloc/theme_bloc/theme_bloc.dart`, `theme_event.dart`, and `theme_state.dart` (same for `locale_bloc/`, etc.).
 - The bloc file owns `part` declarations and shared imports.
 - Events and states are Freezed sealed classes with named factories.
-- Async handlers use the right `bloc_concurrency` transformer.
+- Async handlers use a `bloc_concurrency` transformer **only** where overlapping async work is plausible; simple flows omit it.
 - State uses `StateStatus`, and `FieldState<T>` where needed; failures for global UI use the `Failure` inside `StateStatus.error`.
 
 ## Red Flags
@@ -39,7 +63,7 @@ Rules for files inside `presentation/bloc/`. This rule defines how feature BLoCs
 - Declaring Freezed generated parts in the wrong file or scattering imports across split files without need.
 - Putting business logic, analytics, repository implementation details, or data-layer imports in BLoC files.
 - Writing manual event/state classes instead of Freezed sealed classes.
-- Registering async handlers without a concurrency transformer.
+- Adding `transformer:` on every async handler regardless of need, or **omitting** it on a clearly race-prone handler (overlapping loads, search-as-you-type, token-cancelled requests).
 - Using `String? errorMessage` instead of typed `Failure` on `StateStatus.error` or `FieldState.error`.
 - Surfacing inline validation failures as top-level screen errors.
-- Naming files generically like `bloc.dart`, `state.dart`, or `theme_bloc.dart`.
+- Naming files generically like `bloc.dart`, `state.dart`, or flattening all topics into `presentation/bloc/` without a per-topic folder.

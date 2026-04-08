@@ -17,13 +17,18 @@ Files must be prefixed with the feature name:
 - ✅ `user_config_repository_impl.dart`, `user_config_local_data_source.dart`, `routes_route_model.dart`
 - ❌ `repository_impl.dart`, `local_data_source.dart`, `route_model.dart`
 
-Data layer folder layout:
+Feature-level folder layout (data plus feature-scoped constants):
+
 ```
-data/
-  datasource/   ← local & remote data sources
-  models/       ← JSON model folders (e.g. `models/routes_route_model/routes_route_model.dart`)
-  repository/   ← repository implementations
+lib/src/features/<feature>/
+  configs/          ← optional: `api_endpoints.dart`, storage key classes (e.g. `local_storage_consts.dart`), no Flutter imports
+  data/
+    datasource/     ← local & remote data sources
+    models/         ← JSON model folders (e.g. `models/routes_route_model/routes_route_model.dart`)
+    repository/     ← repository implementations
 ```
+
+`configs/` holds strings and constants used by data sources or repositories (endpoints, SharedPreferences keys). Keep it free of business logic and Flutter UI imports.
 
 Models MUST NOT be imported by domain or presentation. Only the repository uses them.
 See `model-entity-separation.mdc` for the full model/entity rule.
@@ -37,34 +42,29 @@ It automatically maps `ApiException` → `Failure.api`, `FormatException`/`TypeE
 Never construct `Failure.*` variants manually in a catch block.
 
 ```dart
-// ✅ GOOD — user_config repository impl
-@LazySingleton(as: UserConfigRepository)
+// ✅ GOOD — user_config-style repository impl (local + remote, feature configs)
+@Singleton(as: UserConfigRepository)
 class UserConfigRepositoryImpl implements UserConfigRepository {
-  final UserConfigLocalDataSource _local;
-  UserConfigRepositoryImpl(this._local);
+  final UserConfigLocalDataSource _localDataSource;
+  final UserConfigRemoteDataSource _remoteDataSource;
+  final NetworkInfo _networkInfo;
+
+  UserConfigRepositoryImpl(this._localDataSource, this._remoteDataSource, this._networkInfo);
 
   @override
   FutureEither<AppThemeMode?> getAppThemeMode() async {
     try {
-      final raw = await _local.getUserConfig(key: UserConfigConsts.themeKey);
-      final mode = raw != null ? AppThemeMode.values.byName(raw) : null;
-      return Right(mode);
+      final key = LocalStorageConsts.themeModeKey;
+      final raw = await _localDataSource.getUserConfig(key: key);
+      return Right(AppThemeMode.fromString(raw));
     } on Exception catch (e) {
-      return Left(e.toFailure(source: '$runtimeType'));
-    }
-  }
-
-  @override
-  FutureEither<void> setTheme(AppThemeMode themeMode) async {
-    try {
-      await _local.setUserConfig(key: UserConfigConsts.themeKey, value: themeMode.name);
-      return const Right(null);
-    } on Exception catch (e) {
-      return Left(e.toFailure(source: '$runtimeType'));
+      return Left(e.toFailure(source: '$runtimeType.getAppThemeMode'));
     }
   }
 }
+```
 
+```dart
 // ❌ BAD — manually constructing Failure variants
 } catch (e) {
   return Left(Failure.base(source: '$runtimeType', message: e.toString()));
@@ -73,7 +73,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
 // ❌ BAD — exception thrown in data source escapes to domain/BLoC
 void _ensureSupportedValue(Object? value) {
   if (value is! String && value is! int) {
-    throw Exception('Unsupported type'); // raw exception, never caught
+    throw Exception('Unsupported type');
   }
 }
 ```

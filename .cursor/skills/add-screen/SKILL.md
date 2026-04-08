@@ -38,7 +38,7 @@ import 'package:<package>/src/core/utils/extensions/context_x.dart';
 import 'package:<package>/src/components/buttons/base_filled_button.dart';
 import 'package:<package>/src/components/dialogs/base_snackbar.dart';
 import 'package:<package>/src/components/dialogs/base_dialog.dart';
-import 'package:<package>/src/features/<feature>/presentation/bloc/<topic>_bloc/<feature>_<topic>_bloc.dart';
+import 'package:<package>/src/features/<feature>/presentation/bloc/<topic>_bloc/<topic>_bloc.dart';
 
 @RoutePage()
 class <Name>Screen extends StatelessWidget {

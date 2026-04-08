@@ -9,12 +9,14 @@ description: Adds a new API endpoint constant to a feature's ApiEndpoints class 
 
 | File | Purpose |
 |------|---------|
-| `lib/src/features/<feature>/consts/api_endpoints.dart` | Endpoint URL constant |
+| `lib/src/features/<feature>/configs/api_endpoints.dart` | Endpoint URL constants (`ApiEndpoints` class) |
 | `lib/src/features/<feature>/data/datasource/<feature>_remote_data_source.dart` | Abstract method + implementation |
+
+Older features may use `consts/api_endpoints.dart` — prefer `configs/` for new work (matches `user_config`).
 
 ## Step 1 — Add the endpoint constant
 
-Open `<feature>/consts/api_endpoints.dart` and add a `static const String` to `ApiEndpoints`:
+Open `<feature>/configs/api_endpoints.dart` and add a `static const String` to `ApiEndpoints`:
 
 ```dart
 class ApiEndpoints {

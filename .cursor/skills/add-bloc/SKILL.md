@@ -1,6 +1,6 @@
 ---
 name: add-bloc
-description: Creates a BLoC (event, state, bloc files) for a feature's presentation layer using Freezed, bloc_concurrency, injectable, and the wrapper/content screen split. Use when the user wants to add a BLoC, event, state, or presentation layer for a feature after the domain layer is ready.
+description: Creates a BLoC (event, state, bloc files) for a feature's presentation layer using Freezed, injectable, optional bloc_concurrency when races are possible, and the wrapper/content screen split. Use when the user wants to add a BLoC, event, state, or presentation layer for a feature after the domain layer is ready.
 ---
 
 # Add BLoC
@@ -16,20 +16,21 @@ description: Creates a BLoC (event, state, bloc files) for a feature's presentat
 
 ## Directory layout
 
+Reference: `user_config` uses `theme_bloc/`, `locale_bloc/`, etc.
+
 ```
 lib/src/features/<feature>/presentation/bloc/<topic>_bloc/
-  <feature>_<topic>_bloc.dart     ← main file (parts + class)
-  <feature>_<topic>_event.dart    ← part of bloc
-  <feature>_<topic>_state.dart    ← part of bloc
-  <feature>_<topic>_bloc.freezed.dart  ← generated, never edit
+  <topic>_bloc.dart           ← main file (parts + class)
+  <topic>_event.dart          ← part of bloc
+  <topic>_state.dart          ← part of bloc
+  <topic>_bloc.freezed.dart   ← generated, never edit
 ```
 
 ---
 
-## File 1 — `<feature>_<topic>_bloc.dart`
+## File 1 — `<topic>_bloc.dart`
 
 ```dart
-import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -37,20 +38,21 @@ import 'package:<package>/src/core/bloc/field_state/field_state.dart';
 import 'package:<package>/src/core/bloc/state_status/state_status.dart';
 import 'package:<package>/src/core/error/error.dart';
 import 'package:<package>/src/core/usecases/use_case.dart';
-import 'package:<package>/src/features/<feature>/domain/usecases/<feature>_<action>_use_case.dart';
-// import other use cases and entities as needed
+import 'package:<package>/src/features/<feature>/domain/usecases/<verb>_<noun>_use_case.dart';
+// import 'package:bloc_concurrency/bloc_concurrency.dart'; // only if you use transformer: below
 
-part '<feature>_<topic>_event.dart';
-part '<feature>_<topic>_state.dart';
-part '<feature>_<topic>_bloc.freezed.dart';
+part '<topic>_event.dart';
+part '<topic>_state.dart';
+part '<topic>_bloc.freezed.dart';
 
 @Injectable()
 class <Topic>Bloc extends Bloc<<Topic>Event, <Topic>State> {
   final <Action>UseCase _<action>UseCase;
 
   <Topic>Bloc(this._<action>UseCase) : super(const <Topic>State()) {
-    on<<Topic>Started>(_onStarted, transformer: droppable());
-    on<<Topic>Refreshed>(_onRefreshed, transformer: restartable());
+    on<<Topic>Started>(_onStarted);
+    // Race-prone handlers only — see presentation-bloc.mdc
+    // on<<Topic>QueryChanged>(_onQueryChanged, transformer: restartable());
     // on<<Topic>ItemSaved>(_onItemSaved, transformer: sequential());
   }
 
@@ -72,21 +74,24 @@ class <Topic>Bloc extends Bloc<<Topic>Event, <Topic>State> {
 }
 ```
 
-**Transformer guide:**
+**`bloc_concurrency` — add only when a race is plausible**
+
 | Transformer | Use when |
 |-------------|----------|
-| `droppable()` | Ignore duplicate taps while loading (load, refresh button) |
-| `sequential()` | Queue writes (save, update) |
-| `restartable()` | Only the latest matters (search, system events) |
+| `droppable()` | Same event can fire again before the previous async run finishes (refresh spam) |
+| `sequential()` | Writes must not interleave |
+| `restartable()` | Latest event wins (search, `ApiCancelToken` — see `cancel-token.mdc`) |
 
-Every async `on<>` handler **must** have a transformer. Synchronous handlers need none.
+**Simple** BLoCs: async `on<>` **without** `transformer:` is fine. Synchronous handlers never need a transformer.
+
+Import `bloc_concurrency` only in files that pass `transformer:` to at least one `on<...>()`.
 
 ---
 
-## File 2 — `<feature>_<topic>_event.dart`
+## File 2 — `<topic>_event.dart`
 
 ```dart
-part of '<feature>_<topic>_bloc.dart';
+part of '<topic>_bloc.dart';
 
 @freezed
 sealed class <Topic>Event with _$<Topic>Event {
@@ -102,10 +107,10 @@ Named constructor convention: `<Topic>Event.verbNoun(payload) = ConcreteClass`
 
 ---
 
-## File 3 — `<feature>_<topic>_state.dart`
+## File 3 — `<topic>_state.dart`
 
 ```dart
-part of '<feature>_<topic>_bloc.dart';
+part of '<topic>_bloc.dart';
 
 @freezed
 sealed class <Topic>State with _$<Topic>State {
@@ -150,10 +155,12 @@ result.fold(
 
 | ✅ Allowed | ❌ Forbidden |
 |-----------|------------|
-| `flutter_bloc`, `bloc_concurrency` | Any `data/` layer import |
+| `flutter_bloc`; `bloc_concurrency` only if using `transformer:` | Any `data/` layer import |
 | `freezed_annotation`, `injectable` | `Analytics.track(...)` |
 | Own feature's `domain/` (usecases, entities) | Another feature's BLoC or presentation |
 | `core/bloc/` (`StateStatus`, `FieldState`, `Failure`) | `dio`, `shared_preferences`, or any platform package |
+
+**`build.yaml`** turns off Freezed **`from_json` / `to_json` / `map` / `when`**. Branch events and states with **`switch`** on concrete types; do not use **`.map`/`.when`** or Freezed JSON on BLoC types.
 
 ---
 
@@ -164,7 +171,7 @@ Run code generation:
 dart run build_runner build -d
 ```
 
-Verify `<feature>_<topic>_bloc.freezed.dart` was generated. Fix any analyzer issues.
+Verify `<topic>_bloc.freezed.dart` was generated. Fix any analyzer issues.
 
 ---
 
@@ -172,11 +179,13 @@ Verify `<feature>_<topic>_bloc.freezed.dart` was generated. Fix any analyzer iss
 
 - [ ] Extends `Bloc<Event, State>` — never `Cubit`
 - [ ] `@Injectable()` — never `@LazySingleton` or `@Singleton`
-- [ ] Every async `on<>` has a `bloc_concurrency` transformer
+- [ ] `bloc_concurrency` + `transformer:` only on handlers that can overlap; simple flows omit
 - [ ] Events: `@freezed sealed class` with `part of` — no manual subclasses
 - [ ] State uses `@Default(StateStatus.initial()) StateStatus status` — global errors use `StateStatus.error(Failure)`, not `String? errorMessage`
 - [ ] Input fields use `FieldState<T>`, not `TextEditingController`
 - [ ] `FailureType.inlineError` mapped to field, not `StateStatus.error`
 - [ ] No `data/` imports, no `Analytics.track()`
-- [ ] All files prefixed with feature name (`<feature>_<topic>_bloc.dart`)
+- [ ] No Freezed **`.map`/`.when`** or JSON on event/state (per `build.yaml`)
+- [ ] No unnecessary `bloc_concurrency` import on purely simple BLoCs
+- [ ] BLoC lives under `presentation/bloc/<topic>_bloc/` with `<topic>_bloc.dart` / `_event` / `_state`
 - [ ] `build_runner` ran and generated file exists
