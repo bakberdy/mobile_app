@@ -1,7 +1,7 @@
 name: analyzer-check
 on:
   workflow_call:
-
+  workflow_dispatch:
   push:
     branches:
       - dev
@@ -15,7 +15,7 @@ on:
       - staging
       - main
 jobs:
-  analyze:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
