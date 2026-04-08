@@ -2,6 +2,20 @@ name: android-build-production
 
 on:
   workflow_dispatch:
+    inputs:
+      app_version:
+        description: Optional. Full pubspec version (e.g. 1.0.0+99). Leave empty to use version from pubspec.yaml in the repo.
+        required: false
+        type: string
+        default: ""
+
+  workflow_call:
+    inputs:
+      app_version:
+        description: Full pubspec version (e.g. 1.0.0+42). Empty keeps pubspec as checked in.
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -9,6 +23,13 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set pubspec version
+        if: inputs.app_version != ''
+        env:
+          APP_VERSION: ${{ inputs.app_version }}
+        run: |
+          sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
 
       - uses: actions/setup-java@v4
         with:

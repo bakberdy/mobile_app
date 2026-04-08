@@ -1,0 +1,30 @@
+name: android-release-on-tag
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  validate-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.version.outputs.app_version }}
+    steps:
+      - name: Validate tag and compute pubspec version
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if ! [[ "$TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag must be semver MAJOR.MINOR.PATCH, optional leading v (got: $TAG)"
+            exit 1
+          fi
+          SEMVER="${TAG#v}"
+          echo "app_version=${SEMVER}+${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: validate-tag
+    uses: ./.github/workflows/android-build-production.yml
+    with:
+      app_version: ${{ needs.validate-tag.outputs.app_version }}
+    secrets: inherit
