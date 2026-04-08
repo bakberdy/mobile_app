@@ -1,27 +1,6 @@
 name: android-build-staging
 
 on:
-  push:
-    branches:
-      - staging
-    paths:
-      - "lib/**"
-      - "android/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/android-build-staging.yml"
-
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - staging
-    paths:
-      - "lib/**"
-      - "android/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/android-build-staging.yml"
-
   workflow_dispatch:
 
 jobs:

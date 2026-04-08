@@ -1,27 +1,6 @@
 name: android-build-production
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "lib/**"
-      - "android/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/android-build-production.yml"
-
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - main
-    paths:
-      - "lib/**"
-      - "android/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/android-build-production.yml"
-
   workflow_dispatch:
 
 jobs:
