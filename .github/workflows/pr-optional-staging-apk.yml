@@ -7,11 +7,11 @@ on:
       - dev
       - staging
       - main
-    push:
-      branches:
-        - dev
-        - staging
-        - main
+  push:
+    branches:
+      - dev
+      - staging
+      - main
 
 jobs:
   analyze:
