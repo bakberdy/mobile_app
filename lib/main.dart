@@ -20,6 +20,5 @@ void main() async {
   appLog('ENVIRONMENT: ${config.environment}');
   appLog('API_URL: ${config.baseUrl}');
 
-
   runApp(const App());
 }
