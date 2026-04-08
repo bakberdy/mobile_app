@@ -1,7 +1,7 @@
 name: analyzer-check
 on:
   workflow_call:
-  
+
   push:
     branches:
       - dev
@@ -28,4 +28,9 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter analyze --no-pub #--no-fatal-infos
-      
+      - name: Report success-analyze
+        if: success()
+        run: |
+          echo "## success-analyze" >> "$GITHUB_STEP_SUMMARY"
+          echo "Flutter analyzer completed with no failing errors." >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice::success-analyze — analyzer passed"
