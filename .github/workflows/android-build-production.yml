@@ -18,9 +18,9 @@ on:
         default: ""
 
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
@@ -30,6 +30,24 @@ jobs:
           APP_VERSION: ${{ inputs.app_version }}
         run: |
           sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pubspec-snapshot
+          path: pubspec.yaml
+          if-no-files-found: error
+
+  build:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pubspec-snapshot
+          path: .
 
       - uses: actions/setup-java@v4
         with:
@@ -61,7 +79,9 @@ jobs:
             --dart-define=API_URL="$CFG_API_URL" \
             --dart-define=ENVIRONMENT="$CFG_ENVIRONMENT"
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK artifact
+        if: success()
+        uses: actions/upload-artifact@v4
         with:
           name: app-prod-release-apk
           path: build/app/outputs/flutter-apk/app-prod-release.apk
