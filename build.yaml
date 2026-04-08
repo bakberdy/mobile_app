@@ -7,10 +7,12 @@ targets:
           from_json: false
           when: false
           map: false
+
       injectable_generator:injectable_builder:
         options:
           auto_register: true
           generate_for_injectable: true
+          
       flutter_gen_runner:
         options:
           output: lib/gen/
