@@ -1,4 +1,4 @@
-name: pr-optional-staging-apk
+name: pr-pipeline
 
 on:
   pull_request:

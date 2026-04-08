@@ -14,8 +14,6 @@ on:
       - dev
       - staging
       - main
-      
-
 jobs:
   analyze:
     runs-on: ubuntu-latest
