@@ -78,15 +78,24 @@ jobs:
             --body "Automated pubspec bump from tag push. Waits for required checks (e.g. analyze), then merges."
           sleep 5
           PR_URL=$(gh pr view "${BUMP_BRANCH}" --repo "${GH_REPO}" --json url --jq .url)
-          echo "Waiting for required checks, then merging ${PR_URL} ..."
+          echo "Enabling auto-merge for ${PR_URL} (merges when required checks and rules pass) ..."
+          if ! gh pr merge "${PR_URL}" --repo "${GH_REPO}" --merge --auto; then
+            echo "::error::Could not enable auto-merge. In the repo enable Settings → General → Allow auto-merge, and ensure Actions may merge pull requests."
+            exit 1
+          fi
           for _ in $(seq 1 90); do
-            if gh pr merge "${PR_URL}" --repo "${GH_REPO}" --merge; then
+            STATE=$(gh pr view "${PR_URL}" --repo "${GH_REPO}" --json state --jq .state)
+            if [ "${STATE}" = "MERGED" ]; then
               echo "Merged."
               exit 0
             fi
+            if [ "${STATE}" = "CLOSED" ]; then
+              echo "::error::Pull request was closed without merging."
+              exit 1
+            fi
             sleep 20
           done
-          echo "::error::Timed out waiting to merge ${PR_URL}. Fix failing checks or branch rules, then merge manually."
+          echo "::error::Timed out waiting for merge of ${PR_URL}. Approve the PR if reviews are required, or merge manually."
           exit 1
 
   build:
