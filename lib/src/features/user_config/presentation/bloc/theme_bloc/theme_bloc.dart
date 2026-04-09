@@ -57,8 +57,8 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
 
     final result = await _getAppThemeModeUseCase(const NoParams());
 
-    result.fold(
-      (Failure failure) {
+    await result.fold<Future<void>>(
+      (Failure failure) async {
         emit(
           state.copyWith(
             status: StateStatus.error(failure),
@@ -79,10 +79,12 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
             ),
           );
         } else {
-          // First launch: nothing stored yet — persist and emit system theme.
           await _setThemeUseCase(
             const SetThemeUseCaseParams(themeMode: AppThemeMode.system),
           );
+          if (emit.isDone) {
+            return;
+          }
           emit(
             state.copyWith(
               themeMode: AppThemeMode.system,
