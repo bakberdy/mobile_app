@@ -1,14 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/src/components/buttons/base_filled_button.dart';
-import 'package:mobile_app/src/components/buttons/base_outlined_button.dart';
-import 'package:mobile_app/src/components/dialogs/base_snackbar.dart';
+import 'package:mobile_app/app_config.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:mobile_app/src/config/theme/app_radii.dart';
 import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
 import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
-import 'package:mobile_app/src/features/example/presentation/widgets/custom_example_widget.dart';
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
 import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart';
 import 'package:mobile_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
@@ -23,10 +21,34 @@ class UserConfigExampleScreen extends StatefulWidget {
 }
 
 class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
+  final config = AppConfig.instance;
+  PackageInfo? _packageInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPackageInfo();
+  }
+
+  Future<void> _loadPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    if (!mounted) {
+      return;
+    }
+    setState(() => _packageInfo = info);
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeBloc>().state;
     final localeState = context.watch<LocaleBloc>().state;
+    final packageInfo = _packageInfo;
+    final versionLabel = packageInfo == null
+        ? ''
+        : context.l10n.appVersionWithBuild(
+            packageInfo.version,
+            packageInfo.buildNumber,
+          );
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.themeMode)),
       body: Padding(
@@ -86,70 +108,27 @@ class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
               },
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text('Snackbar', style: context.textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.xs),
-            Wrap(
-              spacing: AppSpacing.xs,
-              runSpacing: AppSpacing.xs,
-              children: [
-                BaseFilledButton.primary(
-                  onPressed: () => BaseSnackbar.success(
-                    context,
-                    message: 'Route saved successfully',
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: context.colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(AppRadii.lg),
+                boxShadow: [
+                  BoxShadow(
+                    color: context.colorScheme.shadow.withValues(alpha: 0.12),
+                    blurRadius: 32,
+                    offset: const Offset(0, 4),
                   ),
-                  label: 'Success',
-                  expand: false,
-                ),
-                BaseFilledButton.primary(
-                  onPressed: () => BaseSnackbar.error(
-                    context,
-                    message: 'Failed to load route data',
-                  ),
-                  label: 'Error',
-                  expand: false,
-                ),
-                BaseFilledButton.primary(
-                  onPressed: () => BaseSnackbar.warning(
-                    context,
-                    message: 'GPS signal is weak',
-                  ),
-                  label: 'Warning',
-                  expand: false,
-                ),
-                BaseFilledButton.primary(
-                  onPressed: () => BaseSnackbar.info(
-                    context,
-                    message: 'Pull down to refresh routes',
-                  ),
-                  label: 'Info',
-                  expand: false,
-                ),
-                BaseFilledButton.primary(
-                  onPressed: () => BaseSnackbar.error(
-                    context,
-                    message: 'Route deleted',
-                    actionLabel: 'Undo',
-                    onAction: () => BaseSnackbar.success(
-                      context,
-                      message: 'Route restored',
-                    ),
-                  ),
-                  label: 'With action',
-                  expand: false,
-                ),
-                BaseOutlinedButton.primary(
-                  onPressed: () => BaseSnackbar.hide(context),
-                  label: 'Hide',
-                  expand: false,
-                ),
-              ],
-            ),
-            SizedBox(height: AppSpacing.lg),
-            CustomExampleWidget(
-              title: context.l10n.santoniLuxuryFurnitureTitle,
-              description: context.l10n.santoniLuxuryFurnitureDescription,
-              buttonLabel: context.l10n.continueToLogin,
-              onPressed: () {},
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(versionLabel),
+                  Text('API URL: ${config.baseUrl}'),
+                  Text('Environment: ${config.environment}'),
+                ],
+              ),
             ),
           ],
         ),

@@ -15,6 +15,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get apiFailureDefaultMessage => 'Something went wrong on request';
 
   @override
+  String appVersionWithBuild(String version, String buildNumber) {
+    return 'Version $version ($buildNumber)';
+  }
+
+  @override
   String get baseDefaultMessage => 'An unexpected error occurred';
 
   @override

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.bakberdi.travel_app"
+    namespace = "com.bakberdi.mobile_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.bakberdi.travel_app"
+        applicationId = "com.bakberdi.mobile_app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

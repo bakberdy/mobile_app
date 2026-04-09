@@ -2,6 +2,13 @@
   "@@locale": "ru",
   "addTodo": "Добавить задачу",
   "apiFailureDefaultMessage": "Что-то пошло не так при запросе",
+  "appVersionWithBuild": "Версия {version} ({buildNumber})",
+  "@appVersionWithBuild": {
+    "placeholders": {
+      "version": { "type": "String" },
+      "buildNumber": { "type": "String" }
+    }
+  },
   "baseDefaultMessage": "Произошла непредвиденная ошибка",
   "clearForm": "Очистить форму",
   "continueToLogin": "Продолжить вход",

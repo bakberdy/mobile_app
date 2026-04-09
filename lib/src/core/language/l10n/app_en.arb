@@ -2,6 +2,13 @@
   "@@locale": "en",
   "addTodo": "Add Todo",
   "apiFailureDefaultMessage": "Something went wrong on request",
+  "appVersionWithBuild": "Version {version} ({buildNumber})",
+  "@appVersionWithBuild": {
+    "placeholders": {
+      "version": { "type": "String" },
+      "buildNumber": { "type": "String" }
+    }
+  },
   "baseDefaultMessage": "An unexpected error occurred",
   "clearForm": "Clear form",
   "continueToLogin": "Continue to Login",

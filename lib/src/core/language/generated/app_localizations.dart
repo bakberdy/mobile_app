@@ -112,6 +112,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong on request'**
   String get apiFailureDefaultMessage;
 
+  /// No description provided for @appVersionWithBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} ({buildNumber})'**
+  String appVersionWithBuild(String version, String buildNumber);
+
   /// No description provided for @baseDefaultMessage.
   ///
   /// In en, this message translates to:

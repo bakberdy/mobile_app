@@ -2,6 +2,13 @@
   "@@locale": "kk",
   "addTodo": "Тапсырма қосу",
   "apiFailureDefaultMessage": "Сұрау кезінде қате орын алды",
+  "appVersionWithBuild": "Нұсқа {version} ({buildNumber})",
+  "@appVersionWithBuild": {
+    "placeholders": {
+      "version": { "type": "String" },
+      "buildNumber": { "type": "String" }
+    }
+  },
   "baseDefaultMessage": "Күтпеген қате орын алды",
   "clearForm": "Форманы тазалау",
   "continueToLogin": "Кіруге жалғастыру",

@@ -15,6 +15,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get apiFailureDefaultMessage => 'Сұрау кезінде қате орын алды';
 
   @override
+  String appVersionWithBuild(String version, String buildNumber) {
+    return 'Нұсқа $version ($buildNumber)';
+  }
+
+  @override
   String get baseDefaultMessage => 'Күтпеген қате орын алды';
 
   @override

@@ -15,6 +15,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get apiFailureDefaultMessage => 'Что-то пошло не так при запросе';
 
   @override
+  String appVersionWithBuild(String version, String buildNumber) {
+    return 'Версия $version ($buildNumber)';
+  }
+
+  @override
   String get baseDefaultMessage => 'Произошла непредвиденная ошибка';
 
   @override
