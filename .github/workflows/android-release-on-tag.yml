@@ -22,8 +22,12 @@ jobs:
           SEMVER="${TAG#v}"
           echo "app_version=${SEMVER}+${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
-  commit-version:
+  analyze:
     needs: validate-tag
+    uses: ./.github/workflows/analyzer-check.yml
+
+  commit-version:
+    needs: [validate-tag, analyze]
     runs-on: ubuntu-latest
     permissions:
       contents: write
