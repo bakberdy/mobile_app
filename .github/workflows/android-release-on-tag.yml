@@ -59,8 +59,12 @@ jobs:
           git commit -m "chore: bump version to ${APP_VERSION}"
           git fetch origin "${DEFAULT_BRANCH}"
           MAIN_SHA=$(git rev-parse "refs/remotes/origin/${DEFAULT_BRANCH}")
-          if [ "${MAIN_SHA}" != "${TAG_SHA}" ]; then
-            echo "::error::Default branch '${DEFAULT_BRANCH}' is not at this tag's commit. Tag only the current tip of '${DEFAULT_BRANCH}' (merge first if needed), then push the tag."
+          if [ "${MAIN_SHA}" = "${TAG_SHA}" ]; then
+            true
+          elif git merge-base --is-ancestor "${TAG_SHA}" "${MAIN_SHA}"; then
+            true
+          else
+            echo "::error::Tag must point to a commit on '${DEFAULT_BRANCH}' (same tip or an ancestor). Merge or move '${DEFAULT_BRANCH}' so it contains the tagged commit, then push the tag."
             exit 1
           fi
           SAFE_VERSION=$(printf '%s' "${APP_VERSION}" | tr '+' '-')
