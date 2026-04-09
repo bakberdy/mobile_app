@@ -59,7 +59,7 @@ jobs:
           git push origin "HEAD:refs/heads/${DEFAULT_BRANCH}"
 
   build:
-    needs: validate-tag
+    needs: [validate-tag, commit-version]
     uses: ./.github/workflows/android-build-production.yml
     with:
       app_version: ${{ needs.validate-tag.outputs.app_version }}

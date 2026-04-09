@@ -2,52 +2,28 @@ name: android-build-production
 
 on:
   workflow_dispatch:
-    inputs:
-      app_version:
-        description: Optional. Full pubspec version (e.g. 1.0.0+99). Leave empty to use version from pubspec.yaml in the repo.
-        required: false
-        type: string
-        default: ""
 
   workflow_call:
     inputs:
       app_version:
-        description: Full pubspec version (e.g. 1.0.0+42). Empty keeps pubspec as checked in.
+        description: When set, replaces the pubspec version line before building. Callers supply the value; this workflow does not interpret tags.
         required: false
         type: string
         default: ""
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set pubspec version
-        if: inputs.app_version != ''
-        env:
-          APP_VERSION: ${{ inputs.app_version }}
-        run: |
-          sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pubspec-snapshot
-          path: pubspec.yaml
-          if-no-files-found: error
-
   build:
-    needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: pubspec-snapshot
-          path: .
+      - name: Apply pubspec version
+        if: github.event_name == 'workflow_call' && inputs.app_version != ''
+        env:
+          APP_VERSION: ${{ inputs.app_version }}
+        run: |
+          sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
 
       - uses: actions/setup-java@v4
         with:
@@ -75,7 +51,7 @@ jobs:
           CFG_API_URL: ${{ secrets.PRODUCTION_API_URL }}
           CFG_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
         run: |
-          flutter build apk --release \
+          flutter build apk --release --flavor prod \
             --dart-define=API_URL="$CFG_API_URL" \
             --dart-define=ENVIRONMENT="$CFG_ENVIRONMENT"
 
