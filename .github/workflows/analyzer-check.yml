@@ -19,7 +19,6 @@ concurrency:
   group: analyzer-check-${{ github.ref }}
   cancel-in-progress: true
 
-
 jobs:
   analyze:
     runs-on: ubuntu-latest
