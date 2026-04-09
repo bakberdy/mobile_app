@@ -36,7 +36,7 @@ jobs:
           CFG_API_URL: ${{ secrets.PRODUCTION_API_URL }}
           CFG_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
         run: |
-          flutter build apk --release --flavor prod \
+          flutter build apk --release \
             --dart-define=API_URL="$CFG_API_URL" \
             --dart-define=ENVIRONMENT="$CFG_ENVIRONMENT"
 
