@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,10 +39,12 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Bump pubspec and push to default branch
+      - name: Bump pubspec, open PR, merge when checks pass
         env:
           APP_VERSION: ${{ needs.validate-tag.outputs.app_version }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
@@ -60,7 +63,27 @@ jobs:
             echo "::error::Default branch '${DEFAULT_BRANCH}' is not at this tag's commit. Tag only the current tip of '${DEFAULT_BRANCH}' (merge first if needed), then push the tag."
             exit 1
           fi
-          git push origin "HEAD:refs/heads/${DEFAULT_BRANCH}"
+          SAFE_VERSION=$(printf '%s' "${APP_VERSION}" | tr '+' '-')
+          BUMP_BRANCH="automated/pubspec-${SAFE_VERSION}-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/${BUMP_BRANCH}"
+          gh pr create \
+            --repo "${GH_REPO}" \
+            --base "${DEFAULT_BRANCH}" \
+            --head "${BUMP_BRANCH}" \
+            --title "chore: bump version to ${APP_VERSION}" \
+            --body "Automated pubspec bump from tag push. Waits for required checks (e.g. analyze), then merges."
+          sleep 5
+          PR_URL=$(gh pr view "${BUMP_BRANCH}" --repo "${GH_REPO}" --json url --jq .url)
+          echo "Waiting for required checks, then merging ${PR_URL} ..."
+          for _ in $(seq 1 90); do
+            if gh pr merge "${PR_URL}" --repo "${GH_REPO}" --merge; then
+              echo "Merged."
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::Timed out waiting to merge ${PR_URL}. Fix failing checks or branch rules, then merge manually."
+          exit 1
 
   build:
     needs: [validate-tag, commit-version]
