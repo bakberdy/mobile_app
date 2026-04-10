@@ -125,7 +125,13 @@ jobs:
             exit 1
           fi
 
-  build:
+  build-android-production:
     needs: [commit-version]
     uses: ./.github/workflows/android-build-production.yml
+    secrets: inherit
+
+  
+  upload-ios-to-testflight:
+    needs: [commit-version]
+    uses: ./.github/workflows/ios-upload-to-testflight.yml
     secrets: inherit
