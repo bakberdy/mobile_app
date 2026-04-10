@@ -1,48 +1,63 @@
-# name: android-build-staging
+name: android-build-production
 
-# on:
-#   workflow_dispatch:
-#   workflow_call:
+on:
+  workflow_dispatch:
+  workflow_call:
 
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 45
-#     steps:
-#       - uses: actions/checkout@v4
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
 
-#       - uses: actions/setup-java@v4
-#         with:
-#           distribution: temurin
-#           java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
 
-#       - uses: subosito/flutter-action@v2
-#         with:
-#           channel: stable
-#           cache: true
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-#       - uses: actions/cache@v4
-#         with:
-#           path: |
-#             ~/.gradle/caches
-#             ~/.gradle/wrapper
-#           key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
-#           restore-keys: |
-#             ${{ runner.os }}-gradle-
+      - name: Flutter clean, pub get
+        run: |
+          set -euo pipefail
+          flutter clean
+          flutter pub get
 
-#       - run: flutter pub get
+      - name: Parse version from pubspec.yaml
+        id: pubspec-version
+        run: |
+          set -euo pipefail
+          LINE=$(grep -E '^version:' pubspec.yaml | head -1)
+          RAW=$(printf '%s' "$LINE" | sed -E 's/^version:[[:space:]]*//' | tr -d "'\"")
+          if [[ "$RAW" == *+* ]]; then
+            echo "version_name=${RAW%+*}" >> "$GITHUB_OUTPUT"
+            echo "version_code=${RAW#*+}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version_name=${RAW}" >> "$GITHUB_OUTPUT"
+            echo "version_code=0" >> "$GITHUB_OUTPUT"
+          fi
 
-#       - name: Build APK
-#         env:
-#           CFG_API_URL: ${{ secrets.STAGING_API_URL }}
-#           CFG_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
-#         run: |
-#           flutter build apk --release \
-#             --dart-define=API_URL="$CFG_API_URL" \
-#             --dart-define=ENVIRONMENT="$CFG_ENVIRONMENT"
+      - name: Build APK
+        env:
+          CFG_API_URL: ${{ secrets.STAGING_API_URL }}
+          CFG_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
+        run: |
+          flutter build apk --release --flavor staging \
+            --dart-define=API_URL="$CFG_API_URL" \
+            --dart-define=ENVIRONMENT="$CFG_ENVIRONMENT"
 
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: app-staging-release-apk
-#           path: build/app/outputs/flutter-apk/app-staging-release.apk
-#           if-no-files-found: error
+      - name: Upload APK artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-staging-release-${{ steps.pubspec-version.outputs.version_name }}-${{ steps.pubspec-version.outputs.version_code }}
+          path: build/app/outputs/flutter-apk/app-prod-release.apk
+          if-no-files-found: error
