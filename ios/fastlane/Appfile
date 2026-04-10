@@ -1,6 +1,2 @@
-app_identifier("com.bakberdi.travelApp") # The bundle identifier of your app
-apple_id("") # Your Apple Developer Portal username
-
-
-# For more information about the Appfile, see:
-#     https://docs.fastlane.tools/advanced/#appfile
+app_identifier("com.bakberdi.travelApp")
+team_id("C466ZHPP34")
