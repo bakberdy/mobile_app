@@ -29,12 +29,36 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Prepare GitHub App private key (PEM newlines / base64)
+        id: prep-app-key
+        env:
+          RAW: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          printf '%b' "${RAW}" | tr -d '\r' > "${RUNNER_TEMP}/candidate.pem"
+          if openssl pkey -in "${RUNNER_TEMP}/candidate.pem" -noout 2>/dev/null \
+            || openssl rsa -in "${RUNNER_TEMP}/candidate.pem" -noout 2>/dev/null; then
+            cp "${RUNNER_TEMP}/candidate.pem" "${RUNNER_TEMP}/app.pem"
+          else
+            printf '%b' "${RAW}" | tr -d '\r' | tr -d '\n' | base64 -d > "${RUNNER_TEMP}/app.pem" 2>/dev/null || true
+            if ! openssl pkey -in "${RUNNER_TEMP}/app.pem" -noout 2>/dev/null \
+              && ! openssl rsa -in "${RUNNER_TEMP}/app.pem" -noout 2>/dev/null; then
+              echo "::error::RELEASE_APP_PRIVATE_KEY must be the full PEM from the GitHub App (-----BEGIN … -----END …). Re-copy from Developer settings → Your app → Private keys, or store the file as Base64 (single line) in the same secret."
+              exit 1
+            fi
+          fi
+          {
+            echo "pem<<KEY_EOF"
+            cat "${RUNNER_TEMP}/app.pem"
+            echo "KEY_EOF"
+          } >> "${GITHUB_OUTPUT}"
+
       - name: Create release bot installation token
         id: release-app-token
         uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
-          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          private-key: ${{ steps.prep-app-key.outputs.pem }}
 
       - uses: actions/checkout@v4
         with:
