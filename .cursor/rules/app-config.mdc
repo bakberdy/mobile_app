@@ -11,7 +11,7 @@ Launch configurations are in `.vscode/launch.json`. Each app target passes `--da
 
 | Launch name | Use for |
 |---|---|
-| `mobile_app (dev)` | Daily development |
+| `mobile_app (development)` | Daily development |
 | `mobile_app (staging)` | Staging / QA |
 | `mobile_app` | Production-like local runs |
 | `mobile_app (Widgetbook)` | Component catalogue only |
@@ -19,8 +19,9 @@ Launch configurations are in `.vscode/launch.json`. Each app target passes `--da
 Reference copies of values for `--dart-define-from-file` live under `config/config.*.json`; JSON keys must be `API_URL` and `ENVIRONMENT`.
 
 ## CI (GitHub Actions)
-- **Staging** (`staging` branch): `android-build-staging.yml` — secrets `STAGING_API_URL`, `STAGING_ENVIRONMENT`.
-- **Production** (`main` branch): `android-build-production.yml` — secrets `PRODUCTION_API_URL`, `PRODUCTION_ENVIRONMENT`.
+- **Development**: `android-build-development.yml` — secrets `DEVELOPMENT_API_URL`, `DEVELOPMENT_ENVIRONMENT`.
+- **Staging**: `android-build-staging.yml` — secrets `STAGING_API_URL`, `STAGING_ENVIRONMENT`.
+- **Production**: `android-build-production.yml` — secrets `PRODUCTION_API_URL`, `PRODUCTION_ENVIRONMENT` (also used from tag release workflow).
 
 Both pass `--dart-define=API_URL=…` and `--dart-define=ENVIRONMENT=…` to `flutter build apk`.
 
@@ -66,5 +67,5 @@ required this.myNewKey,
 ## Rules
 - Never hardcode API keys, base URLs, or environment flags in Dart source outside `AppConfig` compile-time injection.
 - Never commit real secrets to `config.example.json`.
-- Keep the same set of keys across `config.dev.json`, `config.stage.json`, and `config.prod.json`.
+- Keep the same set of keys across `config.development.json`, `config.staging.json`, and `config.production.json`.
 - Inject `AppConfig` via DI (`AppModule`) — never call `AppConfig.instance` directly outside `app_module.dart`.

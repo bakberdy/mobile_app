@@ -10,19 +10,19 @@
             "type": "dart",
             "program": "lib/main.dart",
             "toolArgs": [
-                "--dart-define-from-file=config/config.prod.json",
-                "--flavor=prod"
+                "--dart-define-from-file=config/config.production.json",
+                "--flavor=production"
             ]
         },
         
         {
-            "name": "mobile_app (dev)",
+            "name": "mobile_app (development)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
             "toolArgs": [
-                "--dart-define-from-file=config/config.dev.json",
-                "--flavor=dev"
+                "--dart-define-from-file=config/config.development.json",
+                "--flavor=development"
             ]
         },
         {
@@ -31,7 +31,7 @@
             "type": "dart",
             "program": "lib/main.dart",
             "toolArgs": [
-                "--dart-define-from-file=config/config.stage.json",
+                "--dart-define-from-file=config/config.staging.json",
                 "--flavor=staging"
             ]
         },

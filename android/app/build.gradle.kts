@@ -29,17 +29,17 @@ android {
 
     flavorDimensions += "ENVIRONMENT"
     productFlavors {
-        create("dev") {
+        create("development") {
             dimension = "ENVIRONMENT"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
+            applicationIdSuffix = ".development"
+            versionNameSuffix = "-development"
         }
         create("staging") {
             dimension = "ENVIRONMENT"
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-staging"
         }
-        create("prod") {
+        create("production") {
             dimension = "ENVIRONMENT"
         }
     }

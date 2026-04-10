@@ -1,4 +1,4 @@
-name: android-build-staging
+name: android-build-development
 
 on:
   workflow_dispatch:
@@ -47,10 +47,10 @@ jobs:
 
       - name: Build APK
         env:
-          CFG_API_URL: ${{ secrets.STAGING_API_URL }}
-          CFG_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
+          CFG_API_URL: ${{ secrets.DEVELOPMENT_API_URL }}
+          CFG_ENVIRONMENT: ${{ secrets.DEVELOPMENT_ENVIRONMENT }}
         run: |
-          flutter build apk --release --flavor staging \
+          flutter build apk --release --flavor development \
             --dart-define=API_URL="$CFG_API_URL" \
             --dart-define=ENVIRONMENT="$CFG_ENVIRONMENT"
 
@@ -58,6 +58,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: android-staging-release-${{ steps.pubspec-version.outputs.version_name }}-${{ steps.pubspec-version.outputs.version_code }}
-          path: build/app/outputs/flutter-apk/app-staging-release.apk
+          name: android-development-release-${{ steps.pubspec-version.outputs.version_name }}-${{ steps.pubspec-version.outputs.version_code }}
+          path: build/app/outputs/flutter-apk/app-development-release.apk
           if-no-files-found: error
