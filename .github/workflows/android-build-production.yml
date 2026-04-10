@@ -55,5 +55,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-production-release-${{ inputs.app_version }}-${{ github.run_number }}
-          path: build/app/outputs/flutter-apk/android-production-release-${{ inputs.app_version }}-${{ github.run_number }}.apk
+          path: build/app/outputs/flutter-apk/app-prod-release.apk
           if-no-files-found: error
