@@ -58,6 +58,19 @@ jobs:
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
           private-key: ${{ steps.prep-app-key.outputs.pem }}
+          permission-contents: write
+
+      - name: Verify installation token can push
+        env:
+          GH_TOKEN: ${{ steps.release-app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          unset GITHUB_TOKEN
+          PUSH=$(gh api "repos/${GITHUB_REPOSITORY}" --jq '(.permissions // {}) | .push // "skip"')
+          if [ "${PUSH}" = "false" ]; then
+            echo "::error::This app token has push=false on ${GITHUB_REPOSITORY}. App → Repository permissions: Contents = Read and write → Save. Install App → Configure → accept permission update. Include this repo in the installation."
+            exit 1
+          fi
 
       - uses: actions/checkout@v4
         with:
