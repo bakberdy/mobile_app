@@ -25,12 +25,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Flutter clean, pub get, Gradle clean
+      - name: Flutter clean, pub get
         run: |
           set -euo pipefail
           flutter clean
           flutter pub get
-          cd android && ./gradlew clean
 
       - name: Parse version from pubspec.yaml
         id: pubspec-version
