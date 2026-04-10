@@ -80,6 +80,7 @@ jobs:
         env:
           APP_VERSION: ${{ needs.validate-tag.outputs.app_version }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          RELEASE_APP_INSTALLATION_TOKEN: ${{ steps.release-app-token.outputs.token }}
         run: |
           set -euo pipefail
           sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
@@ -104,7 +105,12 @@ jobs:
             echo "::error::Rebase onto origin/${DEFAULT_BRANCH} failed (e.g. pubspec conflict on '${DEFAULT_BRANCH}'). Fix on '${DEFAULT_BRANCH}' and re-tag, or bump version manually."
             exit 1
           fi
-          git push origin "HEAD:refs/heads/${DEFAULT_BRANCH}"
+          unset GITHUB_TOKEN
+          git remote set-url origin "https://x-access-token:${RELEASE_APP_INSTALLATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if ! git push origin "HEAD:refs/heads/${DEFAULT_BRANCH}"; then
+            echo "::error::Push refused for the release bot. (1) App → Repository permissions: Contents = Read and write, save, then open Install App → Configure and accept the permission update for this repo. (2) Ruleset bypass for this app must be Always allow — if it is For pull requests only, direct pushes to ${DEFAULT_BRANCH} stay blocked."
+            exit 1
+          fi
 
   build:
     needs: [validate-tag, commit-version]
