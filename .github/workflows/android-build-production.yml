@@ -2,14 +2,7 @@ name: android-build-production
 
 on:
   workflow_dispatch:
-
   workflow_call:
-    inputs:
-      app_version:
-        description: When set, replaces the pubspec version line before building. Callers supply the value; this workflow does not interpret tags.
-        required: false
-        type: string
-        default: ""
 
 jobs:
   build:
@@ -17,13 +10,6 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-
-      - name: Apply pubspec version
-        if: github.event_name == 'workflow_call' && inputs.app_version != ''
-        env:
-          APP_VERSION: ${{ inputs.app_version }}
-        run: |
-          sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
 
       - uses: subosito/flutter-action@v2
         with:
@@ -39,7 +25,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - run: flutter pub get
+      - name: Flutter clean, pub get, Gradle clean
+        run: |
+          set -euo pipefail
+          flutter clean
+          flutter pub get
+          cd android && ./gradlew clean
+
+      - name: Parse version from pubspec.yaml
+        id: pubspec-version
+        run: |
+          set -euo pipefail
+          LINE=$(grep -E '^version:' pubspec.yaml | head -1)
+          RAW=$(printf '%s' "$LINE" | sed -E 's/^version:[[:space:]]*//' | tr -d "'\"")
+          if [[ "$RAW" == *+* ]]; then
+            echo "version_name=${RAW%+*}" >> "$GITHUB_OUTPUT"
+            echo "version_code=${RAW#*+}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version_name=${RAW}" >> "$GITHUB_OUTPUT"
+            echo "version_code=0" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build APK
         env:
@@ -54,6 +59,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: android-production-release-${{ inputs.app_version }}-${{ github.run_number }}
+          name: android-production-release-${{ steps.pubspec-version.outputs.version_name }}-${{ steps.pubspec-version.outputs.version_code }}
           path: build/app/outputs/flutter-apk/app-prod-release.apk
           if-no-files-found: error
