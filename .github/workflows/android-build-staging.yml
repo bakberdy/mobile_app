@@ -1,4 +1,4 @@
-name: android-build-production
+name: android-build-staging
 
 on:
   workflow_dispatch:
