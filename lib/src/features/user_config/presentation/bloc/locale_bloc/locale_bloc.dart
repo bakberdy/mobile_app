@@ -45,7 +45,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
     final result = await _getLocaleUseCase(const NoParams());
 
     await result.fold(
-      (Failure failure) async {
+      (Failure failure) {
         emit(state.copyWith(status: StateStatus.error(failure)));
       },
       (languageCode) async {

@@ -15,7 +15,7 @@ class GetEnvironmentUseCase extends UseCase<String?, NoParams> {
   GetEnvironmentUseCase(this._repo);
 
   @override
-  FutureEither<String?> call(NoParams params) async =>
+  FutureEither<String?> call(NoParams params) =>
       _repo.getEnvironment().then(
         (result) => result.fold(
           (failure) {

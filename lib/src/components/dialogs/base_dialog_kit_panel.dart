@@ -179,7 +179,7 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
             titleStyle: titleStyle,
             descStyle: descStyle,
             showClose: widget.showClose,
-            onClose: () => _pop(),
+            onClose: _pop,
           ),
         if (hasHeader) const SizedBox(height: DialogKitLayout.sectionGap),
         _buildMain(bodyStyle, cs),
@@ -404,7 +404,6 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
                   SizedBox(
                     width: 24,
                     height: 24,
-                    // ignore: deprecated_member_use
                     child: Radio<int>(
                       value: i,
                       // ignore: deprecated_member_use

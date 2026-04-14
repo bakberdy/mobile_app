@@ -17,7 +17,7 @@ class SharedPreferencesStorage implements LocalStorage {
       Future.sync(() => _sharedPreferences.remove(key));
 
   @override
-  Future<void> deleteAll() => Future.sync(() => _sharedPreferences.clear());
+  Future<void> deleteAll() => Future.sync(_sharedPreferences.clear);
 
   @override
   Future<String?> read({required String key}) =>
@@ -27,7 +27,7 @@ class SharedPreferencesStorage implements LocalStorage {
   Future<Map<String, String>> readAll() => Future.sync(() {
     final allKeys = _sharedPreferences.getKeys();
     final Map<String, String> allValues = {};
-    for (var key in allKeys) {
+    for (final key in allKeys) {
       final value = _sharedPreferences.getString(key);
       if (value != null) {
         allValues[key] = value;
