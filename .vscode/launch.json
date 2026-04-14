@@ -10,7 +10,7 @@
             "type": "dart",
             "program": "lib/main.dart",
             "toolArgs": [
-                "--dart-define-from-file=config/config.production.json",
+                "--dart-define-from-file=config/run/config.production.json",
                 "--flavor=production"
             ]
         },
@@ -21,7 +21,7 @@
             "type": "dart",
             "program": "lib/main.dart",
             "toolArgs": [
-                "--dart-define-from-file=config/config.development.json",
+                "--dart-define-from-file=config/run/config.development.json",
                 "--flavor=development"
             ]
         },
@@ -31,7 +31,7 @@
             "type": "dart",
             "program": "lib/main.dart",
             "toolArgs": [
-                "--dart-define-from-file=config/config.staging.json",
+                "--dart-define-from-file=config/run/config.staging.json",
                 "--flavor=staging"
             ]
         },
