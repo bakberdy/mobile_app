@@ -29,4 +29,5 @@ linter:
     only_throw_errors: true
     package_names: true
     prefer_const_constructors: true
+    prefer_const_declarations: true
 

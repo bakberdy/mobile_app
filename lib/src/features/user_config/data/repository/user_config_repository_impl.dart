@@ -26,7 +26,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   @override
   FutureEither<AppThemeMode?> getAppThemeMode() async {
     try {
-      final storageKey = LocalStorageConsts.themeModeKey;
+      const storageKey = LocalStorageConsts.themeModeKey;
       final isConnected = await _networkInfo.isConnected;
       final localTheme = await _safeReadLocal(storageKey);
       if (!isConnected) {
@@ -42,7 +42,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   }
 
   Future<void> _syncThemeMode() async {
-    final storageKey = LocalStorageConsts.themeModeKey;
+    const storageKey = LocalStorageConsts.themeModeKey;
     final localTheme = await _safeReadLocal(storageKey);
     final remoteTheme = await _safeReadRemote(key: storageKey);
 
@@ -57,7 +57,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   @override
   FutureEither<String?> getLocale() async {
     try {
-      final storageKey = LocalStorageConsts.localeKey;
+      const storageKey = LocalStorageConsts.localeKey;
       final isConnected = await _networkInfo.isConnected;
       final localLocale = await _safeReadLocal(storageKey);
 
@@ -74,7 +74,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   }
 
   Future<void> _syncLocale() async {
-    final storageKey = LocalStorageConsts.localeKey;
+    const storageKey = LocalStorageConsts.localeKey;
     final localLocale = await _safeReadLocal(storageKey);
     final remoteLocale = await _safeReadRemote(key: storageKey);
 
@@ -138,7 +138,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
 
   @override
   FutureEither<void> setEnvironment(String environment) async {
-    final storageKey = LocalStorageConsts.environmentKey;
+    const storageKey = LocalStorageConsts.environmentKey;
     try {
       await _localDataSource.setUserConfig(key: storageKey, value: environment);
 
