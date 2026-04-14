@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -18,19 +20,21 @@ class GetTodosUseCase extends UseCase<List<Todo>, NoParams> {
     final result = await _repo.getTodos();
     return result.fold(
       (failure) {
-        Analytics.track(
-          GetTodosUseCaseEvent.failure(
-            properties: {
-              AnalyticsPropertyKeys.failureMessage: failure.message,
-              AnalyticsPropertyKeys.failureType: failure.type.name,
-              AnalyticsPropertyKeys.failureSource: failure.source,
-            },
+        unawaited(
+          Analytics.track(
+            GetTodosUseCaseEvent.failure(
+              properties: {
+                AnalyticsPropertyKeys.failureMessage: failure.message,
+                AnalyticsPropertyKeys.failureType: failure.type.name,
+                AnalyticsPropertyKeys.failureSource: failure.source,
+              },
+            ),
           ),
         );
         return result;
       },
       (_) {
-        Analytics.track(GetTodosUseCaseEvent.success());
+        unawaited(Analytics.track(GetTodosUseCaseEvent.success()));
         return result;
       },
     );

@@ -63,13 +63,13 @@ class _NavBarEntryState extends State<NavBarEntry>
   }
 
   @override
-  void didUpdateWidget(covariant NavBarEntry oldWidget) {
+  Future<void> didUpdateWidget(covariant NavBarEntry oldWidget) async {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.isSelected != widget.isSelected) {
       if (widget.isSelected) {
-        animationController.forward();
+        await animationController.forward();
       } else {
-        animationController.reverse();
+        await animationController.reverse();
       }
     }
   }
@@ -92,19 +92,15 @@ class _NavBarEntryState extends State<NavBarEntry>
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTapDown: (_) {
-        _tapController.forward(from: 0);
-      },
-      onTapUp: (_) {
-        _tapController.reverse();
+      onTapDown: (_) async => await _tapController.forward(from: 0),
+      onTapUp: (_) async {
+        await _tapController.reverse();
         if (bottomTheme.enableFeedback == true) {
-          HapticFeedback.lightImpact();
+          await HapticFeedback.lightImpact();
         }
         widget.onTap();
       },
-      onTapCancel: () {
-        _tapController.reverse();
-      },
+      onTapCancel: () async => await _tapController.reverse(),
       child: IconTheme(
         data: widget.isSelected
             ? bottomTheme.selectedIconTheme ?? const IconThemeData()

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
@@ -41,10 +43,13 @@ class AnalyticsPageObserver implements AutoRouteObserver {
   }
 
   String _getTabName(TabPageRoute route) {
-    return route.name.replaceAll('Route', '').replaceAllMapped(
+    return route.name
+        .replaceAll('Route', '')
+        .replaceAllMapped(
           RegExp(r'([a-z])([A-Z])'),
           (match) => '${match.group(1)}_${match.group(2)!.toLowerCase()}',
-        ).toLowerCase();
+        )
+        .toLowerCase();
   }
 
   @override
@@ -54,15 +59,17 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     final screenName = _getScreenName(route);
     final previousScreenName = _getScreenName(previousRoute);
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.screenViewed,
-        properties: {
-          AnalyticsPropertyKeys.screenName: screenName,
-          AnalyticsPropertyKeys.previousScreenName: previousScreenName,
-          AnalyticsPropertyKeys.navigationMethod: 'push',
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.screenViewed,
+          properties: {
+            AnalyticsPropertyKeys.screenName: screenName,
+            AnalyticsPropertyKeys.previousScreenName: previousScreenName,
+            AnalyticsPropertyKeys.navigationMethod: 'push',
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
@@ -73,16 +80,18 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     final screenName = _getScreenName(route);
     final previousScreenName = _getScreenName(previousRoute);
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.screenClosed,
-        properties: {
-          AnalyticsPropertyKeys.screenName: screenName,
-          AnalyticsPropertyKeys.previousScreenName: previousScreenName,
-          AnalyticsPropertyKeys.navigationMethod: 'pop',
-          AnalyticsPropertyKeys.viewDuration: duration,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.screenClosed,
+          properties: {
+            AnalyticsPropertyKeys.screenName: screenName,
+            AnalyticsPropertyKeys.previousScreenName: previousScreenName,
+            AnalyticsPropertyKeys.navigationMethod: 'pop',
+            AnalyticsPropertyKeys.viewDuration: duration,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
@@ -95,16 +104,18 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     final newScreenName = _getScreenName(newRoute);
     final oldScreenName = _getScreenName(oldRoute);
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.screenReplaced,
-        properties: {
-          AnalyticsPropertyKeys.screenName: newScreenName,
-          AnalyticsPropertyKeys.previousScreenName: oldScreenName,
-          AnalyticsPropertyKeys.navigationMethod: 'replace',
-          AnalyticsPropertyKeys.viewDuration: duration,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.screenReplaced,
+          properties: {
+            AnalyticsPropertyKeys.screenName: newScreenName,
+            AnalyticsPropertyKeys.previousScreenName: oldScreenName,
+            AnalyticsPropertyKeys.navigationMethod: 'replace',
+            AnalyticsPropertyKeys.viewDuration: duration,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
@@ -115,36 +126,37 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     final screenName = _getScreenName(route);
     final previousScreenName = _getScreenName(previousRoute);
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.screenRemoved,
-        properties: {
-          AnalyticsPropertyKeys.screenName: screenName,
-          AnalyticsPropertyKeys.previousScreenName: previousScreenName,
-          AnalyticsPropertyKeys.navigationMethod: 'remove',
-          AnalyticsPropertyKeys.viewDuration: duration,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.screenRemoved,
+          properties: {
+            AnalyticsPropertyKeys.screenName: screenName,
+            AnalyticsPropertyKeys.previousScreenName: previousScreenName,
+            AnalyticsPropertyKeys.navigationMethod: 'remove',
+            AnalyticsPropertyKeys.viewDuration: duration,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
 
   @override
-  void didChangeTop(
-    Route<dynamic> topRoute,
-    Route<dynamic>? previousTopRoute,
-  ) {
+  void didChangeTop(Route<dynamic> topRoute, Route<dynamic>? previousTopRoute) {
     final screenName = _getScreenName(topRoute);
     final previousScreenName = _getScreenName(previousTopRoute);
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.screenBecameVisible,
-        properties: {
-          AnalyticsPropertyKeys.screenName: screenName,
-          AnalyticsPropertyKeys.previousScreenName: previousScreenName,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.screenBecameVisible,
+          properties: {
+            AnalyticsPropertyKeys.screenName: screenName,
+            AnalyticsPropertyKeys.previousScreenName: previousScreenName,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
@@ -154,14 +166,16 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     final tabName = _getTabName(route);
     final previousTabName = _getTabName(previousRoute);
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.tabChanged,
-        properties: {
-          AnalyticsPropertyKeys.tabName: tabName,
-          AnalyticsPropertyKeys.previousScreenName: previousTabName,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.tabChanged,
+          properties: {
+            AnalyticsPropertyKeys.tabName: tabName,
+            AnalyticsPropertyKeys.previousScreenName: previousTabName,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
@@ -169,16 +183,20 @@ class AnalyticsPageObserver implements AutoRouteObserver {
   @override
   void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {
     final tabName = _getTabName(route);
-    final previousTabName = previousRoute != null ? _getTabName(previousRoute) : 'none';
+    final previousTabName = previousRoute != null
+        ? _getTabName(previousRoute)
+        : 'none';
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.tabInitialized,
-        properties: {
-          AnalyticsPropertyKeys.tabName: tabName,
-          AnalyticsPropertyKeys.previousScreenName: previousTabName,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.tabInitialized,
+          properties: {
+            AnalyticsPropertyKeys.tabName: tabName,
+            AnalyticsPropertyKeys.previousScreenName: previousTabName,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
@@ -191,28 +209,32 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     final screenName = _getScreenName(route);
     final previousScreenName = _getScreenName(previousRoute);
 
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.navigationGestureStarted,
-        properties: {
-          AnalyticsPropertyKeys.screenName: screenName,
-          AnalyticsPropertyKeys.previousScreenName: previousScreenName,
-          AnalyticsPropertyKeys.isUserGesture: true,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.navigationGestureStarted,
+          properties: {
+            AnalyticsPropertyKeys.screenName: screenName,
+            AnalyticsPropertyKeys.previousScreenName: previousScreenName,
+            AnalyticsPropertyKeys.isUserGesture: true,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }
 
   @override
   void didStopUserGesture() {
-    Analytics.track(
-      AnalyticsEvent(
-        name: AnalyticsEventNames.navigationGestureStopped,
-        properties: {
-          AnalyticsPropertyKeys.isUserGesture: true,
-          AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
-        },
+    unawaited(
+      Analytics.track(
+        AnalyticsEvent(
+          name: AnalyticsEventNames.navigationGestureStopped,
+          properties: {
+            AnalyticsPropertyKeys.isUserGesture: true,
+            AnalyticsPropertyKeys.timestamp: DateTime.now().toIso8601String(),
+          },
+        ),
       ),
     );
   }

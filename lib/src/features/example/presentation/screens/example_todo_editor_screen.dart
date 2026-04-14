@@ -37,12 +37,12 @@ class _ExampleTodoEditorScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ExampleTodoEditorBloc, ExampleTodoEditorState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         switch (state.status) {
           case SuccessStateStatus():
-            context.router.maybePop(true);
+            await context.router.maybePop(true);
           case ErrorStateStatus(: final failure):
-            _handleFailure(context, failure);
+            await _handleFailure(context, failure);
           default:
             break;
         }
@@ -319,7 +319,7 @@ class _ExampleTodoEditorScreenContent extends StatelessWidget {
     );
   }
 
-  void _handleFailure(BuildContext context, Failure failure) {
+  Future<void> _handleFailure(BuildContext context, Failure failure) async {
     final message = failure.message ?? failure.defaultMessage(context);
     switch (failure.type) {
       case FailureType.snackbar:
@@ -327,7 +327,7 @@ class _ExampleTodoEditorScreenContent extends StatelessWidget {
       case FailureType.banner:
         BaseDialog.showBanner(context, message: message);
       case FailureType.alert:
-        BaseDialog.showBasic(
+        await BaseDialog.showBasic(
           context,
           title: context.l10n.errorTitle,
           description: message,
@@ -335,7 +335,7 @@ class _ExampleTodoEditorScreenContent extends StatelessWidget {
           barrierDismissible: false,
         );
       case FailureType.fullScreenError:
-        BaseDialog.showFullscreen(
+        await BaseDialog.showFullscreen(
           context,
           title: context.l10n.errorTitle,
           bodyText: message,

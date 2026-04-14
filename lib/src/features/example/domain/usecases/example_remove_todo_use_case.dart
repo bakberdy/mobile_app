@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -17,19 +19,21 @@ class RemoveTodoUseCase extends UseCase<void, RemoveTodoParams> {
     final result = await _repo.removeTodo(params.id);
     return result.fold(
       (failure) {
-        Analytics.track(
-          RemoveTodoUseCaseEvent.failure(
-            properties: {
-              AnalyticsPropertyKeys.failureMessage: failure.message,
-              AnalyticsPropertyKeys.failureType: failure.type.name,
-              AnalyticsPropertyKeys.failureSource: failure.source,
-            },
+        unawaited(
+          Analytics.track(
+            RemoveTodoUseCaseEvent.failure(
+              properties: {
+                AnalyticsPropertyKeys.failureMessage: failure.message,
+                AnalyticsPropertyKeys.failureType: failure.type.name,
+                AnalyticsPropertyKeys.failureSource: failure.source,
+              },
+            ),
           ),
         );
         return result;
       },
       (_) {
-        Analytics.track(RemoveTodoUseCaseEvent.success());
+        unawaited(Analytics.track(RemoveTodoUseCaseEvent.success()));
         return result;
       },
     );

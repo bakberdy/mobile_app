@@ -1,8 +1,12 @@
-
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - ios/**
+    - android/**
 
 linter:
   rules:
-
-analyzer:
-  
+    unawaited_futures: true
+    discarded_futures: true
+    avoid_void_async: true

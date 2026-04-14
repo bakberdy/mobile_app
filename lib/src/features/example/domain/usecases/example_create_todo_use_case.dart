@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -18,7 +20,7 @@ class CreateTodoUseCase extends UseCase<void, CreateTodoParams> {
     final result = await _repo.createTodo(params.todo);
     return result.fold(
       (failure) {
-        Analytics.track(
+        unawaited(Analytics.track(
           CreateTodoUseCaseEvent.failure(
             properties: {
               AnalyticsPropertyKeys.failureMessage: failure.message,
@@ -26,11 +28,11 @@ class CreateTodoUseCase extends UseCase<void, CreateTodoParams> {
               AnalyticsPropertyKeys.failureSource: failure.source,
             },
           ),
-        );
+        ));
         return result;
       },
       (_) {
-        Analytics.track(CreateTodoUseCaseEvent.success());
+        unawaited(Analytics.track(CreateTodoUseCaseEvent.success()));
         return result;
       },
     );

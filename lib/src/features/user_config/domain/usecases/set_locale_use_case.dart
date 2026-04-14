@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -24,15 +26,15 @@ class SetLocaleUseCase extends UseCase<void, SetLocaleUseCaseParams> {
       (result) {
         return result.fold(
           (failure) {
-            Analytics.track(SetAppLocaleUseCaseEvent.failure(properties: {
+            unawaited(Analytics.track(SetAppLocaleUseCaseEvent.failure(properties: {
               AnalyticsPropertyKeys.failureMessage: failure.message,
               AnalyticsPropertyKeys.failureType: failure.type.name,
               AnalyticsPropertyKeys.failureSource: failure.source,
-            }));
+            })));
             return result;
           },
           (success) {
-            Analytics.track(SetAppLocaleUseCaseEvent.success());
+            unawaited(Analytics.track(SetAppLocaleUseCaseEvent.success()));
             return result;
           },
         );

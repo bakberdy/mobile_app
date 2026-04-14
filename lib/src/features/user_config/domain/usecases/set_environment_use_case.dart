@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -17,7 +19,7 @@ class SetEnvironmentUseCase extends UseCase<void, String> {
     return _repo.setEnvironment(environment).then((result) {
       return result.fold(
         (failure) {
-          Analytics.track(
+          unawaited(Analytics.track(
             SetEnvironmentUseCaseEvent.failure(
               properties: {
                 AnalyticsPropertyKeys.failureMessage: failure.message,
@@ -25,11 +27,11 @@ class SetEnvironmentUseCase extends UseCase<void, String> {
                 AnalyticsPropertyKeys.failureSource: failure.source,
               },
             ),
-          );
+          ));
           return result;
         },
         (success) {
-          Analytics.track(SetEnvironmentUseCaseEvent.success());
+          unawaited(Analytics.track(SetEnvironmentUseCaseEvent.success()));
           return result;
         },
       );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -18,19 +20,21 @@ class UpdateTodoUseCase extends UseCase<void, UpdateTodoParams> {
     final result = await _repo.updateTodo(params.todo);
     return result.fold(
       (failure) {
-        Analytics.track(
-          UpdateTodoUseCaseEvent.failure(
-            properties: {
-              AnalyticsPropertyKeys.failureMessage: failure.message,
-              AnalyticsPropertyKeys.failureType: failure.type.name,
-              AnalyticsPropertyKeys.failureSource: failure.source,
-            },
+        unawaited(
+          Analytics.track(
+            UpdateTodoUseCaseEvent.failure(
+              properties: {
+                AnalyticsPropertyKeys.failureMessage: failure.message,
+                AnalyticsPropertyKeys.failureType: failure.type.name,
+                AnalyticsPropertyKeys.failureSource: failure.source,
+              },
+            ),
           ),
         );
         return result;
       },
       (_) {
-        Analytics.track(UpdateTodoUseCaseEvent.success());
+        unawaited(Analytics.track(UpdateTodoUseCaseEvent.success()));
         return result;
       },
     );

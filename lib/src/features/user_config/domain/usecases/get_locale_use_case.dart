@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -17,7 +19,7 @@ class GetLocaleUseCase extends UseCase<String?, NoParams> {
     final result = await _repo.getLocale();
     return result.fold(
       (failure) {
-        Analytics.track(
+        unawaited(Analytics.track(
           GetAppLocaleUseCaseEvent.failure(
             properties: {
               AnalyticsPropertyKeys.failureMessage: failure.message,
@@ -25,11 +27,11 @@ class GetLocaleUseCase extends UseCase<String?, NoParams> {
               AnalyticsPropertyKeys.failureSource: failure.source,
             },
           ),
-        );
+        ));
         return result;
       },
       (success) {
-        Analytics.track(GetAppLocaleUseCaseEvent.success());
+        unawaited(Analytics.track(GetAppLocaleUseCaseEvent.success()));
         return result;
       },
     );

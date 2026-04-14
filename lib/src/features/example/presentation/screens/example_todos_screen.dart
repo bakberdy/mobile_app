@@ -34,10 +34,10 @@ class _ExampleTodosScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ExampleTodosBloc, ExampleTodosState>( 
-      listener: (context, state) {
+      listener: (context, state) async {
         switch (state.status) {
           case ErrorStateStatus(: final failure):
-            _handleFailure(context, failure);
+            await _handleFailure(context, failure);
           default:
             break;
         }
@@ -117,7 +117,7 @@ class _ExampleTodosScreenContent extends StatelessWidget {
     );
   }
 
-  void _handleFailure(BuildContext context, Failure failure) {
+  Future<void> _handleFailure(BuildContext context, Failure failure) async {
     final message = failure.message ?? failure.defaultMessage(context);
     switch (failure.type) {
       case FailureType.snackbar:
@@ -125,7 +125,7 @@ class _ExampleTodosScreenContent extends StatelessWidget {
       case FailureType.banner:
         BaseDialog.showBanner(context, message: message);
       case FailureType.alert:
-        BaseDialog.showBasic(
+        await BaseDialog.showBasic(
           context,
           title: context.l10n.errorTitle,
           description: message,
@@ -133,7 +133,7 @@ class _ExampleTodosScreenContent extends StatelessWidget {
           barrierDismissible: false,
         );
       case FailureType.fullScreenError:
-        BaseDialog.showFullscreen(
+        await BaseDialog.showFullscreen(
           context,
           title: context.l10n.errorTitle,
           bodyText: message,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -17,15 +19,15 @@ class GetEnvironmentUseCase extends UseCase<String?, NoParams> {
     return _repo.getEnvironment().then((result) {
       return result.fold(
         (failure) {
-          Analytics.track(GetEnvironmentUseCaseEvent.failure(properties: {
+          unawaited(Analytics.track(GetEnvironmentUseCaseEvent.failure(properties: {
             AnalyticsPropertyKeys.failureMessage: failure.message,
             AnalyticsPropertyKeys.failureType: failure.type.name,
             AnalyticsPropertyKeys.failureSource: failure.source,
-          }));
+          })));
           return result;
         },
         (success) {
-          Analytics.track(GetEnvironmentUseCaseEvent.success());
+          unawaited(Analytics.track(GetEnvironmentUseCaseEvent.success()));
           return result;
         },
       );

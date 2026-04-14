@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
@@ -18,7 +20,7 @@ class GetAppThemeModeUseCase extends UseCase<AppThemeMode?, NoParams> {
     final result = await _repo.getAppThemeMode();
     return result.fold(
       (failure) {
-        Analytics.track(
+        unawaited(Analytics.track(
           GetAppThemeModeUseCaseEvent.failure(
             properties: {
               AnalyticsPropertyKeys.failureMessage: failure.message,
@@ -26,11 +28,11 @@ class GetAppThemeModeUseCase extends UseCase<AppThemeMode?, NoParams> {
               AnalyticsPropertyKeys.failureSource: failure.source,
             },
           ),
-        );
+        ));
         return result;
       },
       (success) {
-        Analytics.track(GetAppThemeModeUseCaseEvent.success());
+        unawaited(Analytics.track(GetAppThemeModeUseCaseEvent.success()));
         return result;
       },
     );

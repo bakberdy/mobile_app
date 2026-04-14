@@ -27,7 +27,7 @@ class AuthInterceptor extends Interceptor {
         _log = logger;
 
   @override
-  void onRequest(
+  Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
@@ -45,7 +45,7 @@ class AuthInterceptor extends Interceptor {
 
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode != 401) return handler.next(err);
 
     final path = err.requestOptions.path;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_log/app_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +16,7 @@ void main() async {
   AppLogConfig.init();
   Bloc.observer = BlocLogObserver();
 
-  Analytics.track(AnalyticsEvent(name: AnalyticsEventNames.appOpened));
+  unawaited(Analytics.track(AnalyticsEvent(name: AnalyticsEventNames.appOpened)));
   final config = AppConfig.instance;
   appLog('App started');
   appLog('ENVIRONMENT: ${config.environment}');

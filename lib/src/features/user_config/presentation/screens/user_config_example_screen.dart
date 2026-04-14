@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +29,7 @@ class _UserConfigExampleScreenState extends State<UserConfigExampleScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPackageInfo();
+    unawaited(_loadPackageInfo());
   }
 
   Future<void> _loadPackageInfo() async {
