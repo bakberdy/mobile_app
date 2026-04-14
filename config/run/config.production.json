@@ -1,0 +1,4 @@
+{
+    "API_URL": "https://prod.base_api_url",
+    "ENVIRONMENT": "production"
+}
