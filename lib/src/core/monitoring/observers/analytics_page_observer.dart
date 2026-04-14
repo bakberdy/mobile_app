@@ -33,7 +33,7 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     }
 
     name = name.replaceAllMapped(
-      RegExp(r'([a-z])([A-Z])'),
+      RegExp('([a-z])([A-Z])'),
       (match) => '${match.group(1)}_${match.group(2)!.toLowerCase()}',
     );
 
@@ -45,7 +45,7 @@ class AnalyticsPageObserver implements AutoRouteObserver {
   String _getTabName(TabPageRoute route) => route.name
       .replaceAll('Route', '')
       .replaceAllMapped(
-        RegExp(r'([a-z])([A-Z])'),
+        RegExp('([a-z])([A-Z])'),
         (match) => '${match.group(1)}_${match.group(2)!.toLowerCase()}',
       )
       .toLowerCase();
