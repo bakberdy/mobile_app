@@ -16,7 +16,7 @@ part 'example_todo_editor_state.dart';
 class ExampleTodoEditorBloc
     extends Bloc<ExampleTodoEditorEvent, ExampleTodoEditorState> {
   ExampleTodoEditorBloc(this._createTodoUseCase, this._updateTodoUseCase)
-    : super(ExampleTodoEditorState()) {
+    : super(const ExampleTodoEditorState()) {
     on<ExampleTodoEditorStarted>(_onStarted);
     on<ExampleTodoEditorTitleChanged>(_onTitleChanged);
     on<ExampleTodoEditorDescriptionChanged>(_onDescriptionChanged);
@@ -49,7 +49,7 @@ class ExampleTodoEditorBloc
           status: FieldStatus.valid,
         ),
         formVersion: state.formVersion + 1,
-        status: StateStatus.initial(),
+        status: const StateStatus.initial(),
       ),
     );
   }
@@ -138,7 +138,7 @@ class ExampleTodoEditorBloc
       return;
     }
 
-    emit(state.copyWith(status: StateStatus.loading()));
+    emit(state.copyWith(status: const StateStatus.loading()));
 
     final currentTodo = state.todo;
     final createdAt =
@@ -157,7 +157,7 @@ class ExampleTodoEditorBloc
 
     result.fold(
       (failure) => emit(state.copyWith(status: StateStatus.error(failure))),
-      (_) => emit(state.copyWith(status: StateStatus.success())),
+      (_) => emit(state.copyWith(status: const StateStatus.success())),
     );
   }
 }

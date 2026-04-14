@@ -33,7 +33,7 @@ class CustomExampleWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Spacer(),
+          const Spacer(),
           ClipRect(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -51,7 +51,7 @@ class CustomExampleWidget extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.md,
                   vertical: AppSpacing.lg,
                 ),
@@ -64,7 +64,7 @@ class CustomExampleWidget extends StatelessWidget {
                         fontWeight: .w600,
                       ),
                     ),
-                    SizedBox(height: AppSpacing.md),
+                    const SizedBox(height: AppSpacing.md),
                     Text(description, style: context.textTheme.bodyMedium),
                     const SizedBox(height: AppSpacing.md),
                     BaseFilledButton.primary(

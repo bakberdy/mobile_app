@@ -94,7 +94,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
         value: locale,
       );
       unawaited(_syncLocale());
-      return Right(null);
+      return const Right(null);
     } on Exception catch (e) {
       return Left(e.toFailure(source: '$runtimeType.setLocale'));
     }
@@ -109,7 +109,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
       );
       unawaited(_syncThemeMode());
 
-      return Right(null);
+      return const Right(null);
     } on Exception catch (e) {
       return Left(e.toFailure(source: '$runtimeType.setTheme'));
     }
@@ -142,7 +142,7 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
     try {
       await _localDataSource.setUserConfig(key: storageKey, value: environment);
 
-      return Right(null);
+      return const Right(null);
     } on Exception catch (e) {
       return Left(e.toFailure(source: '$runtimeType.setEnvironment'));
     }

@@ -40,7 +40,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
     LocaleStarted event,
     Emitter<LocaleState> emit,
   ) async {
-    emit(state.copyWith(status: StateStatus.loading()));
+    emit(state.copyWith(status: const StateStatus.loading()));
 
     final result = await _getLocaleUseCase(const NoParams());
 
@@ -53,7 +53,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
           emit(
             state.copyWith(
               languageCode: languageCode,
-              status: StateStatus.success(),
+              status: const StateStatus.success(),
             ),
           );
         } else {
@@ -66,7 +66,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
           emit(
             state.copyWith(
               languageCode: event.deviceLanguageCode,
-              status: StateStatus.success(),
+              status: const StateStatus.success(),
             ),
           );
         }
@@ -87,7 +87,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
     emit(
       state.copyWith(
         languageCode: event.languageCode,
-        status: StateStatus.loading(),
+        status: const StateStatus.loading(),
       ),
     );
 
@@ -100,7 +100,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
         emit(state.copyWith(status: StateStatus.error(failure)));
       },
       (_) {
-        emit(state.copyWith(status: StateStatus.success()));
+        emit(state.copyWith(status: const StateStatus.success()));
       },
     );
   }

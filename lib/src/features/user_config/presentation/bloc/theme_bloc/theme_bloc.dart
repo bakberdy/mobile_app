@@ -34,7 +34,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   final SetThemeUseCase _setThemeUseCase;
 
   ThemeBloc(this._getAppThemeModeUseCase, this._setThemeUseCase)
-    : super(ThemeState()) {
+    : super(const ThemeState()) {
     on<ThemeStarted>(_onStarted);
     on<ThemeModeChanged>(_onModeChanged);
     on<ThemeSystemRefreshed>(_onSystemRefreshed);
@@ -53,7 +53,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   }
 
   Future<void> _onStarted(ThemeStarted event, Emitter<ThemeState> emit) async {
-    emit(state.copyWith(status: StateStatus.loading()));
+    emit(state.copyWith(status: const StateStatus.loading()));
 
     final result = await _getAppThemeModeUseCase(const NoParams());
 
@@ -71,7 +71,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
                 appThemeMode,
                 event.systemThemeMode,
               ),
-              status: StateStatus.success(),
+              status: const StateStatus.success(),
             ),
           );
         } else {
@@ -89,7 +89,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
                 AppThemeMode.system,
                 event.systemThemeMode,
               ),
-              status: StateStatus.success(),
+              status: const StateStatus.success(),
             ),
           );
         }
@@ -109,7 +109,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
           event.mode,
           state.systemThemeMode,
         ),
-        status: StateStatus.loading(),
+        status: const StateStatus.loading(),
       ),
     );
 
@@ -122,7 +122,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
         emit(state.copyWith(status: StateStatus.error(failure)));
       },
       (_) {
-        emit(state.copyWith(status: StateStatus.success()));
+        emit(state.copyWith(status: const StateStatus.success()));
       },
     );
   }
@@ -148,7 +148,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
       state.copyWith(
         systemThemeMode: event.systemThemeMode,
         appliedThemeMode: appliedThemeMode,
-        status: StateStatus.success(),
+        status: const StateStatus.success(),
       ),
     );
   }

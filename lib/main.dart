@@ -14,10 +14,10 @@ void main() async {
   await configureDependencies();
 
   AppLogConfig.init();
-  Bloc.observer = BlocLogObserver();
+  Bloc.observer = const BlocLogObserver();
 
   unawaited(
-    Analytics.track(AnalyticsEvent(name: AnalyticsEventNames.appOpened)),
+    Analytics.track(const AnalyticsEvent(name: AnalyticsEventNames.appOpened)),
   );
   final config = AppConfig.instance;
   appLog('App started');
