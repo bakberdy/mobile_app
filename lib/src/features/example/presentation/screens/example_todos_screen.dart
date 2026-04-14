@@ -22,7 +22,8 @@ class ExampleTodosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<ExampleTodosBloc>()..add(const ExampleTodosEvent.started()),
+      create: (_) =>
+          sl<ExampleTodosBloc>()..add(const ExampleTodosEvent.started()),
       child: const _ExampleTodosScreenContent(),
     );
   }
@@ -33,10 +34,10 @@ class _ExampleTodosScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ExampleTodosBloc, ExampleTodosState>( 
+    return BlocConsumer<ExampleTodosBloc, ExampleTodosState>(
       listener: (context, state) async {
         switch (state.status) {
-          case ErrorStateStatus(: final failure):
+          case ErrorStateStatus(:final failure):
             await _handleFailure(context, failure);
           default:
             break;
@@ -69,9 +70,7 @@ class _ExampleTodosScreenContent extends StatelessWidget {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.md),
-              ),
+              const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 sliver: SliverToBoxAdapter(
@@ -88,9 +87,7 @@ class _ExampleTodosScreenContent extends StatelessWidget {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.md),
-              ),
+              const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.md,

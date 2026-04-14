@@ -10,7 +10,8 @@ sealed class FieldState<T> with _$FieldState<T> {
     required T value,
     @Default(FieldStatus.pure) FieldStatus status,
     String? error, // present when invalid
-    @Default(false) bool isDirty, // true when the field has been interacted with
+    @Default(false)
+    bool isDirty, // true when the field has been interacted with
     @Default(true) bool enabled, // true when the field is enabled
   }) = _FieldState<T>;
 }

@@ -55,17 +55,16 @@ class ApiClient {
     ApiOptions? options,
     ApiCancelToken? cancelToken,
     ApiProgressCallback? onReceiveProgress,
-  }) =>
-      _send(
-        () => _dio.get<T>(
-          path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options?.toOptions(),
-          cancelToken: cancelToken?.toCancelToken(),
-          onReceiveProgress: onReceiveProgress,
-        ),
-      );
+  }) => _send(
+    () => _dio.get<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options?.toOptions(),
+      cancelToken: cancelToken?.toCancelToken(),
+      onReceiveProgress: onReceiveProgress,
+    ),
+  );
 
   Future<ApiResponse<T>> post<T>(
     String path, {
@@ -75,18 +74,17 @@ class ApiClient {
     ApiCancelToken? cancelToken,
     ApiProgressCallback? onSendProgress,
     ApiProgressCallback? onReceiveProgress,
-  }) =>
-      _send(
-        () => _dio.post<T>(
-          path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options?.toOptions(),
-          cancelToken: cancelToken?.toCancelToken(),
-          onSendProgress: onSendProgress,
-          onReceiveProgress: onReceiveProgress,
-        ),
-      );
+  }) => _send(
+    () => _dio.post<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options?.toOptions(),
+      cancelToken: cancelToken?.toCancelToken(),
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    ),
+  );
 
   Future<ApiResponse<T>> put<T>(
     String path, {
@@ -96,18 +94,17 @@ class ApiClient {
     ApiCancelToken? cancelToken,
     ApiProgressCallback? onSendProgress,
     ApiProgressCallback? onReceiveProgress,
-  }) =>
-      _send(
-        () => _dio.put<T>(
-          path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options?.toOptions(),
-          cancelToken: cancelToken?.toCancelToken(),
-          onSendProgress: onSendProgress,
-          onReceiveProgress: onReceiveProgress,
-        ),
-      );
+  }) => _send(
+    () => _dio.put<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options?.toOptions(),
+      cancelToken: cancelToken?.toCancelToken(),
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    ),
+  );
 
   Future<ApiResponse<T>> patch<T>(
     String path, {
@@ -117,18 +114,17 @@ class ApiClient {
     ApiCancelToken? cancelToken,
     ApiProgressCallback? onSendProgress,
     ApiProgressCallback? onReceiveProgress,
-  }) =>
-      _send(
-        () => _dio.patch<T>(
-          path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options?.toOptions(),
-          cancelToken: cancelToken?.toCancelToken(),
-          onSendProgress: onSendProgress,
-          onReceiveProgress: onReceiveProgress,
-        ),
-      );
+  }) => _send(
+    () => _dio.patch<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options?.toOptions(),
+      cancelToken: cancelToken?.toCancelToken(),
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    ),
+  );
 
   Future<ApiResponse<T>> delete<T>(
     String path, {
@@ -136,16 +132,15 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     ApiOptions? options,
     ApiCancelToken? cancelToken,
-  }) =>
-      _send(
-        () => _dio.delete<T>(
-          path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options?.toOptions(),
-          cancelToken: cancelToken?.toCancelToken(),
-        ),
-      );
+  }) => _send(
+    () => _dio.delete<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options?.toOptions(),
+      cancelToken: cancelToken?.toCancelToken(),
+    ),
+  );
 
   Future<ApiResponse<T>> head<T>(
     String path, {
@@ -153,16 +148,15 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     ApiOptions? options,
     ApiCancelToken? cancelToken,
-  }) =>
-      _send(
-        () => _dio.head<T>(
-          path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options?.toOptions(),
-          cancelToken: cancelToken?.toCancelToken(),
-        ),
-      );
+  }) => _send(
+    () => _dio.head<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options?.toOptions(),
+      cancelToken: cancelToken?.toCancelToken(),
+    ),
+  );
 
   Future<ApiResponse> download(
     String urlPath,
@@ -173,19 +167,18 @@ class ApiClient {
     bool deleteOnError = true,
     Object? data,
     ApiOptions? options,
-  }) =>
-      _send(
-        () => _dio.download(
-          urlPath,
-          savePath,
-          onReceiveProgress: onReceiveProgress,
-          queryParameters: queryParameters,
-          cancelToken: cancelToken?.toCancelToken(),
-          deleteOnError: deleteOnError,
-          data: data,
-          options: options?.toOptions(),
-        ),
-      );
+  }) => _send(
+    () => _dio.download(
+      urlPath,
+      savePath,
+      onReceiveProgress: onReceiveProgress,
+      queryParameters: queryParameters,
+      cancelToken: cancelToken?.toCancelToken(),
+      deleteOnError: deleteOnError,
+      data: data,
+      options: options?.toOptions(),
+    ),
+  );
 
   // ── Internal ────────────────────────────────────────────────────────────────
 

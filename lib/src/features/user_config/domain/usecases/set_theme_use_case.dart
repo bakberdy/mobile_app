@@ -1,4 +1,4 @@
-  import 'dart:async';
+import 'dart:async';
 
 import 'package:injectable/injectable.dart';
 import 'package:mobile_app/src/core/monitoring/analytics/analytics.dart';
@@ -23,23 +23,27 @@ class SetThemeUseCase extends UseCase<void, SetThemeUseCaseParams> {
 
   @override
   FutureEither<void> call(SetThemeUseCaseParams params) {
-    return _repo.setTheme(params.themeMode).then(
-      (result) {
-        return result.fold(
-          (failure) {
-            unawaited(Analytics.track(SetAppThemeModeUseCaseEvent.failure(properties: {
-              AnalyticsPropertyKeys.failureMessage: failure.message,
-              AnalyticsPropertyKeys.failureType: failure.type.name,
-              AnalyticsPropertyKeys.failureSource: failure.source,
-            })));
-            return result;
-          },
-          (success) {
-            unawaited(Analytics.track(SetAppThemeModeUseCaseEvent.success()));
-            return result;
-          },
-        );
-      },
-    );
+    return _repo.setTheme(params.themeMode).then((result) {
+      return result.fold(
+        (failure) {
+          unawaited(
+            Analytics.track(
+              SetAppThemeModeUseCaseEvent.failure(
+                properties: {
+                  AnalyticsPropertyKeys.failureMessage: failure.message,
+                  AnalyticsPropertyKeys.failureType: failure.type.name,
+                  AnalyticsPropertyKeys.failureSource: failure.source,
+                },
+              ),
+            ),
+          );
+          return result;
+        },
+        (success) {
+          unawaited(Analytics.track(SetAppThemeModeUseCaseEvent.success()));
+          return result;
+        },
+      );
+    });
   }
 }

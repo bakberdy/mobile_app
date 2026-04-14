@@ -4,9 +4,8 @@ import 'package:mobile_app/src/config/theme/base_theme_x.dart';
 import 'package:mobile_app/src/core/language/generated/app_localizations.dart';
 
 extension ContextExtensions on BuildContext {
-
   //theme extensions
-  ThemeData get theme => Theme.of(this);  
+  ThemeData get theme => Theme.of(this);
   TextTheme get textTheme => TextTheme.of(this);
   ColorScheme get colorScheme => ColorScheme.of(this);
   BaseThemeExtension get baseThemeX => theme.extension<BaseThemeExtension>()!;
@@ -19,9 +18,8 @@ extension ContextExtensions on BuildContext {
     final languageCode = locale.languageCode;
     return ['ar', 'he', 'fa', 'ur'].contains(languageCode);
   }
-  String get languageCode => locale.languageCode;
 
-  
+  String get languageCode => locale.languageCode;
 }
 
 final class AppContextAssets {

@@ -68,7 +68,9 @@ class ExampleTodosBloc extends Bloc<ExampleTodosEvent, ExampleTodosState> {
 
     emit(state.copyWith(status: StateStatus.loading()));
 
-    final currentTodo = state.todos.where((todo) => todo.id == state.editingTodoId);
+    final currentTodo = state.todos.where(
+      (todo) => todo.id == state.editingTodoId,
+    );
     final existingTodo = currentTodo.isEmpty ? null : currentTodo.first;
     final todo = Todo(
       id:
@@ -85,9 +87,7 @@ class ExampleTodosBloc extends Bloc<ExampleTodosEvent, ExampleTodosState> {
         : await _updateTodoUseCase(UpdateTodoParams(todo: todo));
 
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: StateStatus.error(failure)),
-      ),
+      (failure) => emit(state.copyWith(status: StateStatus.error(failure))),
       (_) => emit(
         state.copyWith(
           status: StateStatus.success(),
@@ -113,9 +113,7 @@ class ExampleTodosBloc extends Bloc<ExampleTodosEvent, ExampleTodosState> {
 
     final result = await _removeTodoUseCase(RemoveTodoParams(id: event.id));
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: StateStatus.error(failure)),
-      ),
+      (failure) => emit(state.copyWith(status: StateStatus.error(failure))),
       (_) {
         final isEditingDeletedTodo = state.editingTodoId == event.id;
         emit(
@@ -155,9 +153,7 @@ class ExampleTodosBloc extends Bloc<ExampleTodosEvent, ExampleTodosState> {
     );
 
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: StateStatus.error(failure)),
-      ),
+      (failure) => emit(state.copyWith(status: StateStatus.error(failure))),
       (_) => emit(state.copyWith(status: StateStatus.success())),
     );
 
@@ -204,10 +200,7 @@ class ExampleTodosBloc extends Bloc<ExampleTodosEvent, ExampleTodosState> {
   ) {
     emit(
       state.copyWith(
-        isDoneField: FieldState(
-          value: event.value,
-          status: FieldStatus.valid,
-        ),
+        isDoneField: FieldState(value: event.value, status: FieldStatus.valid),
       ),
     );
   }
@@ -261,15 +254,9 @@ class ExampleTodosBloc extends Bloc<ExampleTodosEvent, ExampleTodosState> {
 
     final result = await _getTodosUseCase(const NoParams());
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: StateStatus.error(failure)),
-      ),
-      (todos) => emit(
-        state.copyWith(
-          status: StateStatus.success(),
-          todos: todos,
-        ),
-      ),
+      (failure) => emit(state.copyWith(status: StateStatus.error(failure))),
+      (todos) =>
+          emit(state.copyWith(status: StateStatus.success(), todos: todos)),
     );
   }
 }

@@ -12,9 +12,9 @@ class FirebaseAnalyticsProvider implements AnalyticsProvider {
     //   name: event.eventName,
     //   parameters: event.propertiesMap,
     // );
-    
+
     // For now, just print (replace with actual Firebase implementation)
-   // print('[Firebase] Event: ${event.eventName}, Properties: ${event.propertiesMap}');
+    // print('[Firebase] Event: ${event.eventName}, Properties: ${event.propertiesMap}');
   }
 
   @override

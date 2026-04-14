@@ -120,7 +120,9 @@ class ExampleTodoEditorBloc
       emit(
         state.copyWith(
           titleField: state.titleField.copyWith(
-            status: titleError == null ? FieldStatus.valid : FieldStatus.invalid,
+            status: titleError == null
+                ? FieldStatus.valid
+                : FieldStatus.invalid,
             error: titleError,
             isDirty: true,
           ),
@@ -139,7 +141,8 @@ class ExampleTodoEditorBloc
     emit(state.copyWith(status: StateStatus.loading()));
 
     final currentTodo = state.todo;
-    final createdAt = state.createdAt ?? currentTodo?.createdAt ?? DateTime.now();
+    final createdAt =
+        state.createdAt ?? currentTodo?.createdAt ?? DateTime.now();
     final todo = Todo(
       id: currentTodo?.id ?? DateTime.now().microsecondsSinceEpoch.toString(),
       createdAt: createdAt,
@@ -153,9 +156,7 @@ class ExampleTodoEditorBloc
         : await _updateTodoUseCase(UpdateTodoParams(todo: todo));
 
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: StateStatus.error(failure)),
-      ),
+      (failure) => emit(state.copyWith(status: StateStatus.error(failure))),
       (_) => emit(state.copyWith(status: StateStatus.success())),
     );
   }

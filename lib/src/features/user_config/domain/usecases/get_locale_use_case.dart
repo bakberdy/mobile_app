@@ -19,15 +19,17 @@ class GetLocaleUseCase extends UseCase<String?, NoParams> {
     final result = await _repo.getLocale();
     return result.fold(
       (failure) {
-        unawaited(Analytics.track(
-          GetAppLocaleUseCaseEvent.failure(
-            properties: {
-              AnalyticsPropertyKeys.failureMessage: failure.message,
-              AnalyticsPropertyKeys.failureType: failure.type.name,
-              AnalyticsPropertyKeys.failureSource: failure.source,
-            },
+        unawaited(
+          Analytics.track(
+            GetAppLocaleUseCaseEvent.failure(
+              properties: {
+                AnalyticsPropertyKeys.failureMessage: failure.message,
+                AnalyticsPropertyKeys.failureType: failure.type.name,
+                AnalyticsPropertyKeys.failureSource: failure.source,
+              },
+            ),
           ),
-        ));
+        );
         return result;
       },
       (success) {

@@ -46,7 +46,7 @@ enum FailureType {
   banner,
   @JsonValue('inline_error')
   inlineError,
-  
+
   //critical
   @JsonValue('alert')
   alert,

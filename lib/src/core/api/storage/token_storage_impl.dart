@@ -26,13 +26,12 @@ class TokenStorageImpl implements TokenStorage {
   Future<String?> getRefreshToken() => _storage.read(key: _refreshKey);
 
   @override
-  Future<bool> containsRefreshToken() =>
-      _storage.containsKey(key: _refreshKey);
+  Future<bool> containsRefreshToken() => _storage.containsKey(key: _refreshKey);
 
   @override
   Future<void> clearTokens() => Future.wait([
-        _storage.delete(key: _accessKey),
-        _storage.delete(key: _refreshKey),
-        _storage.delete(key: _expiryKey),
-      ]);
+    _storage.delete(key: _accessKey),
+    _storage.delete(key: _refreshKey),
+    _storage.delete(key: _expiryKey),
+  ]);
 }

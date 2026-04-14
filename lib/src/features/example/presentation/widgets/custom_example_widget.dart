@@ -65,10 +65,7 @@ class CustomExampleWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: AppSpacing.md),
-                    Text(
-                      description,
-                      style: context.textTheme.bodyMedium,
-                    ),
+                    Text(description, style: context.textTheme.bodyMedium),
                     const SizedBox(height: AppSpacing.md),
                     BaseFilledButton.primary(
                       onPressed: () {},

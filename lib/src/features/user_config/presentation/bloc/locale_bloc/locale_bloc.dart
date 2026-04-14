@@ -19,7 +19,8 @@ part 'locale_bloc.freezed.dart';
 class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
   final GetLocaleUseCase _getLocaleUseCase;
   final SetLocaleUseCase _setLocaleUseCase;
-  static const List<Locale> _supportedLanguageCodes = LocaleConstants.supportedLocales;
+  static const List<Locale> _supportedLanguageCodes =
+      LocaleConstants.supportedLocales;
 
   LocaleBloc(this._getLocaleUseCase, this._setLocaleUseCase)
     : super(const LocaleState()) {
@@ -35,18 +36,17 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
     add(LocaleEvent.changed(languageCode));
   }
 
-  Future<void> _onStarted(LocaleStarted event, Emitter<LocaleState> emit) async {
+  Future<void> _onStarted(
+    LocaleStarted event,
+    Emitter<LocaleState> emit,
+  ) async {
     emit(state.copyWith(status: StateStatus.loading()));
 
     final result = await _getLocaleUseCase(const NoParams());
 
     await result.fold(
       (Failure failure) async {
-        emit(
-          state.copyWith(
-            status: StateStatus.error(failure),
-          ),
-        );
+        emit(state.copyWith(status: StateStatus.error(failure)));
       },
       (languageCode) async {
         if (languageCode != null) {
@@ -57,7 +57,9 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
             ),
           );
         } else {
-          await _setLocaleUseCase(SetLocaleUseCaseParams(locale: event.deviceLanguageCode));
+          await _setLocaleUseCase(
+            SetLocaleUseCaseParams(locale: event.deviceLanguageCode),
+          );
           if (emit.isDone) {
             return;
           }
@@ -76,7 +78,9 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
     LocaleChanged event,
     Emitter<LocaleState> emit,
   ) async {
-    if (!_supportedLanguageCodes.any((locale) => locale.languageCode == event.languageCode)) {
+    if (!_supportedLanguageCodes.any(
+      (locale) => locale.languageCode == event.languageCode,
+    )) {
       return;
     }
 
@@ -93,11 +97,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
 
     result.fold(
       (Failure failure) {
-        emit(
-          state.copyWith(
-            status: StateStatus.error(failure),
-          ),
-        );
+        emit(state.copyWith(status: StateStatus.error(failure)));
       },
       (_) {
         emit(state.copyWith(status: StateStatus.success()));

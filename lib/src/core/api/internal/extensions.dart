@@ -1,24 +1,26 @@
 import 'package:dio/dio.dart';
 import 'package:mobile_app/src/core/api/api.dart';
 
-
-extension DioExceptionX on DioException{
-  ApiException toApiException(){
-    return ApiException(type: type.toApiExceptionType(), response: response?.toApiResponse());
+extension DioExceptionX on DioException {
+  ApiException toApiException() {
+    return ApiException(
+      type: type.toApiExceptionType(),
+      response: response?.toApiResponse(),
+    );
   }
 }
 
-extension DioExceptionTypeX on DioExceptionType{
-  ApiExceptionType toApiExceptionType(){
-    return switch(this){
-      .badCertificate=>.badCertificate,
-      .badResponse=>.badCertificate,
-      .cancel=>.cancel,
-      .connectionError=>.connectionError,
-      .receiveTimeout=> .receiveTimeout,
-      .sendTimeout=>.sendTimeout,
-      .unknown=>.unknown,
-      .connectionTimeout=>.connectionTimeout
+extension DioExceptionTypeX on DioExceptionType {
+  ApiExceptionType toApiExceptionType() {
+    return switch (this) {
+      .badCertificate => .badCertificate,
+      .badResponse => .badCertificate,
+      .cancel => .cancel,
+      .connectionError => .connectionError,
+      .receiveTimeout => .receiveTimeout,
+      .sendTimeout => .sendTimeout,
+      .unknown => .unknown,
+      .connectionTimeout => .connectionTimeout,
     };
   }
 }

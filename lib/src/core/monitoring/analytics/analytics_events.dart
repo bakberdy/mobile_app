@@ -104,7 +104,6 @@ final class AnalyticsPropertyKeys {
   static const String timestamp = 'timestamp';
   static const String isUserGesture = 'is_user_gesture';
 
-
   static const String failureType = 'failure_type';
   static const String failureMessage = 'failure_message';
   static const String failureSource = 'failure_source';

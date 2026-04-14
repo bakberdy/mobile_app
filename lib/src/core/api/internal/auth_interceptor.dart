@@ -20,11 +20,11 @@ class AuthInterceptor extends Interceptor {
     this._tokenStorage, {
     String refreshPath = '/auth/refresh',
     void Function()? onUnauthorized,
-    void Function(String)? logger, 
+    void Function(String)? logger,
     required List<String> publicPaths,
-  })  : _publicPaths = publicPaths,
-        _refreshPath = refreshPath,
-        _log = logger;
+  }) : _publicPaths = publicPaths,
+       _refreshPath = refreshPath,
+       _log = logger;
 
   @override
   Future<void> onRequest(
@@ -43,9 +43,11 @@ class AuthInterceptor extends Interceptor {
     return handler.next(options);
   }
 
-
   @override
-  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
     if (err.response?.statusCode != 401) return handler.next(err);
 
     final path = err.requestOptions.path;
@@ -77,7 +79,6 @@ class AuthInterceptor extends Interceptor {
       return handler.reject(_toUnauthorizedError(err));
     }
   }
-
 
   Future<void> _doRefresh() async {
     final refreshToken = await _tokenStorage.getRefreshToken();
@@ -124,7 +125,8 @@ class AuthInterceptor extends Interceptor {
   }
 
   DioException _toUnauthorizedError(DioException source) {
-    final response = source.response ??
+    final response =
+        source.response ??
         Response(
           requestOptions: source.requestOptions,
           statusCode: 401,

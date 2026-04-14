@@ -16,7 +16,9 @@ void main() async {
   AppLogConfig.init();
   Bloc.observer = BlocLogObserver();
 
-  unawaited(Analytics.track(AnalyticsEvent(name: AnalyticsEventNames.appOpened)));
+  unawaited(
+    Analytics.track(AnalyticsEvent(name: AnalyticsEventNames.appOpened)),
+  );
   final config = AppConfig.instance;
   appLog('App started');
   appLog('ENVIRONMENT: ${config.environment}');

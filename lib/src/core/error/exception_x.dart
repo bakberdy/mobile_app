@@ -6,25 +6,23 @@ extension ExceptionX on Exception {
     final e = this;
     if (e is ApiException) {
       String? message;
-      try{
+      try {
         message = e.response?.data['message'];
-      }catch(_){
+      } catch (_) {
         message = null;
       }
       return Failure.api(
         message: message,
         data: e.response?.data,
-        type: FailureType.values.byName(e.response?.data?['type'] ?? 'snackbar'),
-        source: source
+        type: FailureType.values.byName(
+          e.response?.data?['type'] ?? 'snackbar',
+        ),
+        source: source,
       );
     }
     if (e is FormatException || e is TypeError) {
-      return Failure.parse(
-        source: source
-      );
+      return Failure.parse(source: source);
     }
-    return Failure.base(
-      source: source
-    );
+    return Failure.base(source: source);
   }
 }

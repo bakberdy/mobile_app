@@ -59,11 +59,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
 
     await result.fold<Future<void>>(
       (Failure failure) async {
-        emit(
-          state.copyWith(
-            status: StateStatus.error(failure),
-          ),
-        );
+        emit(state.copyWith(status: StateStatus.error(failure)));
       },
       (AppThemeMode? appThemeMode) async {
         if (appThemeMode != null) {
@@ -113,7 +109,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
           event.mode,
           state.systemThemeMode,
         ),
-        status: StateStatus.loading() ,
+        status: StateStatus.loading(),
       ),
     );
 
@@ -123,11 +119,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
 
     result.fold(
       (Failure failure) {
-        emit(
-          state.copyWith(
-            status: StateStatus.error(failure),
-          ),
-        );
+        emit(state.copyWith(status: StateStatus.error(failure)));
       },
       (_) {
         emit(state.copyWith(status: StateStatus.success()));

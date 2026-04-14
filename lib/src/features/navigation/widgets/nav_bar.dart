@@ -58,7 +58,8 @@ class _NavBarState extends State<NavBar> {
     final indicatorRight = totalWidth - indicatorLeft - widget.itemWidth;
     final isLtr = context.isRTL;
     final theme = Theme.of(context);
-    final sliderColor = widget.sliderColor ?? theme.colorScheme.surfaceContainer;
+    final sliderColor =
+        widget.sliderColor ?? theme.colorScheme.surfaceContainer;
 
     return SafeArea(
       child: Padding(
@@ -85,14 +86,17 @@ class _NavBarState extends State<NavBar> {
                   widget.itemWidth / 2,
                   totalWidth - widget.itemWidth / 2,
                 );
-                setState(() => _dragLeft = clampedCenter - widget.itemWidth / 2);
+                setState(
+                  () => _dragLeft = clampedCenter - widget.itemWidth / 2,
+                );
               },
               onHorizontalDragEnd: (_) {
                 final left = _dragLeft ?? _currentPage * slotWidth;
                 final center = left + widget.itemWidth / 2;
-                final snapped = (center / slotWidth)
-                    .floor()
-                    .clamp(0, widget.items.length - 1);
+                final snapped = (center / slotWidth).floor().clamp(
+                  0,
+                  widget.items.length - 1,
+                );
                 setState(() {
                   _currentPage = snapped;
                   _dragLeft = null;

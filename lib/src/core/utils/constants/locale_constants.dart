@@ -7,11 +7,7 @@ class LocaleConstants {
   static const Locale russian = Locale('ru');
   static const Locale kazakh = Locale('kk');
 
-  static const List<Locale> supportedLocales = [
-    english,
-    russian,
-    kazakh,
-  ];
+  static const List<Locale> supportedLocales = [english, russian, kazakh];
 
   static const Locale defaultLocale = english;
 }

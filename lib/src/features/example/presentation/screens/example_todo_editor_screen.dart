@@ -41,7 +41,7 @@ class _ExampleTodoEditorScreenContent extends StatelessWidget {
         switch (state.status) {
           case SuccessStateStatus():
             await context.router.maybePop(true);
-          case ErrorStateStatus(: final failure):
+          case ErrorStateStatus(:final failure):
             await _handleFailure(context, failure);
           default:
             break;

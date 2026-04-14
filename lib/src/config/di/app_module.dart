@@ -9,7 +9,6 @@ import 'package:mobile_app/src/core/api/api.dart';
 
 @module
 abstract class AppModule {
-
   @singleton
   AppConfig get appConfig => AppConfig.instance;
 
@@ -36,13 +35,14 @@ abstract class AppModule {
   AppRouter appRouter(AuthGuard authGuard) => AppRouter(authGuard: authGuard);
 
   @lazySingleton
-  ApiClient apiClient(TokenStorage tokenStorage, AppConfig appConfig) => ApiClient(
-    ApiConfig(
-      baseUrl: appConfig.baseUrl,
-      connectTimeout: appConfig.connectTimeout,
-      receiveTimeout: appConfig.receiveTimeout,
-      sendTimeout: appConfig.sendTimeout,
-    ),
-    tokenStorage,
-  );
+  ApiClient apiClient(TokenStorage tokenStorage, AppConfig appConfig) =>
+      ApiClient(
+        ApiConfig(
+          baseUrl: appConfig.baseUrl,
+          connectTimeout: appConfig.connectTimeout,
+          receiveTimeout: appConfig.receiveTimeout,
+          sendTimeout: appConfig.sendTimeout,
+        ),
+        tokenStorage,
+      );
 }

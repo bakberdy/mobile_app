@@ -45,7 +45,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           },
           items: [
             NavBarItem(icon: const Icon(Icons.home, size: 20), label: 'Home'),
-            NavBarItem(icon: const Icon(Icons.person, size: 20), label: 'Profile'),
+            NavBarItem(
+              icon: const Icon(Icons.person, size: 20),
+              label: 'Profile',
+            ),
           ],
         ),
       ),

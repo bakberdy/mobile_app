@@ -7,9 +7,7 @@ sealed class StateStatus with _$StateStatus {
   const factory StateStatus.initial() = InitialStateStatus;
   const factory StateStatus.loading() = LoadingStateStatus;
   const factory StateStatus.success() = SuccessStateStatus;
-  const factory StateStatus.error(
-    Failure failure,
-  ) = ErrorStateStatus;
+  const factory StateStatus.error(Failure failure) = ErrorStateStatus;
 }
 
 extension StateStatusX on StateStatus {

@@ -6,7 +6,8 @@ import 'package:mobile_app/src/core/storage/local_storage/local_storage.dart';
 class SharedPreferencesStorage implements LocalStorage {
   final SharedPreferences _sharedPreferences;
 
-  SharedPreferencesStorage({required SharedPreferences sharedPreferences}) : _sharedPreferences = sharedPreferences;
+  SharedPreferencesStorage({required SharedPreferences sharedPreferences})
+    : _sharedPreferences = sharedPreferences;
   @override
   Future<bool> containsKey({required String key}) {
     return Future.sync(() => _sharedPreferences.containsKey(key));
@@ -46,5 +47,4 @@ class SharedPreferencesStorage implements LocalStorage {
   Future<void> write({required String key, required String value}) {
     return Future.sync(() => _sharedPreferences.setString(key, value));
   }
-
 }

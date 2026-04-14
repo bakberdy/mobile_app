@@ -16,7 +16,8 @@ class AppTypography {
 
   // ── Font families ──────────────────────────────────────────────────────────
   static const String primary = 'Montserrat'; // used for all roles
-  static const String display = 'Hiatus';     // used only for displayLarge (hero/splash)
+  static const String display =
+      'Hiatus'; // used only for displayLarge (hero/splash)
 
   // ── M3 Type scale ──────────────────────────────────────────────────────────
   //
@@ -42,7 +43,6 @@ class AppTypography {
   static const TextTheme textTheme = TextTheme(
     // ── Display ──────────────────────────────────────────────────────────────
     // Large, expressive text. Typically used for hero or splash screens.
-
     displayLarge: TextStyle(
       fontFamily: display, // Hiatus for visual impact
       fontSize: 57,
@@ -67,7 +67,6 @@ class AppTypography {
 
     // ── Headline ─────────────────────────────────────────────────────────────
     // Section titles, screen headers, dialogs.
-
     headlineLarge: TextStyle(
       fontFamily: primary,
       fontSize: 32,
@@ -92,7 +91,6 @@ class AppTypography {
 
     // ── Title ─────────────────────────────────────────────────────────────────
     // AppBar titles, card titles, list item titles.
-
     titleLarge: TextStyle(
       fontFamily: primary,
       fontSize: 22,
@@ -117,7 +115,6 @@ class AppTypography {
 
     // ── Label ─────────────────────────────────────────────────────────────────
     // Buttons, tabs, chips, badges, navigation items.
-
     labelLarge: TextStyle(
       fontFamily: primary,
       fontSize: 14,
@@ -142,7 +139,6 @@ class AppTypography {
 
     // ── Body ──────────────────────────────────────────────────────────────────
     // Main content, paragraphs, descriptions.
-
     bodyLarge: TextStyle(
       fontFamily: primary,
       fontSize: 16,

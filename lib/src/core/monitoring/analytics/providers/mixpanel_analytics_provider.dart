@@ -5,13 +5,13 @@ import '../analytics_events.dart';
 /// To use: Add mixpanel_flutter package to pubspec.yaml
 class MixpanelAnalyticsProvider implements AnalyticsProvider {
   // final Mixpanel _mixpanel;
-  
+
   // MixpanelAnalyticsProvider(this._mixpanel);
 
   @override
   Future<void> track(AnalyticsEvent event) async {
     // _mixpanel.track(event.eventName, properties: event.propertiesMap);
-    
+
     // For now, just print (replace with actual Mixpanel implementation)
     // print('[Mixpanel] Event: ${event.eventName}, Properties: ${event.propertiesMap}');
   }

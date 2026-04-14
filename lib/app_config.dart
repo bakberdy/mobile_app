@@ -10,7 +10,6 @@ class AppConfig {
     defaultValue: 'not-provided',
   );
 
-
   final String environment;
   final bool enableLogging;
   final bool enableAnalytics;

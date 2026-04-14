@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ScrollToTopProvider extends InheritedWidget {
-  const ScrollToTopProvider({super.key, required super.child, required this.onScrollToTop, required this.onRegisterCallback});
+  const ScrollToTopProvider({
+    super.key,
+    required super.child,
+    required this.onScrollToTop,
+    required this.onRegisterCallback,
+  });
   final VoidCallback onScrollToTop;
   final void Function(VoidCallback) onRegisterCallback;
 

@@ -19,11 +19,17 @@ class GetEnvironmentUseCase extends UseCase<String?, NoParams> {
     return _repo.getEnvironment().then((result) {
       return result.fold(
         (failure) {
-          unawaited(Analytics.track(GetEnvironmentUseCaseEvent.failure(properties: {
-            AnalyticsPropertyKeys.failureMessage: failure.message,
-            AnalyticsPropertyKeys.failureType: failure.type.name,
-            AnalyticsPropertyKeys.failureSource: failure.source,
-          })));
+          unawaited(
+            Analytics.track(
+              GetEnvironmentUseCaseEvent.failure(
+                properties: {
+                  AnalyticsPropertyKeys.failureMessage: failure.message,
+                  AnalyticsPropertyKeys.failureType: failure.type.name,
+                  AnalyticsPropertyKeys.failureSource: failure.source,
+                },
+              ),
+            ),
+          );
           return result;
         },
         (success) {

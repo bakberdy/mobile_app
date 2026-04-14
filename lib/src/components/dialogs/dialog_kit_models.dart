@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Content variants from the [Dialog UI Kit](https://www.figma.com/design/iESOJrBixUXf4DC4hyljgy/Dialog-UI-Kit--Community-?node-id=4-94).
-enum BaseDialogType {
-  basic,
-  checkbox,
-  scrollable,
-  list,
-  select,
-}
+enum BaseDialogType { basic, checkbox, scrollable, list, select }
 
 /// One row in [BaseDialogType.checkbox] when using multiple checkboxes.
 class BaseDialogCheckboxItem {

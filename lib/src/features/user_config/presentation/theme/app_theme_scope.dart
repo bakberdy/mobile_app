@@ -78,7 +78,11 @@ class _AppThemeScopeBodyState extends State<_AppThemeScopeBody>
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, themeState) {
-        return widget.builder(context, _toThemeMode(themeState.appliedThemeMode ?? AppThemeMode.system), widget.child);
+        return widget.builder(
+          context,
+          _toThemeMode(themeState.appliedThemeMode ?? AppThemeMode.system),
+          widget.child,
+        );
       },
     );
   }

@@ -20,15 +20,17 @@ class CreateTodoUseCase extends UseCase<void, CreateTodoParams> {
     final result = await _repo.createTodo(params.todo);
     return result.fold(
       (failure) {
-        unawaited(Analytics.track(
-          CreateTodoUseCaseEvent.failure(
-            properties: {
-              AnalyticsPropertyKeys.failureMessage: failure.message,
-              AnalyticsPropertyKeys.failureType: failure.type.name,
-              AnalyticsPropertyKeys.failureSource: failure.source,
-            },
+        unawaited(
+          Analytics.track(
+            CreateTodoUseCaseEvent.failure(
+              properties: {
+                AnalyticsPropertyKeys.failureMessage: failure.message,
+                AnalyticsPropertyKeys.failureType: failure.type.name,
+                AnalyticsPropertyKeys.failureSource: failure.source,
+              },
+            ),
           ),
-        ));
+        );
         return result;
       },
       (_) {

@@ -20,15 +20,17 @@ class GetAppThemeModeUseCase extends UseCase<AppThemeMode?, NoParams> {
     final result = await _repo.getAppThemeMode();
     return result.fold(
       (failure) {
-        unawaited(Analytics.track(
-          GetAppThemeModeUseCaseEvent.failure(
-            properties: {
-              AnalyticsPropertyKeys.failureMessage: failure.message,
-              AnalyticsPropertyKeys.failureType: failure.type.name,
-              AnalyticsPropertyKeys.failureSource: failure.source,
-            },
+        unawaited(
+          Analytics.track(
+            GetAppThemeModeUseCaseEvent.failure(
+              properties: {
+                AnalyticsPropertyKeys.failureMessage: failure.message,
+                AnalyticsPropertyKeys.failureType: failure.type.name,
+                AnalyticsPropertyKeys.failureSource: failure.source,
+              },
+            ),
           ),
-        ));
+        );
         return result;
       },
       (success) {

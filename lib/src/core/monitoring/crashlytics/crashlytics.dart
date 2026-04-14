@@ -1,5 +1,3 @@
-
-
 import 'package:mobile_app/src/core/monitoring/crashlytics/crashlytics_provider.dart';
 
 class Crashlytics {

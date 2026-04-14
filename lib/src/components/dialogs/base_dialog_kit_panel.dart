@@ -141,7 +141,8 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final titleStyle = theme.textTheme.headlineSmall?.copyWith(
+    final titleStyle =
+        theme.textTheme.headlineSmall?.copyWith(
           fontWeight: FontWeight.w700,
           color: cs.onSurface,
         ) ??
@@ -150,21 +151,22 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
           fontWeight: FontWeight.w700,
           color: cs.onSurface,
         );
-    final descStyle = theme.textTheme.bodyMedium?.copyWith(
+    final descStyle =
+        theme.textTheme.bodyMedium?.copyWith(
           color: cs.onSurfaceVariant,
           fontSize: 14,
         ) ??
         TextStyle(fontSize: 14, color: cs.onSurfaceVariant);
-    final bodyStyle = theme.textTheme.bodyMedium?.copyWith(
+    final bodyStyle =
+        theme.textTheme.bodyMedium?.copyWith(
           color: cs.onSurface,
           fontSize: 14,
           height: 1.4,
         ) ??
         TextStyle(fontSize: 14, height: 1.4, color: cs.onSurface);
 
-    final hasHeader = widget.title != null ||
-        widget.description != null ||
-        widget.showClose;
+    final hasHeader =
+        widget.title != null || widget.description != null || widget.showClose;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -210,7 +212,8 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _basicBody(bodyStyle),
-            if (labels.isNotEmpty) const SizedBox(height: DialogKitLayout.sectionGap),
+            if (labels.isNotEmpty)
+              const SizedBox(height: DialogKitLayout.sectionGap),
             for (var i = 0; i < labels.length; i++) ...[
               if (i > 0) const SizedBox(height: 12),
               InkWell(
@@ -228,9 +231,12 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
                         width: 24,
                         height: 24,
                         child: Checkbox(
-                          value: i < _checkboxStates.length ? _checkboxStates[i] : false,
+                          value: i < _checkboxStates.length
+                              ? _checkboxStates[i]
+                              : false,
                           onChanged: (v) => _setCheckbox(i, v ?? false),
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                           visualDensity: VisualDensity.compact,
                           activeColor: cs.primary,
                           side: BorderSide(color: cs.outline, width: 1.5),
@@ -271,7 +277,8 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
   }
 
   Widget _scrollableBody(TextStyle? bodyStyle) {
-    final child = widget.body ??
+    final child =
+        widget.body ??
         (widget.bodyText != null
             ? Text(widget.bodyText!, style: bodyStyle)
             : const SizedBox.shrink());
@@ -300,7 +307,9 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Theme.of(context).colorScheme.surface.withValues(alpha: 0),
+                        Theme.of(
+                          context,
+                        ).colorScheme.surface.withValues(alpha: 0),
                         Theme.of(context).colorScheme.surface,
                       ],
                     ),
@@ -335,13 +344,17 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
                   else
                     CircleAvatar(
                       radius: 30,
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
                       child: Text(
                         items[i].title.isNotEmpty
                             ? items[i].title[0].toUpperCase()
                             : '?',
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
                         ),
                       ),
                     ),
@@ -359,10 +372,7 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
                         ),
                         if (items[i].subtitle != null) ...[
                           const SizedBox(height: 4),
-                          Text(
-                            items[i].subtitle!,
-                            style: bodyStyle,
-                          ),
+                          Text(items[i].subtitle!, style: bodyStyle),
                         ],
                       ],
                     ),
@@ -410,7 +420,10 @@ class _BaseDialogKitPanelState<T> extends State<BaseDialogKitPanel<T>> {
                   ),
                   const SizedBox(width: 6),
                   Expanded(
-                    child: Text(options[i], style: _themeBody(context, bodyStyle)),
+                    child: Text(
+                      options[i],
+                      style: _themeBody(context, bodyStyle),
+                    ),
                   ),
                 ],
               ),
@@ -523,20 +536,13 @@ class _DialogKitActionRow extends StatelessWidget {
     }
     if (primary != null) {
       if (expand) {
-        return Row(
-          children: [Expanded(child: primary)],
-        );
+        return Row(children: [Expanded(child: primary)]);
       }
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [primary],
-      );
+      return Row(mainAxisAlignment: MainAxisAlignment.end, children: [primary]);
     }
     if (secondary != null) {
       if (expand) {
-        return Row(
-          children: [Expanded(child: secondary)],
-        );
+        return Row(children: [Expanded(child: secondary)]);
       }
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,

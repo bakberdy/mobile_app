@@ -1,7 +1,5 @@
-
 import 'package:app_log/app_log.dart';
 import 'package:mobile_app/src/core/monitoring/crashlytics/crashlytics_provider.dart';
-
 
 class ConsoleCrashProvider implements CrashlyticsProvider {
   String? _userId;
@@ -14,20 +12,20 @@ class ConsoleCrashProvider implements CrashlyticsProvider {
     Map<String, dynamic>? data,
   }) async {
     final parts = <String>[];
-    
+
     if (reason != null) {
       parts.add('Reason: $reason');
     }
-    
+
     if (_userId != null) {
       parts.add('User: $_userId');
     }
-    
+
     if (data != null && data.isNotEmpty) {
       parts.add('Data: $data');
     }
-    
-    final message = parts.isEmpty 
+
+    final message = parts.isEmpty
         ? 'Crash recorded: $exception'
         : 'Crash recorded: $exception (${parts.join(', ')})';
 
@@ -41,27 +39,18 @@ class ConsoleCrashProvider implements CrashlyticsProvider {
 
   @override
   Future<void> log(String message) async {
-    appLog(
-      'Crashlytics: $message',
-      name: 'Crashlytics',
-    );
+    appLog('Crashlytics: $message', name: 'Crashlytics');
   }
 
   @override
   Future<void> setUserId(String userId) async {
     _userId = userId;
-    appLog(
-      'Crashlytics user set: $userId',
-      name: 'Crashlytics',
-    );
+    appLog('Crashlytics user set: $userId', name: 'Crashlytics');
   }
 
   @override
   Future<void> clearUserId() async {
     _userId = null;
-    appLog(
-      'Crashlytics user cleared',
-      name: 'Crashlytics',
-    );
+    appLog('Crashlytics user cleared', name: 'Crashlytics');
   }
 }

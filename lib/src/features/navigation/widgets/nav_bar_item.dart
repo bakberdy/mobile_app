@@ -133,11 +133,11 @@ class _NavBarEntryState extends State<NavBarEntry>
                   },
                   animation: _tapController,
                   child: Text(
-                      widget.label!,
-                      style: widget.isSelected
-                          ? bottomTheme.selectedLabelStyle
-                          : bottomTheme.unselectedLabelStyle,
-                    ),
+                    widget.label!,
+                    style: widget.isSelected
+                        ? bottomTheme.selectedLabelStyle
+                        : bottomTheme.unselectedLabelStyle,
+                  ),
                 ),
             ],
           ),

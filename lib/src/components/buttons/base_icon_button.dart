@@ -27,19 +27,18 @@ class BaseIconButton extends StatelessWidget {
     BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
-  }) =>
-      BaseIconButton._(
-        key: key,
-        variant: _BaseIconButtonVariant.standard,
-        icon: icon,
-        selectedIcon: selectedIcon,
-        isSelected: isSelected,
-        onPressed: onPressed,
-        tooltip: tooltip,
-        borderRadius: borderRadius,
-        disabled: disabled,
-        loading: loading,
-      );
+  }) => BaseIconButton._(
+    key: key,
+    variant: _BaseIconButtonVariant.standard,
+    icon: icon,
+    selectedIcon: selectedIcon,
+    isSelected: isSelected,
+    onPressed: onPressed,
+    tooltip: tooltip,
+    borderRadius: borderRadius,
+    disabled: disabled,
+    loading: loading,
+  );
 
   factory BaseIconButton.primary({
     Key? key,
@@ -51,19 +50,18 @@ class BaseIconButton extends StatelessWidget {
     BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
-  }) =>
-      BaseIconButton._(
-        key: key,
-        variant: _BaseIconButtonVariant.primary,
-        icon: icon,
-        selectedIcon: selectedIcon,
-        isSelected: isSelected,
-        onPressed: onPressed,
-        tooltip: tooltip,
-        borderRadius: borderRadius,
-        disabled: disabled,
-        loading: loading,
-      );
+  }) => BaseIconButton._(
+    key: key,
+    variant: _BaseIconButtonVariant.primary,
+    icon: icon,
+    selectedIcon: selectedIcon,
+    isSelected: isSelected,
+    onPressed: onPressed,
+    tooltip: tooltip,
+    borderRadius: borderRadius,
+    disabled: disabled,
+    loading: loading,
+  );
 
   factory BaseIconButton.secondary({
     Key? key,
@@ -75,19 +73,18 @@ class BaseIconButton extends StatelessWidget {
     BorderRadius? borderRadius,
     bool disabled = false,
     bool loading = false,
-  }) =>
-      BaseIconButton._(
-        key: key,
-        variant: _BaseIconButtonVariant.secondary,
-        icon: icon,
-        selectedIcon: selectedIcon,
-        isSelected: isSelected,
-        onPressed: onPressed,
-        tooltip: tooltip,
-        borderRadius: borderRadius,
-        disabled: disabled,
-        loading: loading,
-      );
+  }) => BaseIconButton._(
+    key: key,
+    variant: _BaseIconButtonVariant.secondary,
+    icon: icon,
+    selectedIcon: selectedIcon,
+    isSelected: isSelected,
+    onPressed: onPressed,
+    tooltip: tooltip,
+    borderRadius: borderRadius,
+    disabled: disabled,
+    loading: loading,
+  );
 
   final _BaseIconButtonVariant _variant;
   final Widget icon;
@@ -116,8 +113,10 @@ class BaseIconButton extends StatelessWidget {
     final ButtonStyle? style = switch (_variant) {
       _BaseIconButtonVariant.standard => _shapeOnlyStyle(),
       _BaseIconButtonVariant.primary => _coloredStyle(context, isPrimary: true),
-      _BaseIconButtonVariant.secondary =>
-        _coloredStyle(context, isPrimary: false),
+      _BaseIconButtonVariant.secondary => _coloredStyle(
+        context,
+        isPrimary: false,
+      ),
     };
 
     final progress = baseButtonProgressIndicator(_progressColor(context));

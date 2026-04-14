@@ -15,6 +15,5 @@ class ApiResponse<T> {
     this.request,
   });
 
-
   bool get isSuccessful => statusCode >= 200 && statusCode < 300;
 }

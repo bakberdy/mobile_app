@@ -10,23 +10,22 @@ class Analytics {
   static List<AnalyticsProvider> _providers = [];
   static bool _enableAnalytics = true;
 
-  static void initialize(List<AnalyticsProvider> providers, {bool enableAnalytics = true}) {
+  static void initialize(
+    List<AnalyticsProvider> providers, {
+    bool enableAnalytics = true,
+  }) {
     _providers = providers;
     _enableAnalytics = enableAnalytics;
   }
 
   static Future<void> track(AnalyticsEvent event) async {
     if (!_enableAnalytics) return;
-    await Future.wait(
-      _providers.map((provider) => provider.track(event)),
-    );
+    await Future.wait(_providers.map((provider) => provider.track(event)));
   }
 
   static Future<void> setUserId(String? userId) async {
     if (!_enableAnalytics) return;
-    await Future.wait(
-      _providers.map((provider) => provider.setUserId(userId)),
-    );
+    await Future.wait(_providers.map((provider) => provider.setUserId(userId)));
   }
 
   static Future<void> setUserProperty(Map<String, dynamic> properties) async {

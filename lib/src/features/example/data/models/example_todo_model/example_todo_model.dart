@@ -19,10 +19,10 @@ class TodoModel extends Todo {
   Map<String, dynamic> toJson() => _$TodoModelToJson(this);
 
   factory TodoModel.fromEntity(Todo entity) => TodoModel(
-        id: entity.id,
-        createdAt: entity.createdAt,
-        title: entity.title,
-        description: entity.description,
-        isDone: entity.isDone,
-      );
+    id: entity.id,
+    createdAt: entity.createdAt,
+    title: entity.title,
+    description: entity.description,
+    isDone: entity.isDone,
+  );
 }

@@ -3,7 +3,7 @@ import 'package:mobile_app/src/core/monitoring/analytics/analytics_events.dart';
 final class GetAppThemeModeUseCaseEvent extends AnalyticsEvent {
   const GetAppThemeModeUseCaseEvent({required super.name, super.properties});
 
-   factory GetAppThemeModeUseCaseEvent.success({
+  factory GetAppThemeModeUseCaseEvent.success({
     Map<String, dynamic>? properties,
   }) => GetAppThemeModeUseCaseEvent(
     name: 'get_app_theme_mode_usecase_success',
@@ -35,7 +35,6 @@ final class GetAppLocaleUseCaseEvent extends AnalyticsEvent {
     properties: properties,
   );
 }
-
 
 final class SetAppThemeModeUseCaseEvent extends AnalyticsEvent {
   const SetAppThemeModeUseCaseEvent({required super.name, super.properties});
