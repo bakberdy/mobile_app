@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/app_config.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:mobile_app/src/config/theme/app_radii.dart';
 import 'package:mobile_app/src/config/theme/app_spacing.dart';
 import 'package:mobile_app/src/core/utils/constants/locale_constants.dart';
@@ -12,6 +11,7 @@ import 'package:mobile_app/src/core/utils/extensions/context_x.dart';
 import 'package:mobile_app/src/features/user_config/domain/entity/app_theme_mode.dart';
 import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart';
 import 'package:mobile_app/src/features/user_config/presentation/bloc/theme_bloc/theme_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 @RoutePage()
 class UserConfigExampleScreen extends StatefulWidget {

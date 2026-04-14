@@ -1,15 +1,16 @@
 import 'package:app_log/app_log.dart';
 import 'package:app_log/app_log_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile_app/app_config.dart';
+import 'package:mobile_app/src/config/di/injection.dart';
 import 'package:mobile_app/src/config/router/app_router.dart';
 import 'package:mobile_app/src/config/theme/app_theme.dart';
-import 'package:mobile_app/src/config/di/injection.dart';
 import 'package:mobile_app/src/core/language/generated/app_localizations.dart';
 import 'package:mobile_app/src/features/user_config/presentation/bloc/locale_bloc/locale_bloc.dart';
 import 'package:mobile_app/src/features/user_config/presentation/theme/app_theme_scope.dart';
+
 import 'src/core/utils/constants/locale_constants.dart';
 
 class App extends StatelessWidget {

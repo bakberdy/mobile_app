@@ -1,3 +1,5 @@
+import 'package:mobile_app/src/core/utils/typedef.dart';
+
 import '../api/models/api_exception.dart';
 import 'failure.dart';
 
@@ -5,17 +7,18 @@ extension ExceptionX on Exception {
   Failure toFailure({required String source}) {
     final e = this;
     if (e is ApiException) {
+      final data = e.response?.data as DataMap?;
       String? message;
       try {
-        message = e.response?.data['message'];
+        message = data?['message'];
       } catch (_) {
         message = null;
       }
       return Failure.api(
         message: message,
-        data: e.response?.data,
+        data: data,
         type: FailureType.values.byName(
-          e.response?.data?['type'] ?? 'snackbar',
+          data?['type'] ?? 'snackbar',
         ),
         source: source,
       );

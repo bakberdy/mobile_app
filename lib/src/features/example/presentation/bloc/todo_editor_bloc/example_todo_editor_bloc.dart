@@ -2,15 +2,15 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mobile_app/src/core/bloc/state_status/state_status.dart';
 import 'package:mobile_app/src/core/bloc/field_state/field_state.dart';
+import 'package:mobile_app/src/core/bloc/state_status/state_status.dart';
 import 'package:mobile_app/src/features/example/domain/entity/example_todo.dart';
 import 'package:mobile_app/src/features/example/domain/usecases/example_create_todo_use_case.dart';
 import 'package:mobile_app/src/features/example/domain/usecases/example_update_todo_use_case.dart';
 
+part 'example_todo_editor_bloc.freezed.dart';
 part 'example_todo_editor_event.dart';
 part 'example_todo_editor_state.dart';
-part 'example_todo_editor_bloc.freezed.dart';
 
 @Injectable()
 class ExampleTodoEditorBloc
