@@ -21,28 +21,28 @@ class SetLocaleUseCase extends UseCase<void, SetLocaleUseCaseParams> {
   SetLocaleUseCase(this._repo);
 
   @override
-  FutureEither<void> call(SetLocaleUseCaseParams params) {
-    return _repo.setLocale(params.locale).then((result) {
-      return result.fold(
-        (failure) {
-          unawaited(
-            Analytics.track(
-              SetAppLocaleUseCaseEvent.failure(
-                properties: {
-                  AnalyticsPropertyKeys.failureMessage: failure.message,
-                  AnalyticsPropertyKeys.failureType: failure.type.name,
-                  AnalyticsPropertyKeys.failureSource: failure.source,
-                },
+  FutureEither<void> call(SetLocaleUseCaseParams params) => _repo
+      .setLocale(params.locale)
+      .then(
+        (result) => result.fold(
+          (failure) {
+            unawaited(
+              Analytics.track(
+                SetAppLocaleUseCaseEvent.failure(
+                  properties: {
+                    AnalyticsPropertyKeys.failureMessage: failure.message,
+                    AnalyticsPropertyKeys.failureType: failure.type.name,
+                    AnalyticsPropertyKeys.failureSource: failure.source,
+                  },
+                ),
               ),
-            ),
-          );
-          return result;
-        },
-        (success) {
-          unawaited(Analytics.track(SetAppLocaleUseCaseEvent.success()));
-          return result;
-        },
+            );
+            return result;
+          },
+          (success) {
+            unawaited(Analytics.track(SetAppLocaleUseCaseEvent.success()));
+            return result;
+          },
+        ),
       );
-    });
-  }
 }

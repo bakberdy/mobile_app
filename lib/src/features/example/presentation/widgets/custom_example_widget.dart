@@ -18,67 +18,65 @@ class CustomExampleWidget extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.hardEdge,
-      height: 400,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadii.xxl),
-        image: DecorationImage(
-          image: context.assets.images.onboardingBg.provider(),
-          fit: BoxFit.cover,
-        ),
+  Widget build(BuildContext context) => Container(
+    clipBehavior: Clip.hardEdge,
+    height: 400,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(AppRadii.xxl),
+      image: DecorationImage(
+        image: context.assets.images.onboardingBg.provider(),
+        fit: BoxFit.cover,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Spacer(),
-          ClipRect(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    context.colorScheme.primaryContainer.withValues(alpha: 0.0),
-                    context.colorScheme.primaryContainer.withValues(alpha: 0.4),
-                    context.colorScheme.primaryContainer.withValues(alpha: 0.6),
-                    context.colorScheme.primaryContainer.withValues(alpha: 0.8),
-                    context.colorScheme.primaryContainer.withValues(alpha: 0.6),
-                    context.colorScheme.primaryContainer.withValues(alpha: 0.4),
-                  ],
-                ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Spacer(),
+        ClipRect(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  context.colorScheme.primaryContainer.withValues(alpha: 0.0),
+                  context.colorScheme.primaryContainer.withValues(alpha: 0.4),
+                  context.colorScheme.primaryContainer.withValues(alpha: 0.6),
+                  context.colorScheme.primaryContainer.withValues(alpha: 0.8),
+                  context.colorScheme.primaryContainer.withValues(alpha: 0.6),
+                  context.colorScheme.primaryContainer.withValues(alpha: 0.4),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.lg,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: .w600,
-                      ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.lg,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: context.textTheme.titleLarge?.copyWith(
+                      fontWeight: .w600,
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(description, style: context.textTheme.bodyMedium),
-                    const SizedBox(height: AppSpacing.md),
-                    BaseFilledButton.primary(
-                      onPressed: () {},
-                      label: context.l10n.continueToLogin,
-                      borderRadius: BorderRadius.circular(AppRadii.xl),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(description, style: context.textTheme.bodyMedium),
+                  const SizedBox(height: AppSpacing.md),
+                  BaseFilledButton.primary(
+                    onPressed: () {},
+                    label: context.l10n.continueToLogin,
+                    borderRadius: BorderRadius.circular(AppRadii.xl),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

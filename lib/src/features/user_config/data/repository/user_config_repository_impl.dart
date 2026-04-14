@@ -132,9 +132,8 @@ class UserConfigRepositoryImpl implements UserConfigRepository {
   }
 
   @override
-  FutureEither<String?> getEnvironment() async {
-    return Right(await _safeReadLocal(LocalStorageConsts.environmentKey));
-  }
+  FutureEither<String?> getEnvironment() async =>
+      Right(await _safeReadLocal(LocalStorageConsts.environmentKey));
 
   @override
   FutureEither<void> setEnvironment(String environment) async {

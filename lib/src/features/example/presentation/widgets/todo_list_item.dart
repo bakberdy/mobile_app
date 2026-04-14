@@ -31,57 +31,55 @@ class TodoListItem extends StatelessWidget {
   final VoidCallback onDelete;
 
   @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(AppRadii.xl),
-        border: Border.all(
-          color: todo.isDone
-              ? context.colorScheme.primary.withValues(alpha: 0.4)
-              : context.colorScheme.outlineVariant,
-        ),
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: context.colorScheme.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppRadii.xl),
+      border: Border.all(
+        color: todo.isDone
+            ? context.colorScheme.primary.withValues(alpha: 0.4)
+            : context.colorScheme.outlineVariant,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(todo.title, style: context.textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.xs),
-            Text(todo.description, style: context.textTheme.bodyMedium),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              createdAtLabel,
-              style: context.textTheme.bodySmall?.copyWith(
-                color: context.colorScheme.onSurfaceVariant,
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(todo.title, style: context.textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.xs),
+          Text(todo.description, style: context.textTheme.bodyMedium),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            createdAtLabel,
+            style: context.textTheme.bodySmall?.copyWith(
+              color: context.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
+            children: [
+              BaseOutlinedButton.secondary(
+                onPressed: isLoading ? null : onEdit,
+                label: editLabel,
+                expand: false,
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Wrap(
-              spacing: AppSpacing.xs,
-              runSpacing: AppSpacing.xs,
-              children: [
-                BaseOutlinedButton.secondary(
-                  onPressed: isLoading ? null : onEdit,
-                  label: editLabel,
-                  expand: false,
-                ),
-                BaseOutlinedButton.secondary(
-                  onPressed: isLoading ? null : onToggle,
-                  label: toggleLabel,
-                  expand: false,
-                ),
-                BaseFilledButton.secondary(
-                  onPressed: isLoading ? null : onDelete,
-                  label: deleteLabel,
-                  expand: false,
-                ),
-              ],
-            ),
-          ],
-        ),
+              BaseOutlinedButton.secondary(
+                onPressed: isLoading ? null : onToggle,
+                label: toggleLabel,
+                expand: false,
+              ),
+              BaseFilledButton.secondary(
+                onPressed: isLoading ? null : onDelete,
+                label: deleteLabel,
+                expand: false,
+              ),
+            ],
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

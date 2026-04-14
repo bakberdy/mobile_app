@@ -2,27 +2,23 @@ import 'package:dio/dio.dart';
 import 'package:mobile_app/src/core/api/api.dart';
 
 extension DioExceptionX on DioException {
-  ApiException toApiException() {
-    return ApiException(
-      type: type.toApiExceptionType(),
-      response: response?.toApiResponse(),
-    );
-  }
+  ApiException toApiException() => ApiException(
+    type: type.toApiExceptionType(),
+    response: response?.toApiResponse(),
+  );
 }
 
 extension DioExceptionTypeX on DioExceptionType {
-  ApiExceptionType toApiExceptionType() {
-    return switch (this) {
-      .badCertificate => .badCertificate,
-      .badResponse => .badCertificate,
-      .cancel => .cancel,
-      .connectionError => .connectionError,
-      .receiveTimeout => .receiveTimeout,
-      .sendTimeout => .sendTimeout,
-      .unknown => .unknown,
-      .connectionTimeout => .connectionTimeout,
-    };
-  }
+  ApiExceptionType toApiExceptionType() => switch (this) {
+    .badCertificate => .badCertificate,
+    .badResponse => .badCertificate,
+    .cancel => .cancel,
+    .connectionError => .connectionError,
+    .receiveTimeout => .receiveTimeout,
+    .sendTimeout => .sendTimeout,
+    .unknown => .unknown,
+    .connectionTimeout => .connectionTimeout,
+  };
 }
 
 extension DioResponseX on Response {
@@ -42,31 +38,27 @@ extension DioResponseX on Response {
 }
 
 extension ApiOptionsX on ApiOptions {
-  Options? toOptions() {
-    return Options(
-      headers: headers,
-      contentType: contentType,
-      sendTimeout: sendTimeout,
-      receiveTimeout: receiveTimeout,
-      extra: extra,
-      followRedirects: followRedirects,
-      maxRedirects: maxRedirects,
-    );
-  }
+  Options? toOptions() => Options(
+    headers: headers,
+    contentType: contentType,
+    sendTimeout: sendTimeout,
+    receiveTimeout: receiveTimeout,
+    extra: extra,
+    followRedirects: followRedirects,
+    maxRedirects: maxRedirects,
+  );
 }
 
 extension OptionsX on Options {
-  ApiOptions? toApiOptions() {
-    return ApiOptions(
-      headers: headers,
-      contentType: contentType,
-      sendTimeout: sendTimeout,
-      receiveTimeout: receiveTimeout,
-      extra: extra,
-      followRedirects: followRedirects,
-      maxRedirects: maxRedirects,
-    );
-  }
+  ApiOptions? toApiOptions() => ApiOptions(
+    headers: headers,
+    contentType: contentType,
+    sendTimeout: sendTimeout,
+    receiveTimeout: receiveTimeout,
+    extra: extra,
+    followRedirects: followRedirects,
+    maxRedirects: maxRedirects,
+  );
 }
 
 extension CancelTokenX on ApiCancelToken {

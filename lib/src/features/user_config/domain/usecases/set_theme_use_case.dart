@@ -22,28 +22,28 @@ class SetThemeUseCase extends UseCase<void, SetThemeUseCaseParams> {
   SetThemeUseCase(this._repo);
 
   @override
-  FutureEither<void> call(SetThemeUseCaseParams params) {
-    return _repo.setTheme(params.themeMode).then((result) {
-      return result.fold(
-        (failure) {
-          unawaited(
-            Analytics.track(
-              SetAppThemeModeUseCaseEvent.failure(
-                properties: {
-                  AnalyticsPropertyKeys.failureMessage: failure.message,
-                  AnalyticsPropertyKeys.failureType: failure.type.name,
-                  AnalyticsPropertyKeys.failureSource: failure.source,
-                },
+  FutureEither<void> call(SetThemeUseCaseParams params) => _repo
+      .setTheme(params.themeMode)
+      .then(
+        (result) => result.fold(
+          (failure) {
+            unawaited(
+              Analytics.track(
+                SetAppThemeModeUseCaseEvent.failure(
+                  properties: {
+                    AnalyticsPropertyKeys.failureMessage: failure.message,
+                    AnalyticsPropertyKeys.failureType: failure.type.name,
+                    AnalyticsPropertyKeys.failureSource: failure.source,
+                  },
+                ),
               ),
-            ),
-          );
-          return result;
-        },
-        (success) {
-          unawaited(Analytics.track(SetAppThemeModeUseCaseEvent.success()));
-          return result;
-        },
+            );
+            return result;
+          },
+          (success) {
+            unawaited(Analytics.track(SetAppThemeModeUseCaseEvent.success()));
+            return result;
+          },
+        ),
       );
-    });
-  }
 }

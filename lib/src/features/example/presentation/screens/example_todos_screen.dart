@@ -20,99 +20,97 @@ class ExampleTodosScreen extends StatelessWidget {
   const ExampleTodosScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          sl<ExampleTodosBloc>()..add(const ExampleTodosEvent.started()),
-      child: const _ExampleTodosScreenContent(),
-    );
-  }
+  Widget build(BuildContext context) => BlocProvider(
+    create: (_) =>
+        sl<ExampleTodosBloc>()..add(const ExampleTodosEvent.started()),
+    child: const _ExampleTodosScreenContent(),
+  );
 }
 
 class _ExampleTodosScreenContent extends StatelessWidget {
   const _ExampleTodosScreenContent();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<ExampleTodosBloc, ExampleTodosState>(
-      listener: (context, state) async {
-        switch (state.status) {
-          case ErrorStateStatus(:final failure):
-            await _handleFailure(context, failure);
-          default:
-            break;
-        }
-      },
-      builder: (context, state) {
-        final isLoading = state.status.isLoading;
+  Widget build(
+    BuildContext context,
+  ) => BlocConsumer<ExampleTodosBloc, ExampleTodosState>(
+    listener: (context, state) async {
+      switch (state.status) {
+        case ErrorStateStatus(:final failure):
+          await _handleFailure(context, failure);
+        default:
+          break;
+      }
+    },
+    builder: (context, state) {
+      final isLoading = state.status.isLoading;
 
-        return Scaffold(
-          appBar: AppBar(title: Text(context.l10n.exampleTodosTitle)),
-          body: CustomScrollView(
-            slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                sliver: SliverToBoxAdapter(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          context.l10n.todoListTitle,
-                          style: context.textTheme.titleLarge,
-                        ),
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.exampleTodosTitle)),
+        body: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        context.l10n.todoListTitle,
+                        style: context.textTheme.titleLarge,
                       ),
-                      BaseFilledButton.secondary(
-                        onPressed: () => _openTodoEditor(context),
-                        label: context.l10n.addTodo,
-                        expand: false,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                sliver: SliverToBoxAdapter(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: BaseOutlinedButton.secondary(
-                      onPressed: () => context.read<ExampleTodosBloc>().add(
-                        const ExampleTodosEvent.refreshed(),
-                      ),
-                      label: context.l10n.refreshTodos,
-                      expand: false,
-                      loading: isLoading && state.todos.isEmpty,
                     ),
+                    BaseFilledButton.secondary(
+                      onPressed: () => _openTodoEditor(context),
+                      label: context.l10n.addTodo,
+                      expand: false,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              sliver: SliverToBoxAdapter(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: BaseOutlinedButton.secondary(
+                    onPressed: () => context.read<ExampleTodosBloc>().add(
+                      const ExampleTodosEvent.refreshed(),
+                    ),
+                    label: context.l10n.refreshTodos,
+                    expand: false,
+                    loading: isLoading && state.todos.isEmpty,
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md,
-                  0,
-                  AppSpacing.md,
-                  AppSpacing.md,
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                0,
+                AppSpacing.md,
+                AppSpacing.md,
+              ),
+              sliver: TodoList(
+                todos: state.todos,
+                isLoading: isLoading,
+                onEdit: (todo) => _openTodoEditor(context, todo: todo),
+                onToggle: (todo) => context.read<ExampleTodosBloc>().add(
+                  ExampleTodosEvent.toggled(todo),
                 ),
-                sliver: TodoList(
-                  todos: state.todos,
-                  isLoading: isLoading,
-                  onEdit: (todo) => _openTodoEditor(context, todo: todo),
-                  onToggle: (todo) => context.read<ExampleTodosBloc>().add(
-                    ExampleTodosEvent.toggled(todo),
-                  ),
-                  onDelete: (id) => context.read<ExampleTodosBloc>().add(
-                    ExampleTodosEvent.deleted(id),
-                  ),
+                onDelete: (id) => context.read<ExampleTodosBloc>().add(
+                  ExampleTodosEvent.deleted(id),
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+            ),
+          ],
+        ),
+      );
+    },
+  );
 
   Future<void> _handleFailure(BuildContext context, Failure failure) async {
     final message = failure.message ?? failure.defaultMessage(context);

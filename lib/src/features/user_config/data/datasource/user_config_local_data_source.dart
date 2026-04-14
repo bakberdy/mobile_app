@@ -13,15 +13,10 @@ class UserConfigLocalDataSourceImpl implements UserConfigLocalDataSource {
   UserConfigLocalDataSourceImpl({required this.localStorage});
 
   @override
-  Future<void> setUserConfig({
-    required String key,
-    required String value,
-  }) async {
-    await localStorage.write(key: key, value: value);
-  }
+  Future<void> setUserConfig({required String key, required String value}) =>
+      localStorage.write(key: key, value: value);
 
   @override
-  Future<String?> getUserConfig({required String key}) {
-    return localStorage.read(key: key);
-  }
+  Future<String?> getUserConfig({required String key}) =>
+      localStorage.read(key: key);
 }

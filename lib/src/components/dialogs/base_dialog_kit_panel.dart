@@ -453,38 +453,36 @@ class _DialogKitHeader extends StatelessWidget {
   final VoidCallback onClose;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (title != null) Text(title!, style: titleStyle),
-              if (description != null) ...[
-                if (title != null) const SizedBox(height: 4),
-                Text(description!, style: descStyle),
-              ],
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null) Text(title!, style: titleStyle),
+            if (description != null) ...[
+              if (title != null) const SizedBox(height: 4),
+              Text(description!, style: descStyle),
             ],
+          ],
+        ),
+      ),
+      if (showClose) ...[
+        const SizedBox(width: DialogKitLayout.sectionGap),
+        IconButton(
+          onPressed: onClose,
+          icon: const Icon(Icons.close_rounded, size: 24),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+          visualDensity: VisualDensity.compact,
+          style: IconButton.styleFrom(
+            foregroundColor: context.colorScheme.onSurfaceVariant,
           ),
         ),
-        if (showClose) ...[
-          const SizedBox(width: DialogKitLayout.sectionGap),
-          IconButton(
-            onPressed: onClose,
-            icon: const Icon(Icons.close_rounded, size: 24),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-            visualDensity: VisualDensity.compact,
-            style: IconButton.styleFrom(
-              foregroundColor: context.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
       ],
-    );
-  }
+    ],
+  );
 }
 
 class _DialogKitActionRow extends StatelessWidget {

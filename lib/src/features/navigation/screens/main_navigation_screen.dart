@@ -24,34 +24,32 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ScrollToTopProvider(
-      onScrollToTop: _triggerScrollToTop,
-      onRegisterCallback: _registerScrollToTop,
-      child: AutoTabsScaffold(
-        extendBody: true,
-        routes: const [
-          // HomeRoute(),
-          // OnboardingRoute(),
+  Widget build(BuildContext context) => ScrollToTopProvider(
+    onScrollToTop: _triggerScrollToTop,
+    onRegisterCallback: _registerScrollToTop,
+    child: AutoTabsScaffold(
+      extendBody: true,
+      routes: const [
+        // HomeRoute(),
+        // OnboardingRoute(),
+      ],
+      bottomNavigationBuilder: (context, tabsRouter) => NavBar(
+        initialPage: tabsRouter.activeIndex,
+        onPageChanged: (int value) {
+          if (value != tabsRouter.activeIndex) {
+            tabsRouter.setActiveIndex(value);
+          } else {
+            _triggerScrollToTop();
+          }
+        },
+        items: [
+          const NavBarItem(icon: Icon(Icons.home, size: 20), label: 'Home'),
+          const NavBarItem(
+            icon: Icon(Icons.person, size: 20),
+            label: 'Profile',
+          ),
         ],
-        bottomNavigationBuilder: (context, tabsRouter) => NavBar(
-          initialPage: tabsRouter.activeIndex,
-          onPageChanged: (int value) {
-            if (value != tabsRouter.activeIndex) {
-              tabsRouter.setActiveIndex(value);
-            } else {
-              _triggerScrollToTop();
-            }
-          },
-          items: [
-            const NavBarItem(icon: Icon(Icons.home, size: 20), label: 'Home'),
-            const NavBarItem(
-              icon: Icon(Icons.person, size: 20),
-              label: 'Profile',
-            ),
-          ],
-        ),
       ),
-    );
-  }
+    ),
+  );
 }

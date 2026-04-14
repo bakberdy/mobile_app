@@ -14,12 +14,10 @@ class AppThemeScope extends StatelessWidget {
   const AppThemeScope({required this.builder, this.child, super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<ThemeBloc>(),
-      child: _AppThemeScopeBody(builder: builder, child: child),
-    );
-  }
+  Widget build(BuildContext context) => BlocProvider(
+    create: (_) => sl<ThemeBloc>(),
+    child: _AppThemeScopeBody(builder: builder, child: child),
+  );
 }
 
 class _AppThemeScopeBody extends StatefulWidget {
@@ -75,17 +73,13 @@ class _AppThemeScopeBodyState extends State<_AppThemeScopeBody>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ThemeBloc, ThemeState>(
-      builder: (context, themeState) {
-        return widget.builder(
-          context,
-          _toThemeMode(themeState.appliedThemeMode ?? AppThemeMode.system),
-          widget.child,
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) => BlocBuilder<ThemeBloc, ThemeState>(
+    builder: (context, themeState) => widget.builder(
+      context,
+      _toThemeMode(themeState.appliedThemeMode ?? AppThemeMode.system),
+      widget.child,
+    ),
+  );
 
   ThemeMode _toThemeMode(AppThemeMode mode) {
     switch (mode) {

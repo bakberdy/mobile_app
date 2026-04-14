@@ -15,28 +15,28 @@ class SetEnvironmentUseCase extends UseCase<void, String> {
   SetEnvironmentUseCase(this._repo);
 
   @override
-  FutureEither<void> call(String environment) {
-    return _repo.setEnvironment(environment).then((result) {
-      return result.fold(
-        (failure) {
-          unawaited(
-            Analytics.track(
-              SetEnvironmentUseCaseEvent.failure(
-                properties: {
-                  AnalyticsPropertyKeys.failureMessage: failure.message,
-                  AnalyticsPropertyKeys.failureType: failure.type.name,
-                  AnalyticsPropertyKeys.failureSource: failure.source,
-                },
+  FutureEither<void> call(String environment) => _repo
+      .setEnvironment(environment)
+      .then(
+        (result) => result.fold(
+          (failure) {
+            unawaited(
+              Analytics.track(
+                SetEnvironmentUseCaseEvent.failure(
+                  properties: {
+                    AnalyticsPropertyKeys.failureMessage: failure.message,
+                    AnalyticsPropertyKeys.failureType: failure.type.name,
+                    AnalyticsPropertyKeys.failureSource: failure.source,
+                  },
+                ),
               ),
-            ),
-          );
-          return result;
-        },
-        (success) {
-          unawaited(Analytics.track(SetEnvironmentUseCaseEvent.success()));
-          return result;
-        },
+            );
+            return result;
+          },
+          (success) {
+            unawaited(Analytics.track(SetEnvironmentUseCaseEvent.success()));
+            return result;
+          },
+        ),
       );
-    });
-  }
 }

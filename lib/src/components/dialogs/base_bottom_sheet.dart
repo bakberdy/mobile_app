@@ -28,8 +28,7 @@ class BaseBottomSheet {
     bool enableDrag = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<T>(
+  }) => show<T>(
       context,
       type: BaseDialogType.basic,
       title: title,
@@ -47,7 +46,6 @@ class BaseBottomSheet {
       barrierColor: barrierColor,
       popOnAction: popOnAction,
     );
-  }
 
   static Future<T?> showCheckbox<T>(
     BuildContext context, {
@@ -117,8 +115,7 @@ class BaseBottomSheet {
     bool enableDrag = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<T>(
+  }) => show<T>(
       context,
       type: BaseDialogType.scrollable,
       title: title,
@@ -137,7 +134,6 @@ class BaseBottomSheet {
       barrierColor: barrierColor,
       popOnAction: popOnAction,
     );
-  }
 
   static Future<T?> showList<T>(
     BuildContext context, {
@@ -154,8 +150,7 @@ class BaseBottomSheet {
     bool enableDrag = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<T>(
+  }) => show<T>(
       context,
       type: BaseDialogType.list,
       title: title,
@@ -172,7 +167,6 @@ class BaseBottomSheet {
       barrierColor: barrierColor,
       popOnAction: popOnAction,
     );
-  }
 
   static Future<int?> showSelect(
     BuildContext context, {
@@ -190,8 +184,7 @@ class BaseBottomSheet {
     bool enableDrag = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<int>(
+  }) => show<int>(
       context,
       type: BaseDialogType.select,
       title: title,
@@ -209,7 +202,6 @@ class BaseBottomSheet {
       barrierColor: barrierColor,
       popOnAction: popOnAction,
     );
-  }
 
   static Future<T?> show<T>(
     BuildContext context, {
@@ -238,8 +230,7 @@ class BaseBottomSheet {
     bool enableDrag = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return showModalBottomSheet<T>(
+  }) => showModalBottomSheet<T>(
       context: context,
       useRootNavigator: true,
       isScrollControlled: true,
@@ -305,5 +296,4 @@ class BaseBottomSheet {
         );
       },
     );
-  }
 }

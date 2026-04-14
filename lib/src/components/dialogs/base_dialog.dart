@@ -30,25 +30,23 @@ class BaseDialog {
     bool barrierDismissible = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<T>(
-      context,
-      type: BaseDialogType.basic,
-      title: title,
-      description: description,
-      showClose: showClose,
-      bodyText: bodyText,
-      body: body,
-      primaryLabel: primaryLabel,
-      onPrimary: onPrimary,
-      secondaryLabel: secondaryLabel,
-      onSecondary: onSecondary,
-      primaryFirst: primaryFirst,
-      barrierDismissible: barrierDismissible,
-      barrierColor: barrierColor,
-      popOnAction: popOnAction,
-    );
-  }
+  }) => show<T>(
+    context,
+    type: BaseDialogType.basic,
+    title: title,
+    description: description,
+    showClose: showClose,
+    bodyText: bodyText,
+    body: body,
+    primaryLabel: primaryLabel,
+    onPrimary: onPrimary,
+    secondaryLabel: secondaryLabel,
+    onSecondary: onSecondary,
+    primaryFirst: primaryFirst,
+    barrierDismissible: barrierDismissible,
+    barrierColor: barrierColor,
+    popOnAction: popOnAction,
+  );
 
   static Future<T?> showCheckbox<T>(
     BuildContext context, {
@@ -115,26 +113,24 @@ class BaseDialog {
     bool barrierDismissible = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<T>(
-      context,
-      type: BaseDialogType.scrollable,
-      title: title,
-      description: description,
-      showClose: showClose,
-      bodyText: bodyText,
-      body: body,
-      maxBodyHeight: maxBodyHeight,
-      primaryLabel: primaryLabel,
-      onPrimary: onPrimary,
-      secondaryLabel: secondaryLabel,
-      onSecondary: onSecondary,
-      primaryFirst: primaryFirst,
-      barrierDismissible: barrierDismissible,
-      barrierColor: barrierColor,
-      popOnAction: popOnAction,
-    );
-  }
+  }) => show<T>(
+    context,
+    type: BaseDialogType.scrollable,
+    title: title,
+    description: description,
+    showClose: showClose,
+    bodyText: bodyText,
+    body: body,
+    maxBodyHeight: maxBodyHeight,
+    primaryLabel: primaryLabel,
+    onPrimary: onPrimary,
+    secondaryLabel: secondaryLabel,
+    onSecondary: onSecondary,
+    primaryFirst: primaryFirst,
+    barrierDismissible: barrierDismissible,
+    barrierColor: barrierColor,
+    popOnAction: popOnAction,
+  );
 
   static Future<T?> showList<T>(
     BuildContext context, {
@@ -150,24 +146,22 @@ class BaseDialog {
     bool barrierDismissible = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<T>(
-      context,
-      type: BaseDialogType.list,
-      title: title,
-      description: description,
-      showClose: showClose,
-      listItems: items,
-      primaryLabel: primaryLabel,
-      onPrimary: onPrimary,
-      secondaryLabel: secondaryLabel,
-      onSecondary: onSecondary,
-      primaryFirst: primaryFirst,
-      barrierDismissible: barrierDismissible,
-      barrierColor: barrierColor,
-      popOnAction: popOnAction,
-    );
-  }
+  }) => show<T>(
+    context,
+    type: BaseDialogType.list,
+    title: title,
+    description: description,
+    showClose: showClose,
+    listItems: items,
+    primaryLabel: primaryLabel,
+    onPrimary: onPrimary,
+    secondaryLabel: secondaryLabel,
+    onSecondary: onSecondary,
+    primaryFirst: primaryFirst,
+    barrierDismissible: barrierDismissible,
+    barrierColor: barrierColor,
+    popOnAction: popOnAction,
+  );
 
   static Future<int?> showSelect(
     BuildContext context, {
@@ -184,25 +178,23 @@ class BaseDialog {
     bool barrierDismissible = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return show<int>(
-      context,
-      type: BaseDialogType.select,
-      title: title,
-      description: description,
-      showClose: showClose,
-      selectOptions: options,
-      selectedIndex: selectedIndex,
-      primaryLabel: primaryLabel,
-      onPrimaryWithIndex: onPrimary,
-      secondaryLabel: secondaryLabel,
-      onSecondary: onSecondary,
-      primaryFirst: primaryFirst,
-      barrierDismissible: barrierDismissible,
-      barrierColor: barrierColor,
-      popOnAction: popOnAction,
-    );
-  }
+  }) => show<int>(
+    context,
+    type: BaseDialogType.select,
+    title: title,
+    description: description,
+    showClose: showClose,
+    selectOptions: options,
+    selectedIndex: selectedIndex,
+    primaryLabel: primaryLabel,
+    onPrimaryWithIndex: onPrimary,
+    secondaryLabel: secondaryLabel,
+    onSecondary: onSecondary,
+    primaryFirst: primaryFirst,
+    barrierDismissible: barrierDismissible,
+    barrierColor: barrierColor,
+    popOnAction: popOnAction,
+  );
 
   /// Shows a [MaterialBanner] at the top of the nearest [Scaffold].
   /// Hides any currently visible banner before showing the new one.
@@ -247,72 +239,68 @@ class BaseDialog {
     bool primaryFirst = false,
     bool barrierDismissible = false,
     Color? barrierColor,
-  }) {
-    return showGeneralDialog<T>(
-      context: context,
-      barrierDismissible: barrierDismissible,
-      barrierLabel: barrierDismissible ? context.l10n.dismiss : null,
-      barrierColor: DialogKitLayout.modalBarrierColor(context, barrierColor),
-      transitionDuration: const Duration(milliseconds: 200),
-      transitionBuilder: (_, animation, _, child) {
-        return FadeTransition(
-          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-          child: child,
-        );
-      },
-      pageBuilder: (dialogContext, _, _) {
-        final theme = Theme.of(dialogContext);
-        final effectiveContent =
-            body ??
-            (bodyText != null
-                ? Text(bodyText, style: theme.dialogTheme.contentTextStyle)
-                : null);
+  }) => showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: barrierDismissible,
+    barrierLabel: barrierDismissible ? context.l10n.dismiss : null,
+    barrierColor: DialogKitLayout.modalBarrierColor(context, barrierColor),
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: (_, animation, _, child) => FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+      child: child,
+    ),
+    pageBuilder: (dialogContext, _, _) {
+      final theme = Theme.of(dialogContext);
+      final effectiveContent =
+          body ??
+          (bodyText != null
+              ? Text(bodyText, style: theme.dialogTheme.contentTextStyle)
+              : null);
 
-        return PopScope(
-          canPop: barrierDismissible,
-          child: Dialog.fullscreen(
-            child: Scaffold(
-              appBar: AppBar(
-                title: title != null ? Text(title) : null,
-                automaticallyImplyLeading: false,
-                actions: [
-                  IconButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(),
-                    icon: const Icon(Icons.close_rounded),
-                  ),
-                ],
-              ),
-              body: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (effectiveContent != null)
-                        Expanded(
-                          child: SingleChildScrollView(child: effectiveContent),
-                        )
-                      else
-                        const Spacer(),
-                      const SizedBox(height: AppSpacing.md),
-                      _FullscreenActionRow(
-                        dialogContext: dialogContext,
-                        primaryLabel: primaryLabel,
-                        primaryOnPressed: onPrimary,
-                        secondaryLabel: secondaryLabel,
-                        secondaryOnPressed: onSecondary,
-                        primaryFirst: primaryFirst,
-                      ),
-                    ],
-                  ),
+      return PopScope(
+        canPop: barrierDismissible,
+        child: Dialog.fullscreen(
+          child: Scaffold(
+            appBar: AppBar(
+              title: title != null ? Text(title) : null,
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  icon: const Icon(Icons.close_rounded),
+                ),
+              ],
+            ),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (effectiveContent != null)
+                      Expanded(
+                        child: SingleChildScrollView(child: effectiveContent),
+                      )
+                    else
+                      const Spacer(),
+                    const SizedBox(height: AppSpacing.md),
+                    _FullscreenActionRow(
+                      dialogContext: dialogContext,
+                      primaryLabel: primaryLabel,
+                      primaryOnPressed: onPrimary,
+                      secondaryLabel: secondaryLabel,
+                      secondaryOnPressed: onSecondary,
+                      primaryFirst: primaryFirst,
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
 
   static Future<T?> show<T>(
     BuildContext context, {
@@ -340,80 +328,72 @@ class BaseDialog {
     bool barrierDismissible = true,
     Color? barrierColor,
     bool popOnAction = true,
-  }) {
-    return showGeneralDialog<T>(
-      context: context,
-      barrierDismissible: barrierDismissible,
-      barrierLabel: barrierDismissible ? context.l10n.dismiss : null,
-      barrierColor: DialogKitLayout.modalBarrierColor(context, barrierColor),
-      transitionDuration: const Duration(milliseconds: 200),
-      transitionBuilder: (_, animation, _, child) {
-        final curved = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOut,
-        );
-        return FadeTransition(
-          opacity: curved,
-          child: ScaleTransition(
-            scale: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            ),
-            child: child,
-          ),
-        );
-      },
-      pageBuilder: (dialogContext, _, _) {
-        final scheme = Theme.of(dialogContext).colorScheme;
-        final surface = scheme.surface;
-        return PopScope(
-          canPop: barrierDismissible,
-          child: SizedBox.expand(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: _maxWidth),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: surface,
-                    borderRadius: BorderRadius.circular(
-                      DialogKitLayout.cornerRadius,
-                    ),
-                    boxShadow: DialogKitLayout.dialogCardShadows(scheme),
+  }) => showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: barrierDismissible,
+    barrierLabel: barrierDismissible ? context.l10n.dismiss : null,
+    barrierColor: DialogKitLayout.modalBarrierColor(context, barrierColor),
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: (_, animation, _, child) {
+      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+          child: child,
+        ),
+      );
+    },
+    pageBuilder: (dialogContext, _, _) {
+      final scheme = Theme.of(dialogContext).colorScheme;
+      final surface = scheme.surface;
+      return PopScope(
+        canPop: barrierDismissible,
+        child: SizedBox.expand(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: _maxWidth),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: surface,
+                  borderRadius: BorderRadius.circular(
+                    DialogKitLayout.cornerRadius,
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      DialogKitLayout.cornerRadius,
-                    ),
-                    child: Material(
-                      color: surface,
-                      child: Padding(
-                        padding: const EdgeInsets.all(DialogKitLayout.padding),
-                        child: BaseDialogKitPanel<T>(
-                          hostContext: dialogContext,
-                          expandActions: false,
-                          type: type,
-                          title: title,
-                          description: description,
-                          showClose: showClose,
-                          bodyText: bodyText,
-                          body: body,
-                          checkboxLabel: checkboxLabel,
-                          checkboxItems: checkboxItems,
-                          checkboxValue: checkboxValue,
-                          onCheckboxChanged: onCheckboxChanged,
-                          onCheckboxesChanged: onCheckboxesChanged,
-                          maxBodyHeight: maxBodyHeight,
-                          listItems: listItems,
-                          selectOptions: selectOptions,
-                          selectedIndex: selectedIndex,
-                          primaryLabel: primaryLabel,
-                          onPrimary: onPrimary,
-                          onPrimaryWithIndex: onPrimaryWithIndex,
-                          secondaryLabel: secondaryLabel,
-                          onSecondary: onSecondary,
-                          primaryFirst: primaryFirst,
-                          popOnAction: popOnAction,
-                        ),
+                  boxShadow: DialogKitLayout.dialogCardShadows(scheme),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    DialogKitLayout.cornerRadius,
+                  ),
+                  child: Material(
+                    color: surface,
+                    child: Padding(
+                      padding: const EdgeInsets.all(DialogKitLayout.padding),
+                      child: BaseDialogKitPanel<T>(
+                        hostContext: dialogContext,
+                        expandActions: false,
+                        type: type,
+                        title: title,
+                        description: description,
+                        showClose: showClose,
+                        bodyText: bodyText,
+                        body: body,
+                        checkboxLabel: checkboxLabel,
+                        checkboxItems: checkboxItems,
+                        checkboxValue: checkboxValue,
+                        onCheckboxChanged: onCheckboxChanged,
+                        onCheckboxesChanged: onCheckboxesChanged,
+                        maxBodyHeight: maxBodyHeight,
+                        listItems: listItems,
+                        selectOptions: selectOptions,
+                        selectedIndex: selectedIndex,
+                        primaryLabel: primaryLabel,
+                        onPrimary: onPrimary,
+                        onPrimaryWithIndex: onPrimaryWithIndex,
+                        secondaryLabel: secondaryLabel,
+                        onSecondary: onSecondary,
+                        primaryFirst: primaryFirst,
+                        popOnAction: popOnAction,
                       ),
                     ),
                   ),
@@ -421,10 +401,10 @@ class BaseDialog {
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
 }
 
 class _FullscreenActionRow extends StatelessWidget {

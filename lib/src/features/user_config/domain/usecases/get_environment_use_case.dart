@@ -15,28 +15,27 @@ class GetEnvironmentUseCase extends UseCase<String?, NoParams> {
   GetEnvironmentUseCase(this._repo);
 
   @override
-  FutureEither<String?> call(NoParams params) async {
-    return _repo.getEnvironment().then((result) {
-      return result.fold(
-        (failure) {
-          unawaited(
-            Analytics.track(
-              GetEnvironmentUseCaseEvent.failure(
-                properties: {
-                  AnalyticsPropertyKeys.failureMessage: failure.message,
-                  AnalyticsPropertyKeys.failureType: failure.type.name,
-                  AnalyticsPropertyKeys.failureSource: failure.source,
-                },
+  FutureEither<String?> call(NoParams params) async =>
+      _repo.getEnvironment().then(
+        (result) => result.fold(
+          (failure) {
+            unawaited(
+              Analytics.track(
+                GetEnvironmentUseCaseEvent.failure(
+                  properties: {
+                    AnalyticsPropertyKeys.failureMessage: failure.message,
+                    AnalyticsPropertyKeys.failureType: failure.type.name,
+                    AnalyticsPropertyKeys.failureSource: failure.source,
+                  },
+                ),
               ),
-            ),
-          );
-          return result;
-        },
-        (success) {
-          unawaited(Analytics.track(GetEnvironmentUseCaseEvent.success()));
-          return result;
-        },
+            );
+            return result;
+          },
+          (success) {
+            unawaited(Analytics.track(GetEnvironmentUseCaseEvent.success()));
+            return result;
+          },
+        ),
       );
-    });
-  }
 }

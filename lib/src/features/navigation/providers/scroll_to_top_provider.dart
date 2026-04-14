@@ -11,11 +11,8 @@ class ScrollToTopProvider extends InheritedWidget {
   final void Function(VoidCallback) onRegisterCallback;
 
   @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return false;
-  }
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 
-  static ScrollToTopProvider? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<ScrollToTopProvider>();
-  }
+  static ScrollToTopProvider? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ScrollToTopProvider>();
 }

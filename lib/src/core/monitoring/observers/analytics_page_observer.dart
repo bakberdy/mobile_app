@@ -42,15 +42,13 @@ class AnalyticsPageObserver implements AutoRouteObserver {
     return name.isEmpty ? 'home' : name;
   }
 
-  String _getTabName(TabPageRoute route) {
-    return route.name
-        .replaceAll('Route', '')
-        .replaceAllMapped(
-          RegExp(r'([a-z])([A-Z])'),
-          (match) => '${match.group(1)}_${match.group(2)!.toLowerCase()}',
-        )
-        .toLowerCase();
-  }
+  String _getTabName(TabPageRoute route) => route.name
+      .replaceAll('Route', '')
+      .replaceAllMapped(
+        RegExp(r'([a-z])([A-Z])'),
+        (match) => '${match.group(1)}_${match.group(2)!.toLowerCase()}',
+      )
+      .toLowerCase();
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {

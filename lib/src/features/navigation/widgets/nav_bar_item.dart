@@ -125,12 +125,8 @@ class _NavBarEntryState extends State<NavBarEntry>
               ),
               if (showLabel)
                 AnimatedBuilder(
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _tapScale.value,
-                      child: child,
-                    );
-                  },
+                  builder: (context, child) =>
+                      Transform.scale(scale: _tapScale.value, child: child),
                   animation: _tapController,
                   child: Text(
                     widget.label!,

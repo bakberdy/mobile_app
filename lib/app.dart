@@ -17,78 +17,73 @@ class App extends StatelessWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) {
-            final deviceLanguageCode =
-                WidgetsBinding.instance.platformDispatcher.locale.languageCode;
-            return sl<LocaleBloc>()..add(
-              LocaleEvent.started(deviceLanguageCode: deviceLanguageCode),
-            );
-          },
-        ),
-      ],
-      child: AppThemeScope(
-        builder: (context, themeMode, child) {
-          final appRouter = sl<AppRouter>();
-          return BlocBuilder<LocaleBloc, LocaleState>(
-            builder: (context, localeState) {
-              return MaterialApp.router(
-                builder: (context, child) {
-                  if (AppConfig.instance.environment != 'production') {
-                    return Stack(
-                      children: [
-                        ?child,
-                        Positioned(
-                          bottom: 20,
-                          right: 20,
-                          child: LogViewerButton(
-                            navigatorKey: appRouter.navigatorKey,
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return child ?? const SizedBox.shrink();
-                },
-                debugShowCheckedModeBanner: false,
-                routerConfig: appRouter.config(
-                  navigatorObservers: () => [
-                    // AnalyticsPageObserver(),
-                    AutoRouteLogObserver(),
-                  ],
-                ),
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: themeMode,
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                locale: localeState.languageCode != null
-                    ? Locale(localeState.languageCode!)
-                    : null,
-                supportedLocales: LocaleConstants.supportedLocales,
-                localeResolutionCallback: (deviceLocale, supportedLocales) {
-                  final languageCode = localeState.languageCode;
-                  if (languageCode != null) return Locale(languageCode);
-
-                  for (final locale in supportedLocales) {
-                    if (locale.languageCode == deviceLocale?.languageCode) {
-                      return locale;
-                    }
-                  }
-                  return LocaleConstants.defaultLocale;
-                },
-              );
-            },
-          );
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (_) {
+          final deviceLanguageCode =
+              WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+          return sl<LocaleBloc>()
+            ..add(LocaleEvent.started(deviceLanguageCode: deviceLanguageCode));
         },
       ),
-    );
-  }
+    ],
+    child: AppThemeScope(
+      builder: (context, themeMode, child) {
+        final appRouter = sl<AppRouter>();
+        return BlocBuilder<LocaleBloc, LocaleState>(
+          builder: (context, localeState) => MaterialApp.router(
+            builder: (context, child) {
+              if (AppConfig.instance.environment != 'production') {
+                return Stack(
+                  children: [
+                    ?child,
+                    Positioned(
+                      bottom: 20,
+                      right: 20,
+                      child: LogViewerButton(
+                        navigatorKey: appRouter.navigatorKey,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return child ?? const SizedBox.shrink();
+            },
+            debugShowCheckedModeBanner: false,
+            routerConfig: appRouter.config(
+              navigatorObservers: () => [
+                // AnalyticsPageObserver(),
+                AutoRouteLogObserver(),
+              ],
+            ),
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            locale: localeState.languageCode != null
+                ? Locale(localeState.languageCode!)
+                : null,
+            supportedLocales: LocaleConstants.supportedLocales,
+            localeResolutionCallback: (deviceLocale, supportedLocales) {
+              final languageCode = localeState.languageCode;
+              if (languageCode != null) return Locale(languageCode);
+
+              for (final locale in supportedLocales) {
+                if (locale.languageCode == deviceLocale?.languageCode) {
+                  return locale;
+                }
+              }
+              return LocaleConstants.defaultLocale;
+            },
+          ),
+        );
+      },
+    ),
+  );
 }
