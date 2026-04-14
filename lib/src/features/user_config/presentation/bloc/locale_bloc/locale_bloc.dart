@@ -40,8 +40,8 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
 
     final result = await _getLocaleUseCase(const NoParams());
 
-    result.fold(
-      (Failure failure) {
+    await result.fold(
+      (Failure failure) async {
         emit(
           state.copyWith(
             status: StateStatus.error(failure),
@@ -57,8 +57,10 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
             ),
           );
         } else {
-          // First launch: nothing stored yet — persist and emit device locale.
           await _setLocaleUseCase(SetLocaleUseCaseParams(locale: event.deviceLanguageCode));
+          if (emit.isDone) {
+            return;
+          }
           emit(
             state.copyWith(
               languageCode: event.deviceLanguageCode,
