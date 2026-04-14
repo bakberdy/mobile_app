@@ -31,7 +31,7 @@
             "type": "dart",
             "program": "lib/main.dart",
             "toolArgs": [
-                "--dart-define-from-file=config/run/config.staging.json",
+                "--dart-define-from-file=config/run/config.stage.json",
                 "--flavor=staging"
             ]
         },
