@@ -17,7 +17,7 @@ class App extends StatelessWidget {
   const App({super.key});
 
   @override
-  Widget build(final BuildContext context) => MultiBlocProvider(
+  Widget build(BuildContext context) => MultiBlocProvider(
     providers: [
       BlocProvider(
         create: (_) {
