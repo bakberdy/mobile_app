@@ -21,6 +21,8 @@ help:
 	@echo "  ios-release-development / ios-release-staging / ios-release-production"
 	@echo "  ios-ipa-development / ios-ipa-staging / ios-ipa-production"
 	@echo "Optional: EXPORT_OPTIONS_PLIST=ios/fastlane/ExportOptions.plist"
+	@echo "TestFlight (from ios/, after bundle install): fastlane beta_development | beta_staging | beta_production"
+	@echo "  Local Fastlane: ios/keys/.env; CI: same key names as secrets. Doc: .github/docs/ios/build.md"
 
 ios-pod:
 	cd ios && pod install

@@ -2,6 +2,11 @@ name: ios-upload-to-testflight
 
 on:
   workflow_call:
+    inputs:
+      flavor:
+        description: "Flutter iOS flavor to build and upload (development, staging, or production)"
+        type: string
+        default: production
 
 jobs:
   upload:
@@ -14,29 +19,48 @@ jobs:
 
       - name: Check required secrets
         env:
-          PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
-          PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
-          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          ASC_ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          ASC_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-          IOS_CERT_B64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
-          IOS_CERT_PASS: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
-          IOS_PROF_B64: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64 }}
-          IOS_PROF_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+          FLAVOR: ${{ inputs.flavor }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          IOS_BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          IOS_BUILD_CERTIFICATE_PASSWORD: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
+          IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT }}
+          IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT }}
+          IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING }}
+          IOS_PROVISIONING_PROFILE_NAME_STAGING: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_STAGING }}
+          IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION }}
+          IOS_PROVISIONING_PROFILE_NAME_PRODUCTION: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_PRODUCTION }}
         run: |
           set -euo pipefail
           rc=0
-          if [ -z "${PRODUCTION_API_URL}" ]; then echo "::error::Secret PRODUCTION_API_URL is missing or empty."; rc=1; fi
-          if [ -z "${PRODUCTION_ENVIRONMENT}" ]; then echo "::error::Secret PRODUCTION_ENVIRONMENT is missing or empty."; rc=1; fi
-          if [ -z "${ASC_KEY_ID}" ]; then echo "::error::Secret APP_STORE_CONNECT_KEY_ID is missing or empty."; rc=1; fi
-          if [ -z "${ASC_ISSUER}" ]; then echo "::error::Secret APP_STORE_CONNECT_ISSUER_ID is missing or empty."; rc=1; fi
-          if [ -z "${ASC_KEY}" ]; then echo "::error::Secret APP_STORE_CONNECT_API_KEY is missing or empty (App Store Connect API .p8 contents or Base64 of that file)."; rc=1; fi
-          if [ -z "${IOS_CERT_B64}" ]; then echo "::error::Secret IOS_BUILD_CERTIFICATE_BASE64 is missing or empty (Base64 of the iOS Distribution .p12)."; rc=1; fi
-          if [ -z "${IOS_CERT_PASS}" ]; then echo "::error::Secret IOS_BUILD_CERTIFICATE_PASSWORD is missing or empty."; rc=1; fi
-          if [ -z "${IOS_PROF_B64}" ]; then echo "::error::Secret IOS_BUILD_PROVISION_PROFILE_BASE64 is missing or empty (Base64 of the App Store provisioning profile for com.bakberdi.mobile-app)."; rc=1; fi
-          if [ -z "${IOS_PROF_NAME}" ]; then echo "::error::Secret IOS_PROVISIONING_PROFILE_NAME is missing or empty (exact profile name as shown in developer.apple.com or Xcode)."; rc=1; fi
+          if [ -z "${APP_STORE_CONNECT_KEY_ID}" ]; then echo "::error::Secret APP_STORE_CONNECT_KEY_ID is missing or empty."; rc=1; fi
+          if [ -z "${APP_STORE_CONNECT_ISSUER_ID}" ]; then echo "::error::Secret APP_STORE_CONNECT_ISSUER_ID is missing or empty."; rc=1; fi
+          if [ -z "${APP_STORE_CONNECT_API_KEY}" ]; then echo "::error::Secret APP_STORE_CONNECT_API_KEY is missing or empty (App Store Connect API .p8 contents or Base64 of that file)."; rc=1; fi
+          if [ -z "${IOS_BUILD_CERTIFICATE_BASE64}" ]; then echo "::error::Secret IOS_BUILD_CERTIFICATE_BASE64 is missing or empty (Base64 of the iOS Distribution .p12)."; rc=1; fi
+          if [ -z "${IOS_BUILD_CERTIFICATE_PASSWORD}" ]; then echo "::error::Secret IOS_BUILD_CERTIFICATE_PASSWORD is missing or empty."; rc=1; fi
+
+          case "${FLAVOR}" in
+            production)
+              if [ -z "${IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION}" ]; then echo "::error::For flavor production, secret IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION is required."; rc=1; fi
+              if [ -z "${IOS_PROVISIONING_PROFILE_NAME_PRODUCTION}" ]; then echo "::error::For flavor production, secret IOS_PROVISIONING_PROFILE_NAME_PRODUCTION is required."; rc=1; fi
+              ;;
+            staging)
+              if [ -z "${IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING}" ]; then echo "::error::For flavor staging, secret IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING is required."; rc=1; fi
+              if [ -z "${IOS_PROVISIONING_PROFILE_NAME_STAGING}" ]; then echo "::error::For flavor staging, secret IOS_PROVISIONING_PROFILE_NAME_STAGING is required."; rc=1; fi
+              ;;
+            development)
+              if [ -z "${IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT is required."; rc=1; fi
+              if [ -z "${IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT is required."; rc=1; fi
+              ;;
+            *)
+              echo "::error::Invalid flavor '${FLAVOR}'. Use development, staging, or production."
+              exit 1
+              ;;
+          esac
+
           if [ "${rc}" -ne 0 ]; then
-            echo "::error::Add the listed secrets under Settings → Secrets and variables → Actions. In Apple Developer, create an App Store distribution certificate and provisioning profile for the production bundle ID; in App Store Connect, create an API key with App Manager or Admin access."
+            echo "::error::Add the listed secrets under Settings → Secrets and variables → Actions."
             exit 1
           fi
 
@@ -67,29 +91,45 @@ jobs:
 
       - name: Write App Store Connect API key and signing assets
         env:
-          ASC_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-          IOS_CERT_B64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
-          IOS_PROF_B64: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64 }}
+          FLAVOR: ${{ inputs.flavor }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          IOS_BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT }}
+          IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING }}
+          IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION }}
         run: |
           set -euo pipefail
           KEY_OUT="${RUNNER_TEMP}/AuthKey.p8"
-          printf '%b' "${ASC_KEY}" | tr -d '\r' > "${RUNNER_TEMP}/candidate_asc.pem"
+          printf '%b' "${APP_STORE_CONNECT_API_KEY}" | tr -d '\r' > "${RUNNER_TEMP}/candidate_asc.pem"
           if openssl pkey -in "${RUNNER_TEMP}/candidate_asc.pem" -noout 2>/dev/null \
             || openssl ec -in "${RUNNER_TEMP}/candidate_asc.pem" -noout 2>/dev/null; then
             cp "${RUNNER_TEMP}/candidate_asc.pem" "${KEY_OUT}"
           else
-            printf '%b' "${ASC_KEY}" | tr -d '\r' | tr -d '\n' | base64 -d > "${KEY_OUT}" 2>/dev/null || true
+            printf '%b' "${APP_STORE_CONNECT_API_KEY}" | tr -d '\r' | tr -d '\n' | base64 -d > "${KEY_OUT}" 2>/dev/null || true
             if ! openssl pkey -in "${KEY_OUT}" -noout 2>/dev/null \
               && ! openssl ec -in "${KEY_OUT}" -noout 2>/dev/null; then
               echo "::error::APP_STORE_CONNECT_API_KEY must be the full .p8 PEM from App Store Connect (Users and Access → Keys) or Base64 of that file."
               exit 1
             fi
           fi
-          echo "ASC_KEY_PATH=${KEY_OUT}" >> "${GITHUB_ENV}"
-          echo "${IOS_CERT_B64}" | base64 -d > "${RUNNER_TEMP}/ios_distribution.p12"
+          echo "APP_STORE_CONNECT_API_KEY_PATH=${KEY_OUT}" >> "${GITHUB_ENV}"
+          echo "${IOS_BUILD_CERTIFICATE_BASE64}" | base64 -d > "${RUNNER_TEMP}/ios_distribution.p12"
           echo "IOS_BUILD_CERTIFICATE_PATH=${RUNNER_TEMP}/ios_distribution.p12" >> "${GITHUB_ENV}"
-          echo "${IOS_PROF_B64}" | base64 -d > "${RUNNER_TEMP}/production.mobileprovision"
-          echo "IOS_BUILD_PROVISION_PROFILE_PATH=${RUNNER_TEMP}/production.mobileprovision" >> "${GITHUB_ENV}"
+
+          case "${FLAVOR}" in
+            production)
+              echo "${IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION}" | base64 -d > "${RUNNER_TEMP}/selected.mobileprovision"
+              echo "IOS_BUILD_PROVISION_PROFILE_PATH_PRODUCTION=${RUNNER_TEMP}/selected.mobileprovision" >> "${GITHUB_ENV}"
+              ;;
+            staging)
+              echo "${IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING}" | base64 -d > "${RUNNER_TEMP}/selected.mobileprovision"
+              echo "IOS_BUILD_PROVISION_PROFILE_PATH_STAGING=${RUNNER_TEMP}/selected.mobileprovision" >> "${GITHUB_ENV}"
+              ;;
+            development)
+              echo "${IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT}" | base64 -d > "${RUNNER_TEMP}/selected.mobileprovision"
+              echo "IOS_BUILD_PROVISION_PROFILE_PATH_DEVELOPMENT=${RUNNER_TEMP}/selected.mobileprovision" >> "${GITHUB_ENV}"
+              ;;
+          esac
           echo "IOS_KEYCHAIN_PASSWORD=$(openssl rand -hex 32)" >> "${GITHUB_ENV}"
 
       - name: Run Fastlane TestFlight upload
@@ -97,18 +137,18 @@ jobs:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           IOS_BUILD_CERTIFICATE_PASSWORD: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
-          IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
-          PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
-          PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
+          IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT }}
+          IOS_PROVISIONING_PROFILE_NAME_STAGING: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_STAGING }}
+          IOS_PROVISIONING_PROFILE_NAME_PRODUCTION: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_PRODUCTION }}
         run: |
           set -euo pipefail
           cd ios
-          bundle exec fastlane beta_production
+          bundle exec fastlane "beta_${{ inputs.flavor }}"
 
       - name: Upload IPA artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-production-ipa
+          name: ios-${{ inputs.flavor }}-ipa
           path: build/ios/ipa/*.ipa
           if-no-files-found: warn

@@ -6,11 +6,84 @@ def project_root
   File.expand_path("../..", __dir__)
 end
 
-def write_export_options_plist(project_root)
+def ios_root
+  File.expand_path("..", __dir__)
+end
+
+def keys_dotenv_path
+  File.join(ios_root, "keys", ".env")
+end
+
+def load_local_fastlane_env_from_keys
+  return unless ENV["CI"].to_s.empty?
+
+  path = keys_dotenv_path
+  UI.user_error!("Missing #{path}. Copy ios/keys/.env.example to ios/keys/.env and fill values.") unless File.file?(path)
+
+  File.readlines(path, chomp: true).each do |line|
+    stripped = line.strip
+    next if stripped.empty? || stripped.start_with?("#")
+
+    idx = stripped.index("=")
+    next if idx.nil? || idx < 1
+
+    key = stripped[0...idx].strip
+    val = stripped[(idx + 1)..].strip
+    if (val.start_with?('"') && val.end_with?('"')) || (val.start_with?("'") && val.end_with?("'"))
+      val = val[1..-2]
+    end
+    next if key.empty?
+
+    ENV[key] = val
+  end
+end
+
+def expand_relative_path_if_needed(raw_path)
+  return raw_path if raw_path.to_s.empty?
+  return raw_path if File.file?(raw_path)
+
+  candidate = File.expand_path(raw_path, ios_root)
+  return candidate if File.file?(candidate)
+
+  raw_path
+end
+
+def ensure_local_env_paths_resolved
+  return unless ENV["CI"].to_s.empty?
+
+  key_path_env = ENV["APP_STORE_CONNECT_API_KEY_PATH"].to_s
+  ENV["APP_STORE_CONNECT_API_KEY_PATH"] = expand_relative_path_if_needed(key_path_env) unless key_path_env.empty?
+
+  %w[
+    IOS_BUILD_CERTIFICATE_PATH
+    IOS_BUILD_PROVISION_PROFILE_PATH_DEVELOPMENT
+    IOS_BUILD_PROVISION_PROFILE_PATH_STAGING
+    IOS_BUILD_PROVISION_PROFILE_PATH_PRODUCTION
+  ].each do |k|
+    p = ENV[k].to_s
+    ENV[k] = expand_relative_path_if_needed(p) unless p.empty?
+  end
+end
+
+def flavor_ci_suffix(flavor)
+  case flavor
+  when "development" then "DEVELOPMENT"
+  when "staging" then "STAGING"
+  when "production" then "PRODUCTION"
+  else
+    UI.user_error!("Unknown flavor: #{flavor}")
+  end
+end
+
+def provisioning_profile_name_for_flavor(flavor)
+  suffix = flavor_ci_suffix(flavor)
+  ENV["IOS_PROVISIONING_PROFILE_NAME_#{suffix}"].to_s
+end
+
+def write_export_options_plist(project_root, bundle_id:, provisioning_profile_name:)
   out = File.join(project_root, "build", "ios", "flutter_export_options.plist")
   FileUtils.mkdir_p(File.dirname(out))
-  profile_name = ENV["IOS_PROVISIONING_PROFILE_NAME"]
-  if profile_name.to_s.empty?
+  if provisioning_profile_name.to_s.empty?
     File.write(out, File.read(File.join(__dir__, "ExportOptions.plist")))
   else
     File.write(
@@ -30,8 +103,8 @@ def write_export_options_plist(project_root)
           <string>manual</string>
           <key>provisioningProfiles</key>
           <dict>
-            <key>com.bakberdi.mobile-app</key>
-            <string>#{profile_name}</string>
+            <key>#{bundle_id}</key>
+            <string>#{provisioning_profile_name}</string>
           </dict>
         </dict>
         </plist>
@@ -41,11 +114,16 @@ def write_export_options_plist(project_root)
   "build/ios/flutter_export_options.plist"
 end
 
-def setup_ci_signing
+def provision_profile_path_for_flavor(flavor)
+  suffix = flavor_ci_suffix(flavor)
+  ENV["IOS_BUILD_PROVISION_PROFILE_PATH_#{suffix}"].to_s
+end
+
+def setup_ci_signing(flavor:)
   return unless ENV["CI"]
 
   cert_path = ENV["IOS_BUILD_CERTIFICATE_PATH"]
-  profile_path = ENV["IOS_BUILD_PROVISION_PROFILE_PATH"]
+  profile_path = provision_profile_path_for_flavor(flavor)
   return if cert_path.to_s.empty? || profile_path.to_s.empty?
 
   keychain_password = ENV.fetch("IOS_KEYCHAIN_PASSWORD", "build_keychain_temp")
@@ -67,8 +145,8 @@ def setup_ci_signing
 end
 
 def asc_api_key
-  key_path = ENV["ASC_KEY_PATH"]
-  UI.user_error!("ASC_KEY_PATH must point to the App Store Connect API .p8 file") if key_path.to_s.empty? || !File.file?(key_path)
+  key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+  UI.user_error!("APP_STORE_CONNECT_API_KEY_PATH must point to the App Store Connect API .p8 file") if key_path.to_s.empty? || !File.file?(key_path)
 
   app_store_connect_api_key(
     key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
@@ -79,38 +157,76 @@ def asc_api_key
   )
 end
 
+def build_and_upload_beta(flavor:, bundle_id:, dart_define_file:)
+  load_local_fastlane_env_from_keys
+  ensure_local_env_paths_resolved
+  setup_ci_signing(flavor: flavor)
+  asc_api_key
+
+  profile_name = provisioning_profile_name_for_flavor(flavor)
+  if ENV["CI"] && profile_name.to_s.empty?
+    suffix = flavor_ci_suffix(flavor)
+    UI.user_error!(
+      "In CI, set IOS_PROVISIONING_PROFILE_NAME_#{suffix} to the exact App Store distribution profile name for #{bundle_id}"
+    )
+  end
+
+  root = project_root
+  config_path = File.join(root, dart_define_file)
+  UI.user_error!("Missing #{dart_define_file}") unless File.file?(config_path)
+
+  export_plist = write_export_options_plist(
+    root,
+    bundle_id: bundle_id,
+    provisioning_profile_name: profile_name
+  )
+
+  Dir.chdir(root) do
+    sh(
+      "flutter", "build", "ipa",
+      "--flavor", flavor,
+      "--release",
+      "--dart-define-from-file=#{dart_define_file}",
+      "--export-options-plist=#{export_plist}"
+    )
+  end
+
+  ipa = Dir.glob(File.join(root, "build/ios/ipa/*.ipa")).first
+  UI.user_error!("IPA not found under build/ios/ipa") if ipa.nil?
+
+  upload_to_testflight(
+    ipa: ipa,
+    app_identifier: bundle_id,
+    skip_waiting_for_build_processing: true,
+    api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+  )
+end
+
 platform :ios do
-  desc "Build production IPA with Flutter and upload to TestFlight"
+  desc "Build development IPA and upload to TestFlight (bundle com.bakberdi.mobile-app.development)"
+  lane :beta_development do
+    build_and_upload_beta(
+      flavor: "development",
+      bundle_id: "com.bakberdi.mobile-app.development",
+      dart_define_file: "config/run/config.development.json"
+    )
+  end
+
+  desc "Build staging IPA and upload to TestFlight (bundle com.bakberdi.mobile-app.staging)"
+  lane :beta_staging do
+    build_and_upload_beta(
+      flavor: "staging",
+      bundle_id: "com.bakberdi.mobile-app.staging",
+      dart_define_file: "config/run/config.stage.json"
+    )
+  end
+
+  desc "Build production IPA and upload to TestFlight (bundle com.bakberdi.mobile-app)"
   lane :beta_production do
-    setup_ci_signing
-    asc_api_key
-
-    if ENV["CI"] && ENV["IOS_PROVISIONING_PROFILE_NAME"].to_s.empty?
-      UI.user_error!("IOS_PROVISIONING_PROFILE_NAME is required in CI (exact profile name from Apple Developer for com.bakberdi.mobile-app)")
-    end
-
-    api_url = ENV.fetch("PRODUCTION_API_URL")
-    environment = ENV.fetch("PRODUCTION_ENVIRONMENT")
-    export_plist = write_export_options_plist(project_root)
-
-    Dir.chdir(project_root) do
-      sh(
-        "flutter", "build", "ipa",
-        "--flavor", "production",
-        "--release",
-        "--dart-define=API_URL=#{api_url}",
-        "--dart-define=ENVIRONMENT=#{environment}",
-        "--export-options-plist=#{export_plist}"
-      )
-    end
-
-    ipa = Dir.glob(File.join(project_root, "build/ios/ipa/*.ipa")).first
-    UI.user_error!("IPA not found under build/ios/ipa") if ipa.nil?
-
-    upload_to_testflight(
-      ipa: ipa,
-      skip_waiting_for_build_processing: true,
-      api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    build_and_upload_beta(
+      flavor: "production",
+      bundle_id: "com.bakberdi.mobile-app",
+      dart_define_file: "config/run/config.production.json"
     )
   end
 end
