@@ -50,7 +50,7 @@ The **build** phase of that workflow reuses `android-build-production`, so **`PR
 | `android-release-on-tag.yml` | Push of tag matching `v?MAJOR.MINOR.PATCH` | Bumps `pubspec` via bot, then production APK |
 | `analyzer-check.yml` | Reusable only (`workflow_call`) | Static analysis (not covered in depth here) |
 
-Production flavor **applicationId** is `com.bakberdi.mobile_app` (see `android/app/build.gradle.kts`).
+Production flavor **applicationId** is `com.bakberdi.mobile-app` (see `android/app/build.gradle.kts`).
 
 ---
 
