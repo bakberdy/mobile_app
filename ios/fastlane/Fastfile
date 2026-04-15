@@ -30,7 +30,7 @@ def write_export_options_plist(project_root)
           <string>manual</string>
           <key>provisioningProfiles</key>
           <dict>
-            <key>com.bakberdi.travelApp</key>
+            <key>com.bakberdi.mobile-app</key>
             <string>#{profile_name}</string>
           </dict>
         </dict>
@@ -86,7 +86,7 @@ platform :ios do
     asc_api_key
 
     if ENV["CI"] && ENV["IOS_PROVISIONING_PROFILE_NAME"].to_s.empty?
-      UI.user_error!("IOS_PROVISIONING_PROFILE_NAME is required in CI (exact profile name from Apple Developer for com.bakberdi.travelApp)")
+      UI.user_error!("IOS_PROVISIONING_PROFILE_NAME is required in CI (exact profile name from Apple Developer for com.bakberdi.mobile-app)")
     end
 
     api_url = ENV.fetch("PRODUCTION_API_URL")

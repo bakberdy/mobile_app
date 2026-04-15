@@ -10,9 +10,9 @@ The iOS targets mirror Android: `development`, `staging`, `production`.
 
 | Flavor | Xcode scheme | Bundle ID |
 |--------|--------------|-----------|
-| `development` | `development` | `com.bakberdi.travelApp.development` |
-| `staging` | `staging` | `com.bakberdi.travelApp.staging` |
-| `production` | `production` | `com.bakberdi.travelApp` |
+| `development` | `development` | `com.bakberdi.mobile-app.development` |
+| `staging` | `staging` | `com.bakberdi.mobile-app.staging` |
+| `production` | `production` | `com.bakberdi.mobile-app` |
 
 Shared schemes live under `ios/Runner.xcodeproj/xcshareddata/xcschemes/`. Per-flavor settings use `ios/Flutter/*-{development,staging,production}.xcconfig`.
 

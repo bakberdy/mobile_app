@@ -21,7 +21,7 @@ These are the **only** secrets this iOS upload workflow reads:
 | `APP_STORE_CONNECT_API_KEY` | PEM **or** base64 of PEM | Full `.p8` file contents (`-----BEGIN …`), or the same file encoded as a single-line base64 string; the workflow accepts both. |
 | `IOS_BUILD_CERTIFICATE_BASE64` | Base64 of file | Base64-encoded **iOS Distribution** `.p12` used to sign the app. |
 | `IOS_BUILD_CERTIFICATE_PASSWORD` | Plain string | Password for the `.p12`. |
-| `IOS_BUILD_PROVISION_PROFILE_BASE64` | Base64 of file | Base64-encoded **App Store** provisioning profile for `com.bakberdi.travelApp`. |
+| `IOS_BUILD_PROVISION_PROFILE_BASE64` | Base64 of file | Base64-encoded **App Store** provisioning profile for `com.bakberdi.mobile-app`. |
 | `IOS_PROVISIONING_PROFILE_NAME` | Plain string | Exact profile **name** as shown in developer.apple.com or Xcode (must match the installed profile). |
 
 **Rules**
@@ -46,11 +46,11 @@ Fastlane creates a CI keychain, imports the certificate, installs the profile, r
 
 ## 3. Apple Developer / App Store Connect (manual)
 
-- App ID and App Store Connect app for **`com.bakberdi.travelApp`** (production).
+- App ID and App Store Connect app for **`com.bakberdi.mobile-app`** (production).
 - Valid **Distribution** certificate and **App Store** provisioning profile for that bundle ID.
 - App Store Connect **API** key with upload-capable access.
 
-Optional: register separate App IDs for `com.bakberdi.travelApp.staging` and `com.bakberdi.travelApp.development` if you distribute those flavors outside this pipeline.
+Optional: register separate App IDs for `com.bakberdi.mobile-app.staging` and `com.bakberdi.mobile-app.development` if you distribute those flavors outside this pipeline.
 
 ---
 

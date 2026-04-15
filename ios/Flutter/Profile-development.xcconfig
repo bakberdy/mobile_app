@@ -1,4 +1,4 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile-development.xcconfig"
 #include "Generated.xcconfig"
-PRODUCT_BUNDLE_IDENTIFIER=com.bakberdi.travelApp.development
-INFOPLIST_KEY_CFBundleDisplayName=Travel Dev
+PRODUCT_BUNDLE_IDENTIFIER=com.bakberdi.mobile-app.development
+INFOPLIST_KEY_CFBundleDisplayName=Mobile Dev

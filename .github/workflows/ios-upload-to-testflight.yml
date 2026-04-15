@@ -33,7 +33,7 @@ jobs:
           if [ -z "${ASC_KEY}" ]; then echo "::error::Secret APP_STORE_CONNECT_API_KEY is missing or empty (App Store Connect API .p8 contents or Base64 of that file)."; rc=1; fi
           if [ -z "${IOS_CERT_B64}" ]; then echo "::error::Secret IOS_BUILD_CERTIFICATE_BASE64 is missing or empty (Base64 of the iOS Distribution .p12)."; rc=1; fi
           if [ -z "${IOS_CERT_PASS}" ]; then echo "::error::Secret IOS_BUILD_CERTIFICATE_PASSWORD is missing or empty."; rc=1; fi
-          if [ -z "${IOS_PROF_B64}" ]; then echo "::error::Secret IOS_BUILD_PROVISION_PROFILE_BASE64 is missing or empty (Base64 of the App Store provisioning profile for com.bakberdi.travelApp)."; rc=1; fi
+          if [ -z "${IOS_PROF_B64}" ]; then echo "::error::Secret IOS_BUILD_PROVISION_PROFILE_BASE64 is missing or empty (Base64 of the App Store provisioning profile for com.bakberdi.mobile-app)."; rc=1; fi
           if [ -z "${IOS_PROF_NAME}" ]; then echo "::error::Secret IOS_PROVISIONING_PROFILE_NAME is missing or empty (exact profile name as shown in developer.apple.com or Xcode)."; rc=1; fi
           if [ "${rc}" -ne 0 ]; then
             echo "::error::Add the listed secrets under Settings → Secrets and variables → Actions. In Apple Developer, create an App Store distribution certificate and provisioning profile for the production bundle ID; in App Store Connect, create an API key with App Manager or Admin access."
