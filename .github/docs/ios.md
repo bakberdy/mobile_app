@@ -61,14 +61,32 @@ Runs `beta_production` / `beta_staging` / `beta_development` (IPA + TestFlight).
 | `APP_STORE_CONNECT_KEY_ID` | API key id |
 | `APP_STORE_CONNECT_ISSUER_ID` | Issuer id |
 | `APP_STORE_CONNECT_API_KEY` | Full `.p8` PEM, or base64 of that file (workflow writes a temp path) |
-| `IOS_BUILD_CERTIFICATE_BASE64` | `base64 -i your.p12 \| pbcopy` (macOS) |
+| `IOS_BUILD_CERTIFICATE_BASE64` | Base64 of `ios/keys/cert.p12` (see commands below) |
 | `IOS_BUILD_CERTIFICATE_PASSWORD` | `.p12` password |
-| `IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT` | Base64 of development `.mobileprovision` |
+| `IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT` | Base64 of dev `.mobileprovision` (see commands below) |
 | `IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT` | Exact profile name (must match file) |
-| `IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING` | Base64 of staging profile |
+| `IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING` | Base64 of staging `.mobileprovision` (see commands below) |
 | `IOS_PROVISIONING_PROFILE_NAME_STAGING` | Exact staging profile name |
-| `IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION` | Base64 of production profile |
+| `IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION` | Base64 of production `.mobileprovision` (see commands below) |
 | `IOS_PROVISIONING_PROFILE_NAME_PRODUCTION` | Exact production profile name |
+
+**Base64 for GitHub (macOS, run from repository root):** use the same paths as in `ios/keys/.env` (`IOS_BUILD_PROVISION_PROFILE_PATH_*`, `IOS_BUILD_CERTIFICATE_PATH`), or the paths below if they match your files. Paste the clipboard output into the secret value (no quotes).
+
+```bash
+# Distribution .p12 → secret IOS_BUILD_CERTIFICATE_BASE64
+base64 -i ios/keys/cert.p12 | tr -d '\n' | pbcopy
+
+# Development .mobileprovision → secret IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT
+base64 -i ios/keys/profiles/mobileappdevelopmentprofile.mobileprovision | tr -d '\n' | pbcopy
+
+# Staging .mobileprovision → secret IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING
+base64 -i ios/keys/profiles/mobileappstagingprofile.mobileprovision | tr -d '\n' | pbcopy
+
+# Production .mobileprovision → secret IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION
+base64 -i ios/keys/profiles/mobileappproductionprofile.mobileprovision | tr -d '\n' | pbcopy
+```
+
+If your filenames differ, only change the path after `-i` (match `IOS_BUILD_PROVISION_PROFILE_PATH_DEVELOPMENT` etc.). On Linux, use `base64 -w0 file | xclip -selection clipboard` (or `wl-copy`) instead of `tr … | pbcopy`.
 
 **Build config (flavor-scoped, not iOS-only):** same JSON keys as `config/run/config.example.json` (`API_URL`, `ENVIRONMENT`, …). **Secret name = `<FLAVOR>_<KEY>`** with **FLAVOR** uppercase: `DEVELOPMENT` | `STAGING` | `PRODUCTION` (matches Fastlane `env_suffix`). The secret **value** is the same string as in the matching `config/run/config.<flavor>.json` for that key. Local builds still use those files; CI passes `--dart-define` from these secrets.
 
