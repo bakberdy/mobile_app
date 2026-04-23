@@ -82,30 +82,34 @@ jobs:
             exit 1
           fi
 
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"
           bundler-cache: true
           working-directory: ios
 
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
       - name: Flutter pub get
         run: |
           set -euo pipefail
           flutter pub get
 
-      - name: CocoaPods install
+      - name: CocoaPods (Bundler, same Ruby as Fastlane)
         env:
           LANG: en_US.UTF-8
           LC_ALL: en_US.UTF-8
         run: |
           set -euo pipefail
           cd ios
-          pod install
+          bundle install
+          bundle exec pod install
+          pod_dir="$(dirname "$(bundle exec which pod)")"
+          echo "Pod on PATH: ${pod_dir}/pod"
+          echo "$pod_dir" >> "${GITHUB_PATH}"
 
       - name: Write App Store Connect API key and signing assets
         env:

@@ -103,7 +103,7 @@ For a given workflow run, the workflow `inputs.flavor` must have its profile pai
 
 ## Step 7 — CI: what runs and how
 
-- **Workflow:** `.github/workflows/ios-upload-to-testflight.yml` (reusable). It sets `CI=true`, decodes signing + API key, passes secrets into the job env, then runs `cd ios && bundle exec fastlane beta_<flavor>`.
+- **Workflow:** `.github/workflows/ios-upload-to-testflight.yml` (reusable). It sets `CI=true`, installs Ruby gems from `ios/Gemfile` (CocoaPods + Fastlane), runs `bundle exec pod install`, prepends that `pod` to `PATH` so `flutter build ipa` does not use a broken system CocoaPods, then decodes signing + API key and runs `cd ios && bundle exec fastlane beta_<flavor>`.
 - **Tag releases:** `.github/workflows/release-on-tag.yml` calls that workflow with `flavor: production` after the version step. Pushing a release tag runs the iOS job if the rest of the release pipeline is set up; you need all **production** + **shared** secrets from Step 6.
 - **Artifact:** on success, the job uploads `build/ios/ipa/*.ipa` as `ios-<flavor>-ipa`.
 - **Other flavors in CI:** add a workflow (or `workflow_dispatch` input) that calls `ios-upload-to-testflight.yml` with `flavor: staging` or `development` and `secrets: inherit`. Only the secrets for that flavor need to be non-empty for that run (plus shared keys).
