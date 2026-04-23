@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000238">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: Switch to ios prepare lane" time="6.5e-05">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: app_store_connect_api_key" time="0.002145">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: Switch to ios build lane" time="6.3e-05">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: install_provisioning_profile" time="0.043273">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: flutter build ipa --flavor staging --release --dart-define-from-file\=config/run/config.staging.json --export-options-plist\=build/ios/flutter_export_options.plist" time="54.176659">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="6: Switch to ios deploy lane" time="0.000189">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="7: upload_to_testflight" time="83.94996">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

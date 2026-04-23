@@ -1,6 +1,12 @@
 name: ios-upload-to-testflight
 
 on:
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: "Flutter iOS flavor to build and upload (development, staging, or production)"
+        type: string
+        default: production
   workflow_call:
     inputs:
       flavor:
@@ -31,6 +37,12 @@ jobs:
           IOS_PROVISIONING_PROFILE_NAME_STAGING: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_STAGING }}
           IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION: ${{ secrets.IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION }}
           IOS_PROVISIONING_PROFILE_NAME_PRODUCTION: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_PRODUCTION }}
+          DEVELOPMENT_API_URL: ${{ secrets.DEVELOPMENT_API_URL }}
+          DEVELOPMENT_ENVIRONMENT: ${{ secrets.DEVELOPMENT_ENVIRONMENT }}
+          STAGING_API_URL: ${{ secrets.STAGING_API_URL }}
+          STAGING_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
+          PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+          PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
         run: |
           set -euo pipefail
           rc=0
@@ -44,14 +56,20 @@ jobs:
             production)
               if [ -z "${IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION}" ]; then echo "::error::For flavor production, secret IOS_BUILD_PROVISION_PROFILE_BASE64_PRODUCTION is required."; rc=1; fi
               if [ -z "${IOS_PROVISIONING_PROFILE_NAME_PRODUCTION}" ]; then echo "::error::For flavor production, secret IOS_PROVISIONING_PROFILE_NAME_PRODUCTION is required."; rc=1; fi
+              if [ -z "${PRODUCTION_API_URL}" ]; then echo "::error::For flavor production, secret PRODUCTION_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
+              if [ -z "${PRODUCTION_ENVIRONMENT}" ]; then echo "::error::For flavor production, secret PRODUCTION_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
               ;;
             staging)
               if [ -z "${IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING}" ]; then echo "::error::For flavor staging, secret IOS_BUILD_PROVISION_PROFILE_BASE64_STAGING is required."; rc=1; fi
               if [ -z "${IOS_PROVISIONING_PROFILE_NAME_STAGING}" ]; then echo "::error::For flavor staging, secret IOS_PROVISIONING_PROFILE_NAME_STAGING is required."; rc=1; fi
+              if [ -z "${STAGING_API_URL}" ]; then echo "::error::For flavor staging, secret STAGING_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
+              if [ -z "${STAGING_ENVIRONMENT}" ]; then echo "::error::For flavor staging, secret STAGING_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
               ;;
             development)
               if [ -z "${IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret IOS_BUILD_PROVISION_PROFILE_BASE64_DEVELOPMENT is required."; rc=1; fi
               if [ -z "${IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT is required."; rc=1; fi
+              if [ -z "${DEVELOPMENT_API_URL}" ]; then echo "::error::For flavor development, secret DEVELOPMENT_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
+              if [ -z "${DEVELOPMENT_ENVIRONMENT}" ]; then echo "::error::For flavor development, secret DEVELOPMENT_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
               ;;
             *)
               echo "::error::Invalid flavor '${FLAVOR}'. Use development, staging, or production."
@@ -140,6 +158,12 @@ jobs:
           IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_DEVELOPMENT }}
           IOS_PROVISIONING_PROFILE_NAME_STAGING: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_STAGING }}
           IOS_PROVISIONING_PROFILE_NAME_PRODUCTION: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME_PRODUCTION }}
+          DEVELOPMENT_API_URL: ${{ secrets.DEVELOPMENT_API_URL }}
+          DEVELOPMENT_ENVIRONMENT: ${{ secrets.DEVELOPMENT_ENVIRONMENT }}
+          STAGING_API_URL: ${{ secrets.STAGING_API_URL }}
+          STAGING_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
+          PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+          PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
         run: |
           set -euo pipefail
           cd ios
