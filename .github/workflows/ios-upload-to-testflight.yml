@@ -15,7 +15,7 @@ on:
         default: production
 
 jobs:
-  upload:
+  upload-to-testflight:
     runs-on: macos-latest
     timeout-minutes: 60
     env:
