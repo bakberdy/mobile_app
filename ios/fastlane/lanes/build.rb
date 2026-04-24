@@ -16,13 +16,19 @@ platform :ios do
     clean_previous_ipas
 
     Dir.chdir(PROJECT_ROOT) do
-      sh(
+      cmd = [
         "flutter", "build", "ipa",
         "--flavor", flavor,
         "--release",
         *dart_args,
         "--export-options-plist=#{export_plist}",
-      )
+      ]
+      if ci? && !ENV["GITHUB_RUN_ID"].to_s.empty?
+        run_id = ENV["GITHUB_RUN_ID"]
+        cmd += ["--build-number", run_id]
+        UI.message("iOS build number: #{run_id} (GITHUB_RUN_ID)")
+      end
+      sh(*cmd)
     end
 
     ipa = find_built_ipa
