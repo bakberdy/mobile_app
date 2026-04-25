@@ -1,26 +1,31 @@
-name: android-release-on-tag
+name: release-on-publish
 
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types: [published]
 
 jobs:
   validate-tag:
     runs-on: ubuntu-latest
     outputs:
       app_version: ${{ steps.version.outputs.app_version }}
+      env: ${{ steps.version.outputs.env }}
     steps:
-      - name: Validate tag and compute pubspec version
+      - name: Validate release tag and compute pubspec version
         id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          if ! [[ "$TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Tag must be semver MAJOR.MINOR.PATCH, optional leading v (got: $TAG)"
+          set -euo pipefail
+          if [[ "${TAG}" =~ ^(staging|production)-([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            ENV="${BASH_REMATCH[1]}"
+            SEMVER="${BASH_REMATCH[2]}"
+          else
+            echo "::error::Release tag must be 'staging-MAJOR.MINOR.PATCH' or 'production-MAJOR.MINOR.PATCH' (got: ${TAG})"
             exit 1
           fi
-          SEMVER="${TAG#v}"
-          echo "app_version=${SEMVER}+${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "env=${ENV}" >> "${GITHUB_OUTPUT}"
+          echo "app_version=${SEMVER}+${GITHUB_RUN_NUMBER}" >> "${GITHUB_OUTPUT}"
 
   commit-version:
     needs: [validate-tag]
@@ -74,7 +79,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: refs/tags/${{ github.event.release.tag_name }}
           fetch-depth: 0
           token: ${{ steps.release-app-token.outputs.token }}
 
