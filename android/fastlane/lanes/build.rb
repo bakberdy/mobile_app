@@ -15,10 +15,9 @@ platform :android do
         "--release",
         *dart_args,
       ]
-      if ci? && !ENV["GITHUB_RUN_ID"].to_s.empty?
-        run_id = ENV["GITHUB_RUN_ID"]
-        cmd += ["--build-number", run_id]
-        UI.message("Android build number: #{run_id} (GITHUB_RUN_ID)")
+      if ci? && (bn = ci_build_number_from_github_run_id)
+        cmd += ["--build-number", bn]
+        UI.message("Android build number: #{bn} (last 5 decimal digits of GITHUB_RUN_ID, 0 → 1)")
       end
       sh(*cmd)
     end

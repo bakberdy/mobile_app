@@ -40,6 +40,9 @@ on:
         type: string
         default: draft
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   upload-to-play:
     runs-on: ubuntu-latest
@@ -47,7 +50,7 @@ jobs:
     env:
       CI: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.ref || github.sha }}
 
@@ -115,7 +118,7 @@ jobs:
           channel: stable
           cache: true
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
@@ -219,8 +222,12 @@ jobs:
               CFG_ENVIRONMENT="${DEVELOPMENT_ENVIRONMENT}"
               ;;
           esac
+          # Android versionCode must be <= 2100000000; GITHUB_RUN_ID can be larger. Last 5 decimal digits.
+          RID="${GITHUB_RUN_ID:-0}"
+          BN=$(( RID % 100000 ))
+          [ "${BN}" -eq 0 ] && BN=1
           flutter build appbundle --release --flavor "${FLAVOR}" \
-            --build-number "${GITHUB_RUN_ID}" \
+            --build-number "${BN}" \
             --dart-define=API_URL="${CFG_API_URL}" \
             --dart-define=ENVIRONMENT="${CFG_ENVIRONMENT}"
 
@@ -249,7 +256,7 @@ jobs:
 
       - name: Upload AAB artifact
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: android-${{ inputs.flavor }}-aab-${{ steps.pubspec-version.outputs.version_name }}-${{ steps.pubspec-version.outputs.version_code }}
           path: ${{ steps.aab.outputs.path }}

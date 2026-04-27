@@ -320,15 +320,16 @@ These drive the GitHub App that bumps `pubspec.yaml` on the default branch after
 
 | Secret                    | Format                   |
 | ------------------------- | ------------------------ |
-| `RELEASE_APP_ID`          | Numeric GitHub App ID    |
+| `RELEASE_APP_CLIENT_ID` | GitHub App **Client ID** (string from the app’s **Settings → General**, e.g. `Iv1.…` — not the numeric *App ID*) |
 | `RELEASE_APP_PRIVATE_KEY` | PEM **or** base64 of PEM |
 
+If you still have a repo secret named `RELEASE_APP_ID` (the old numeric **App ID**), create **`RELEASE_APP_CLIENT_ID`** with the **Client ID** value instead — `actions/create-github-app-token` no longer accepts `app-id`.
 
 The App needs **Repository permissions → Contents = Read and write**, must be **installed** on this repo, and (if branch protection / rulesets are on the default branch) must be in the bypass list as **"Always allow"**.
 
 ## Step B4 — What CI runs and how
 
-- **Workflow:** `.github/workflows/android-upload-to-play.yml` (reusable). It checks out the chosen `ref`, validates secrets per flavor, decodes the keystore from base64 to `${RUNNER_TEMP}/upload.jks`, writes `android/key.<flavor>.properties` with that path so Gradle picks the matching per-flavor signing config, runs `flutter build appbundle --release --flavor <flavor> --build-number=${GITHUB_RUN_ID} --dart-define=API_URL=... --dart-define=ENVIRONMENT=...`, then uploads the AAB via `r0adkll/upload-google-play@v1`.
+- **Workflow:** `.github/workflows/android-upload-to-play.yml` (reusable). It checks out the chosen `ref`, validates secrets per flavor, decodes the keystore from base64 to `${RUNNER_TEMP}/upload.jks`, writes `android/key.<flavor>.properties` with that path so Gradle picks the matching per-flavor signing config, runs `flutter build appbundle --release --flavor <flavor>` with `--build-number` set to the **last five decimal digits** of `GITHUB_RUN_ID` (i.e. `run_id % 100000`, with `0` mapped to `1` so the value is always a valid positive `versionCode` under the [Play maximum](https://developer.android.com/studio/publish/versioning.html)), then `--dart-define=API_URL=... --dart-define=ENVIRONMENT=...`, and uploads the AAB via `r0adkll/upload-google-play@v1`. iOS TestFlight builds use the same rule in `ios/fastlane` for a matching Flutter build number.
 - **Inputs:**
   - `flavor` — `development` | `production` (default `production`)
   - `track` — `internal` | `alpha` | `beta` | `production` (default `internal`)

@@ -47,6 +47,19 @@ def ci?
   !ENV["CI"].to_s.empty?
 end
 
+# Same scheme as Android CI: `GITHUB_RUN_ID` is too large for Android `versionCode`.
+# Use the last five decimal digits (0..99_999); 0 → 1. iOS does not need the cap, but
+# a single number keeps both platforms aligned for Flutter `flutter build` --build-number.
+# Keep in sync with `android/fastlane/helpers.rb` and `.github/workflows/android-upload-to-play.yml`.
+def ci_build_number_from_github_run_id
+  raw = ENV["GITHUB_RUN_ID"].to_s
+  return nil if raw.empty?
+
+  n = raw.to_i % 100_000
+  n = 1 if n.zero?
+  n.to_s
+end
+
 def load_local_env_file
   return if ci?
 

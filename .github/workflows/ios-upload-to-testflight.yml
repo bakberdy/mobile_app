@@ -24,6 +24,9 @@ on:
         required: false
         default: ""
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   upload-to-testflight:
     runs-on: macos-latest
@@ -31,7 +34,7 @@ jobs:
     env:
       CI: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.ref || github.sha }}
 
@@ -169,7 +172,7 @@ jobs:
 
       - name: Upload IPA artifact
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ios-${{ inputs.flavor }}-ipa
           path: build/ios/ipa/*.ipa

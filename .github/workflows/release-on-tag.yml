@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   validate-tag:
     runs-on: ubuntu-latest
@@ -61,9 +64,9 @@ jobs:
 
       - name: Create release bot installation token
         id: release-app-token
-        uses: actions/create-github-app-token@v3
+        uses: actions/create-github-app-token@v3.1.1
         with:
-          app-id: ${{ secrets.RELEASE_APP_ID }}
+          client-id: ${{ secrets.RELEASE_APP_ID }}
           private-key: ${{ steps.prep-app-key.outputs.pem }}
           permission-contents: write
 
@@ -79,7 +82,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: refs/tags/${{ github.event.release.tag_name }}
           fetch-depth: 0

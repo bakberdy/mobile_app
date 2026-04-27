@@ -5,6 +5,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 concurrency:
   group: analyzer-check-${{ github.ref }}
   cancel-in-progress: true
@@ -14,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Flutter
@@ -22,7 +25,7 @@ jobs:
         with:
           cache: true
       - run: flutter pub get
-      - run: flutter analyze --no-pub #--no-fatal-infos
+      - run: flutter analyze --no-pub
       - name: Report success-analyze
         if: success()
         run: |
