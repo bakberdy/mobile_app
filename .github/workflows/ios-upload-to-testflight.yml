@@ -154,6 +154,28 @@ jobs:
           esac
           echo "IOS_KEYCHAIN_PASSWORD=$(openssl rand -hex 32)" >> "${GITHUB_ENV}"
 
+      - name: Download release changelog (release workflow artifact)
+        id: download_release_notes
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: github-release-changelog
+          path: release-notes
+
+      - name: Expose TestFlight "What to Test" path
+        if: always()
+        run: |
+          set -euo pipefail
+          TF="${GITHUB_WORKSPACE}/release-notes/testflight.txt"
+          if [ -f "${TF}" ] && [ -s "${TF}" ]; then
+            {
+              echo "TESTFLIGHT_CHANGELOG_FILE=${TF}"
+            } >> "${GITHUB_ENV}"
+            echo "Using TestFlight What to Test from release artifact (max 4000 chars)."
+          else
+            echo "No release changelog artifact; TestFlight upload without What to Test text."
+          fi
+
       - name: Run Fastlane TestFlight upload
         env:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}

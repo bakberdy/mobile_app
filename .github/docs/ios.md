@@ -100,8 +100,8 @@ For a given workflow run, the workflow `inputs.flavor` must have its profile pai
 
 ## Step 7 — CI: what runs and how
 
-- **Workflow:** `.github/workflows/ios-upload-to-testflight.yml` (reusable). It sets `CI=true`, installs Ruby gems from `ios/Gemfile` (CocoaPods + Fastlane), runs `bundle exec pod install`, prepends that `pod` to `PATH` so `flutter build ipa` does not use a broken system CocoaPods, then decodes signing + API key and runs `cd ios && bundle exec fastlane beta_<flavor>`.
-- **Tag releases:** `.github/workflows/release-on-tag.yml` calls that workflow with `flavor: production` after the version step. Pushing a release tag runs the iOS job if the rest of the release pipeline is set up; you need all **production** + **shared** secrets from Step 6.
+- **Workflow:** `.github/workflows/ios-upload-to-testflight.yml` (reusable). It sets `CI=true`, installs Ruby gems from `ios/Gemfile` (CocoaPods + Fastlane), runs `bundle exec pod install`, prepends that `pod` to `PATH` so `flutter build ipa` does not use a broken system CocoaPods, then decodes signing + API key and runs `cd ios && bundle exec fastlane beta_<flavor>`. For **tag releases** from `release-on-tag`, if the **GitHub Release** has a **description**, the first **4,000** characters are set as TestFlight **What to Test** (from the same `github-release-changelog` artifact the Android job uses; manual `workflow_dispatch` runs have no such artifact and skip that text).
+- **Tag releases:** `.github/workflows/release-on-tag.yml` calls that workflow with `flavor: <prefix from tag>` after the version step. Pushing a release tag runs the iOS job if the rest of the release pipeline is set up; you need the secrets for that tag’s flavor (e.g. `production`) plus the shared App Store / signing rows from Step 6.
 - **Artifact:** on success, the job uploads `build/ios/ipa/*.ipa` as `ios-<flavor>-ipa`.
 - **Other flavors in CI:** add a workflow (or `workflow_dispatch` input) that calls `ios-upload-to-testflight.yml` with `flavor: development` and `secrets: inherit`. Only the secrets for that flavor need to be non-empty for that run (plus shared keys).
 

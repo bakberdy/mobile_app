@@ -245,6 +245,28 @@ jobs:
           fi
           echo "path=${AAB_PATH}" >> "${GITHUB_OUTPUT}"
 
+      - name: Download release changelog (release workflow artifact)
+        id: download_release_notes
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: github-release-changelog
+          path: release-notes
+
+      - name: Expose Google Play "What's new" path
+        if: always()
+        run: |
+          set -euo pipefail
+          PLAY_DIR="${GITHUB_WORKSPACE}/release-notes/play"
+          if [ -d "${PLAY_DIR}" ] && [ -f "${PLAY_DIR}/whatsnew-en-US" ] && [ -s "${PLAY_DIR}/whatsnew-en-US" ]; then
+            {
+              echo "PLAY_WHATS_NEW_DIR=${PLAY_DIR}"
+            } >> "${GITHUB_ENV}"
+            echo "Using Play release notes from artifact (en-US, max 500 chars)."
+          else
+            echo "No release changelog artifact; upload without What's new text."
+          fi
+
       - name: Upload AAB to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
@@ -253,6 +275,7 @@ jobs:
           releaseFiles: ${{ steps.aab.outputs.path }}
           track: ${{ inputs.track }}
           status: ${{ inputs.release_status }}
+          whatsNewDirectory: ${{ env.PLAY_WHATS_NEW_DIR }}
 
       - name: Upload AAB artifact
         if: success()
