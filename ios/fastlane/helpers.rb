@@ -7,11 +7,6 @@ FLAVORS = {
     dart_define_file: "config/run/config.development.json",
     env_suffix:       "DEVELOPMENT",
   },
-  "staging" => {
-    bundle_id:        "com.bakberdi.mobile-app.staging",
-    dart_define_file: "config/run/config.staging.json",
-    env_suffix:       "STAGING",
-  },
   "production" => {
     bundle_id:        "com.bakberdi.mobile-app",
     dart_define_file: "config/run/config.production.json",
@@ -22,7 +17,7 @@ FLAVORS = {
 DART_DEFINE_KEYS = %w[API_URL ENVIRONMENT].freeze
 
 def flavor_config(flavor)
-  FLAVORS[flavor] || UI.user_error!("Unknown flavor: #{flavor}. Use development, staging, or production.")
+  FLAVORS[flavor] || UI.user_error!("Unknown flavor: #{flavor}. Use development or production.")
 end
 
 def flutter_dart_define_args(flavor)
@@ -79,7 +74,6 @@ def resolve_local_paths
     APP_STORE_CONNECT_API_KEY_PATH
     IOS_BUILD_CERTIFICATE_PATH
     IOS_BUILD_PROVISION_PROFILE_PATH_DEVELOPMENT
-    IOS_BUILD_PROVISION_PROFILE_PATH_STAGING
     IOS_BUILD_PROVISION_PROFILE_PATH_PRODUCTION
   ].each do |key|
     raw = ENV[key].to_s

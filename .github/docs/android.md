@@ -28,16 +28,6 @@ keytool -genkey -v \
   -alias upload
 ```
 
-#### staging
-
-```bash
-mkdir -p ~/keys/mobile-app/staging
-keytool -genkey -v \
-  -keystore ~/keys/mobile-app/staging/upload.jks \
-  -keyalg RSA -keysize 2048 -validity 10000 \
-  -alias upload
-```
-
 #### development
 
 ```bash
@@ -86,17 +76,6 @@ keyPassword=<key password>
 EOF
 ```
 
-#### staging
-
-```bash
-cat > android/key.staging.properties <<EOF
-storeFile=/Users/bakberdi.yessentay/keys/mobile-app/staging/upload.jks
-storePassword=<store password>
-keyAlias=upload
-keyPassword=<key password>
-EOF
-```
-
 #### development
 
 ```bash
@@ -121,15 +100,6 @@ flutter clean && flutter pub get
 flutter build appbundle --release --flavor production \
   --dart-define-from-file=config/run/config.production.json
 # Output: build/app/outputs/bundle/productionRelease/app-production-release.aab
-```
-
-#### staging
-
-```bash
-flutter clean && flutter pub get
-flutter build appbundle --release --flavor staging \
-  --dart-define-from-file=config/run/config.staging.json
-# Output: build/app/outputs/bundle/stagingRelease/app-staging-release.aab
 ```
 
 #### development
@@ -167,20 +137,6 @@ fastlane supply \
   --skip_upload_screenshots true
 ```
 
-#### staging
-
-```bash
-fastlane supply \
-  --aab build/app/outputs/bundle/stagingRelease/app-staging-release.aab \
-  --package_name com.bakberdi.mobile_app.staging \
-  --track internal \
-  --json_key ~/keys/mobile-app/play-service-account.json \
-  --skip_upload_metadata true \
-  --skip_upload_changelogs true \
-  --skip_upload_images true \
-  --skip_upload_screenshots true
-```
-
 #### development
 
 ```bash
@@ -210,7 +166,6 @@ Each Flutter flavor uploads to a **separate** Play Console app, because each fla
 | Flutter flavor | Play `packageName` |
 |----------------|--------------------|
 | `production` | `com.bakberdi.mobile_app` |
-| `staging` | `com.bakberdi.mobile_app.staging` |
 | `development` | `com.bakberdi.mobile_app.development` |
 
 For each app:
@@ -250,7 +205,7 @@ The key now exists in Google Cloud, but Play doesn't know about it yet.
 1. **Play Console → Setup → API access**.
 2. **Link Google Cloud project** → choose the project from B2.1 (one-time per Play developer account; if it's already linked, skip).
 3. Under **Service accounts**, find the account from B2.1 (it auto-appears once the project is linked) → **Manage Play Console permissions**.
-4. **App permissions** tab → **Add app** → add **all flavor apps you ship** (`com.bakberdi.mobile_app`, `com.bakberdi.mobile_app.staging`, `com.bakberdi.mobile_app.development`). The apps must already exist (Step B1).
+4. **App permissions** tab → **Add app** → add **all flavor apps you ship** (`com.bakberdi.mobile_app`, `com.bakberdi.mobile_app.development`). The apps must already exist (Step B1).
 5. **Account permissions** tab → enable at minimum:
    - **View app information and download bulk reports** (read access)
    - **Manage testing tracks and edit testers**
@@ -282,7 +237,7 @@ Expected output: `Successfully established connection to Google Play Store`. If 
 
 ### B3.1 Per-flavor signing (one set per flavor you ship)
 
-Replace `<FLAVOR>` with `DEVELOPMENT`, `STAGING`, or `PRODUCTION`.
+Replace `<FLAVOR>` with `DEVELOPMENT` or `PRODUCTION`.
 
 | Secret | Value |
 |--------|-------|
@@ -296,9 +251,6 @@ Replace `<FLAVOR>` with `DEVELOPMENT`, `STAGING`, or `PRODUCTION`.
 ```bash
 # Production keystore → secret ANDROID_KEYSTORE_BASE64_PRODUCTION
 base64 -i ~/keys/mobile-app/production/upload.jks | tr -d '\n' | pbcopy
-
-# Staging keystore → secret ANDROID_KEYSTORE_BASE64_STAGING
-base64 -i ~/keys/mobile-app/staging/upload.jks | tr -d '\n' | pbcopy
 
 # Development keystore → secret ANDROID_KEYSTORE_BASE64_DEVELOPMENT
 base64 -i ~/keys/mobile-app/development/upload.jks | tr -d '\n' | pbcopy
@@ -323,14 +275,12 @@ If the alias prints, the secret value will work in CI.
 
 ### B3.3 Build config (flavor-scoped — same as iOS)
 
-Same JSON keys as `config/run/config.example.json` (`API_URL`, `ENVIRONMENT`, …). **Secret name = `<FLAVOR>_<KEY>`** with **FLAVOR** uppercase: `DEVELOPMENT` | `STAGING` | `PRODUCTION`. Local builds still read `config/run/config.<flavor>.json`; CI passes `--dart-define` from these secrets.
+Same JSON keys as `config/run/config.example.json` (`API_URL`, `ENVIRONMENT`, …). **Secret name = `<FLAVOR>_<KEY>`** with **FLAVOR** uppercase: `DEVELOPMENT` | `PRODUCTION`. Local builds still read `config/run/config.<flavor>.json`; CI passes `--dart-define` from these secrets.
 
 | Secret | JSON field in that flavor's `config.*.json` |
 |--------|---------------------------------------------|
 | `DEVELOPMENT_API_URL` | `API_URL` |
 | `DEVELOPMENT_ENVIRONMENT` | `ENVIRONMENT` |
-| `STAGING_API_URL` | `API_URL` |
-| `STAGING_ENVIRONMENT` | `ENVIRONMENT` |
 | `PRODUCTION_API_URL` | `API_URL` |
 | `PRODUCTION_ENVIRONMENT` | `ENVIRONMENT` |
 
@@ -351,11 +301,11 @@ The App needs **Repository permissions → Contents = Read and write**, must be 
 
 - **Workflow:** `.github/workflows/android-upload-to-play.yml` (reusable). It checks out the chosen `ref`, validates secrets per flavor, decodes the keystore from base64 to `${RUNNER_TEMP}/upload.jks`, writes `android/key.<flavor>.properties` with that path so Gradle picks the matching per-flavor signing config, runs `flutter build appbundle --release --flavor <flavor> --build-number=${GITHUB_RUN_ID} --dart-define=API_URL=... --dart-define=ENVIRONMENT=...`, then uploads the AAB via `r0adkll/upload-google-play@v1`.
 - **Inputs:**
-  - `flavor` — `development` | `staging` | `production` (default `production`)
+  - `flavor` — `development` | `production` (default `production`)
   - `track` — `internal` | `alpha` | `beta` | `production` (default `internal`)
   - `ref` — optional Git ref/SHA to check out (defaults to event ref)
 - **`packageName`** is derived from `flavor` automatically (see Step B1 table).
-- **Tag releases:** `.github/workflows/release-on-tag.yml` triggers on `release: published`, validates the tag must be `staging-MAJOR.MINOR.PATCH` or `production-MAJOR.MINOR.PATCH`, bumps `pubspec.yaml`, then calls this workflow with `flavor: <prefix>` and `track: internal`. The bumped commit's SHA is passed as `ref` so the AAB is built from the version-bumped source, not the original tag commit.
+- **Tag releases:** `.github/workflows/release-on-tag.yml` triggers on `release: published`, validates the tag must be `development-MAJOR.MINOR.PATCH` or `production-MAJOR.MINOR.PATCH`, bumps `pubspec.yaml`, then calls this workflow with `flavor: <prefix>` and `track: internal`. The bumped commit's SHA is passed as `ref` so the AAB is built from the version-bumped source, not the original tag commit.
 - **Artifact:** on success, the AAB is uploaded as `android-<flavor>-aab-<name>-<code>` (also goes to Play in the same run).
 - **Other flavors / other tracks in CI:** open **Actions → android-upload-to-play → Run workflow**, pick `flavor` and `track`. Only the secrets for that flavor + the shared Play row need to be filled.
 
@@ -366,7 +316,6 @@ The App needs **Repository permissions → Contents = Read and write**, must be 
 | Flutter flavor | applicationId / Play `packageName` | Config JSON (local / `dart-define-from-file`) |
 |----------------|-------------------------------------|-----------------------------------------------|
 | `development` | `com.bakberdi.mobile_app.development` | `config/run/config.development.json` |
-| `staging` | `com.bakberdi.mobile_app.staging` | `config/run/config.staging.json` |
 | `production` | `com.bakberdi.mobile_app` | `config/run/config.production.json` |
 
 | Output / artifact | Path |
@@ -378,8 +327,8 @@ The App needs **Repository permissions → Contents = Read and write**, must be 
 | Tag prefix | Triggers flavor |
 |------------|------------------|
 | `production-MAJOR.MINOR.PATCH` | `production` |
-| `staging-MAJOR.MINOR.PATCH` | `staging` |
+| `development-MAJOR.MINOR.PATCH` | `development` |
 
-**Dart / compile-time defines:** `API_URL` and `ENVIRONMENT` come from `lib/app_config.dart`. **Local:** `config/run/*.json`. **CI:** secrets `<FLAVOR>_<KEY>` (see Step B3.3). New key: add to `config.example.json` + `String.fromEnvironment(...)` in Dart, then add `DEVELOPMENT_NEWKEY`, `STAGING_NEWKEY`, `PRODUCTION_NEWKEY` in GitHub Actions secrets and add `--dart-define=NEWKEY="$NEWKEY"` to the `Build AAB` step in `.github/workflows/android-upload-to-play.yml` (and a matching `<FLAVOR>_NEWKEY` env entry).
+**Dart / compile-time defines:** `API_URL` and `ENVIRONMENT` come from `lib/app_config.dart`. **Local:** `config/run/*.json`. **CI:** secrets `<FLAVOR>_<KEY>` (see Step B3.3). New key: add to `config.example.json` + `String.fromEnvironment(...)` in Dart, then add `DEVELOPMENT_NEWKEY` and `PRODUCTION_NEWKEY` in GitHub Actions secrets and add `--dart-define=NEWKEY="$NEWKEY"` to the `Build AAB` step in `.github/workflows/android-upload-to-play.yml` (and a matching `<FLAVOR>_NEWKEY` env entry).
 
 **iOS CI:** [.github/docs/ios.md](ios.md)

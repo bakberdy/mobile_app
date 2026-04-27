@@ -185,7 +185,6 @@ add(old_pkg, new_pkg)
 
 if old_main and new_main and old_main != new_main:
     disp = [
-        (f"{old_stem} Staging", f"{new_stem} Staging"),
         (f"{old_stem} Dev", f"{new_stem} Dev"),
         (old_main, new_main),
     ]

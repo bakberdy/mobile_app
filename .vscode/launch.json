@@ -26,16 +26,6 @@
             ]
         },
         {
-            "name": "mobile_app (staging)",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main.dart",
-            "toolArgs": [
-                "--dart-define-from-file=config/run/config.stage.json",
-                "--flavor=staging"
-            ]
-        },
-        {
             "name": "mobile_app (Widgetbook)",
             "request": "launch",
             "type": "dart",

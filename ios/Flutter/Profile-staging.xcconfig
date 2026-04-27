@@ -1,4 +1,0 @@
-#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile-staging.xcconfig"
-#include "Generated.xcconfig"
-PRODUCT_BUNDLE_IDENTIFIER=com.bakberdi.mobile-app.staging
-INFOPLIST_KEY_CFBundleDisplayName=Mobile Staging

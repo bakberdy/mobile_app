@@ -1,7 +1,7 @@
 platform :ios do
   desc "Build a signed IPA for the given flavor. Returns the IPA path."
   private_lane :build do |options|
-    flavor = options[:flavor] || UI.user_error!("build requires flavor:<development|staging|production>")
+    flavor = options[:flavor] || UI.user_error!("build requires flavor:<development|production>")
     cfg    = flavor_config(flavor)
 
     install_signing(flavor)

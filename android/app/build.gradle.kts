@@ -25,7 +25,6 @@ fun loadKeyProps(name: String): Properties? {
 }
 
 val productionKeyProps = loadKeyProps("key.production.properties")
-val stagingKeyProps = loadKeyProps("key.staging.properties")
 val developmentKeyProps = loadKeyProps("key.development.properties")
 val sharedKeyProps = loadKeyProps("key.properties")
 
@@ -60,14 +59,6 @@ android {
                 storePassword = props.getProperty("storePassword")
             }
         }
-        stagingKeyProps?.let { props ->
-            create("staging") {
-                keyAlias = props.getProperty("keyAlias")
-                keyPassword = props.getProperty("keyPassword")
-                storeFile = file(props.getProperty("storeFile"))
-                storePassword = props.getProperty("storePassword")
-            }
-        }
         developmentKeyProps?.let { props ->
             create("development") {
                 keyAlias = props.getProperty("keyAlias")
@@ -93,14 +84,6 @@ android {
             applicationIdSuffix = ".development"
             versionNameSuffix = "-development"
             signingConfig = signingConfigs.findByName("development")
-                ?: signingConfigs.findByName("release")
-                ?: signingConfigs.getByName("debug")
-        }
-        create("staging") {
-            dimension = "ENVIRONMENT"
-            applicationIdSuffix = ".staging"
-            versionNameSuffix = "-staging"
-            signingConfig = signingConfigs.findByName("staging")
                 ?: signingConfigs.findByName("release")
                 ?: signingConfigs.getByName("debug")
         }

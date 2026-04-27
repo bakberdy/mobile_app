@@ -17,13 +17,6 @@ platform :ios do
     deploy(flavor: "development")
   end
 
-  desc "Build and upload staging IPA to TestFlight"
-  lane :beta_staging do
-    prepare
-    build(flavor: "staging")
-    deploy(flavor: "staging")
-  end
-
   desc "Build and upload production IPA to TestFlight"
   lane :beta_production do
     prepare

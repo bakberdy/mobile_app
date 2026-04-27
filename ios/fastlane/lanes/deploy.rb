@@ -1,7 +1,7 @@
 platform :ios do
   desc "Upload the built IPA to TestFlight for the given flavor."
   private_lane :deploy do |options|
-    flavor = options[:flavor] || UI.user_error!("deploy requires flavor:<development|staging|production>")
+    flavor = options[:flavor] || UI.user_error!("deploy requires flavor:<development|production>")
     cfg    = flavor_config(flavor)
     ipa    = options[:ipa] || find_built_ipa
     UI.user_error!("No IPA found under build/ios/ipa. Run `build` first.") if ipa.nil?

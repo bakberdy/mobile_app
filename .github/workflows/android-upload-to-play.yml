@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       flavor:
-        description: "Flutter Android flavor to build and upload (development, staging, or production)"
+        description: "Flutter Android flavor to build and upload (development or production)"
         type: string
         default: production
       track:
@@ -19,7 +19,7 @@ on:
   workflow_call:
     inputs:
       flavor:
-        description: "Flutter Android flavor to build and upload (development, staging, or production)"
+        description: "Flutter Android flavor to build and upload (development or production)"
         type: string
         default: production
       track:
@@ -52,18 +52,12 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT }}
           ANDROID_KEY_ALIAS_DEVELOPMENT: ${{ secrets.ANDROID_KEY_ALIAS_DEVELOPMENT }}
           ANDROID_KEY_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEY_PASSWORD_DEVELOPMENT }}
-          ANDROID_KEYSTORE_BASE64_STAGING: ${{ secrets.ANDROID_KEYSTORE_BASE64_STAGING }}
-          ANDROID_KEYSTORE_PASSWORD_STAGING: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_STAGING }}
-          ANDROID_KEY_ALIAS_STAGING: ${{ secrets.ANDROID_KEY_ALIAS_STAGING }}
-          ANDROID_KEY_PASSWORD_STAGING: ${{ secrets.ANDROID_KEY_PASSWORD_STAGING }}
           ANDROID_KEYSTORE_BASE64_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_BASE64_PRODUCTION }}
           ANDROID_KEYSTORE_PASSWORD_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_PRODUCTION }}
           ANDROID_KEY_ALIAS_PRODUCTION: ${{ secrets.ANDROID_KEY_ALIAS_PRODUCTION }}
           ANDROID_KEY_PASSWORD_PRODUCTION: ${{ secrets.ANDROID_KEY_PASSWORD_PRODUCTION }}
           DEVELOPMENT_API_URL: ${{ secrets.DEVELOPMENT_API_URL }}
           DEVELOPMENT_ENVIRONMENT: ${{ secrets.DEVELOPMENT_ENVIRONMENT }}
-          STAGING_API_URL: ${{ secrets.STAGING_API_URL }}
-          STAGING_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
           PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
           PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
         run: |
@@ -89,14 +83,6 @@ jobs:
               if [ -z "${PRODUCTION_API_URL}" ]; then echo "::error::For flavor production, secret PRODUCTION_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
               if [ -z "${PRODUCTION_ENVIRONMENT}" ]; then echo "::error::For flavor production, secret PRODUCTION_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
               ;;
-            staging)
-              if [ -z "${ANDROID_KEYSTORE_BASE64_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEYSTORE_BASE64_STAGING is required (Base64 of upload keystore .jks)."; rc=1; fi
-              if [ -z "${ANDROID_KEYSTORE_PASSWORD_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEYSTORE_PASSWORD_STAGING is required."; rc=1; fi
-              if [ -z "${ANDROID_KEY_ALIAS_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEY_ALIAS_STAGING is required."; rc=1; fi
-              if [ -z "${ANDROID_KEY_PASSWORD_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEY_PASSWORD_STAGING is required."; rc=1; fi
-              if [ -z "${STAGING_API_URL}" ]; then echo "::error::For flavor staging, secret STAGING_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
-              if [ -z "${STAGING_ENVIRONMENT}" ]; then echo "::error::For flavor staging, secret STAGING_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
-              ;;
             development)
               if [ -z "${ANDROID_KEYSTORE_BASE64_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret ANDROID_KEYSTORE_BASE64_DEVELOPMENT is required (Base64 of upload keystore .jks)."; rc=1; fi
               if [ -z "${ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT is required."; rc=1; fi
@@ -106,7 +92,7 @@ jobs:
               if [ -z "${DEVELOPMENT_ENVIRONMENT}" ]; then echo "::error::For flavor development, secret DEVELOPMENT_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
               ;;
             *)
-              echo "::error::Invalid flavor '${FLAVOR}'. Use development, staging, or production."
+              echo "::error::Invalid flavor '${FLAVOR}'. Use development or production."
               exit 1
               ;;
           esac
@@ -144,7 +130,6 @@ jobs:
           set -euo pipefail
           case "${FLAVOR}" in
             production)  PKG="com.bakberdi.mobile_app" ;;
-            staging)     PKG="com.bakberdi.mobile_app.staging" ;;
             development) PKG="com.bakberdi.mobile_app.development" ;;
           esac
           echo "package_name=${PKG}" >> "${GITHUB_OUTPUT}"
@@ -170,10 +155,6 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT }}
           ANDROID_KEY_ALIAS_DEVELOPMENT: ${{ secrets.ANDROID_KEY_ALIAS_DEVELOPMENT }}
           ANDROID_KEY_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEY_PASSWORD_DEVELOPMENT }}
-          ANDROID_KEYSTORE_BASE64_STAGING: ${{ secrets.ANDROID_KEYSTORE_BASE64_STAGING }}
-          ANDROID_KEYSTORE_PASSWORD_STAGING: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_STAGING }}
-          ANDROID_KEY_ALIAS_STAGING: ${{ secrets.ANDROID_KEY_ALIAS_STAGING }}
-          ANDROID_KEY_PASSWORD_STAGING: ${{ secrets.ANDROID_KEY_PASSWORD_STAGING }}
           ANDROID_KEYSTORE_BASE64_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_BASE64_PRODUCTION }}
           ANDROID_KEYSTORE_PASSWORD_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_PRODUCTION }}
           ANDROID_KEY_ALIAS_PRODUCTION: ${{ secrets.ANDROID_KEY_ALIAS_PRODUCTION }}
@@ -188,12 +169,6 @@ jobs:
               STORE_PASSWORD="${ANDROID_KEYSTORE_PASSWORD_PRODUCTION}"
               KEY_ALIAS="${ANDROID_KEY_ALIAS_PRODUCTION}"
               KEY_PASSWORD="${ANDROID_KEY_PASSWORD_PRODUCTION}"
-              ;;
-            staging)
-              KEYSTORE_B64="${ANDROID_KEYSTORE_BASE64_STAGING}"
-              STORE_PASSWORD="${ANDROID_KEYSTORE_PASSWORD_STAGING}"
-              KEY_ALIAS="${ANDROID_KEY_ALIAS_STAGING}"
-              KEY_PASSWORD="${ANDROID_KEY_PASSWORD_STAGING}"
               ;;
             development)
               KEYSTORE_B64="${ANDROID_KEYSTORE_BASE64_DEVELOPMENT}"
@@ -222,8 +197,6 @@ jobs:
           FLAVOR: ${{ inputs.flavor }}
           DEVELOPMENT_API_URL: ${{ secrets.DEVELOPMENT_API_URL }}
           DEVELOPMENT_ENVIRONMENT: ${{ secrets.DEVELOPMENT_ENVIRONMENT }}
-          STAGING_API_URL: ${{ secrets.STAGING_API_URL }}
-          STAGING_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
           PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
           PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
         run: |
@@ -232,10 +205,6 @@ jobs:
             production)
               CFG_API_URL="${PRODUCTION_API_URL}"
               CFG_ENVIRONMENT="${PRODUCTION_ENVIRONMENT}"
-              ;;
-            staging)
-              CFG_API_URL="${STAGING_API_URL}"
-              CFG_ENVIRONMENT="${STAGING_ENVIRONMENT}"
               ;;
             development)
               CFG_API_URL="${DEVELOPMENT_API_URL}"
