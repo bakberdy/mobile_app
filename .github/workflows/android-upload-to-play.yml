@@ -298,7 +298,7 @@ jobs:
 
       - name: Upload AAB artifact
         if: success()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: android-${{ inputs.flavor }}-aab-${{ steps.pubspec-version.outputs.version_name }}-${{ steps.pubspec-version.outputs.version_code }}
           path: ${{ steps.aab.outputs.path }}
