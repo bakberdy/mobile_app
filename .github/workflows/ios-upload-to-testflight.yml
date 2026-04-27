@@ -12,6 +12,11 @@ on:
         type: string
         required: false
         default: ""
+      release_body:
+        description: "Optional. Release notes for TestFlight What to Test (first 4000 chars)."
+        type: string
+        required: false
+        default: ""
   workflow_call:
     inputs:
       flavor:
@@ -20,6 +25,11 @@ on:
         default: production
       ref:
         description: "Git ref or SHA to checkout (defaults to the event ref)"
+        type: string
+        required: false
+        default: ""
+      release_body:
+        description: "Optional. Passed by release-on-publish. TestFlight What to Test (first 4000 chars)."
         type: string
         required: false
         default: ""
@@ -37,6 +47,26 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.ref || github.sha }}
+
+      - name: Write TestFlight What to Test from workflow input
+        if: ${{ inputs.release_body != '' }}
+        env:
+          RELEASE_BODY: ${{ inputs.release_body }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import os
+          from pathlib import Path
+
+          body = (os.environ.get("RELEASE_BODY") or "").strip()
+          if not body:
+              raise SystemExit(0)
+          testflight = body[:4000]
+          d = Path(os.environ["GITHUB_WORKSPACE"]) / "release-notes"
+          d.mkdir(parents=True, exist_ok=True)
+          (d / "testflight.txt").write_text(testflight, encoding="utf-8")
+          print("Wrote release-notes/testflight.txt for TestFlight (max 4000 chars).")
+          PY
 
       - name: Check required secrets
         env:
@@ -154,26 +184,15 @@ jobs:
           esac
           echo "IOS_KEYCHAIN_PASSWORD=$(openssl rand -hex 32)" >> "${GITHUB_ENV}"
 
-      - name: Download release changelog (release workflow artifact)
-        id: download_release_notes
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: github-release-changelog
-          path: release-notes
-
       - name: Expose TestFlight "What to Test" path
-        if: always()
         run: |
           set -euo pipefail
           TF="${GITHUB_WORKSPACE}/release-notes/testflight.txt"
           if [ -f "${TF}" ] && [ -s "${TF}" ]; then
-            {
-              echo "TESTFLIGHT_CHANGELOG_FILE=${TF}"
-            } >> "${GITHUB_ENV}"
-            echo "Using TestFlight What to Test from release artifact (max 4000 chars)."
+            echo "TESTFLIGHT_CHANGELOG_FILE=${TF}" >> "${GITHUB_ENV}"
+            echo "Using TestFlight What to Test from workflow input (max 4000 chars)."
           else
-            echo "No release changelog artifact; TestFlight upload without What to Test text."
+            echo "No release_body input; TestFlight upload without What to Test text."
           fi
 
       - name: Run Fastlane TestFlight upload

@@ -20,7 +20,7 @@ Reference copies of values for `--dart-define-from-file` live under `config/conf
 ## CI (GitHub Actions)
 - **Android**: `android-upload-to-play.yml` — accepts `flavor: development|production`; uses secrets `<FLAVOR>_API_URL` and `<FLAVOR>_ENVIRONMENT`.
 - **iOS**: `ios-upload-to-testflight.yml` — accepts `flavor: development|production`; uses the same secret naming.
-- **Tag release**: `release-on-tag.yml` — fans out to both workflows on `development-X.Y.Z` / `production-X.Y.Z` GitHub Releases.
+- **Tag release**: `release-on-publish.yml` — fans out to both workflows on `development-X.Y.Z` / `production-X.Y.Z` GitHub Releases.
 
 All three pass `--dart-define=API_URL=…` and `--dart-define=ENVIRONMENT=…` to the Flutter build.
 

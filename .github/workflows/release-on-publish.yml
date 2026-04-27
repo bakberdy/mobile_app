@@ -13,6 +13,7 @@ jobs:
     outputs:
       app_version: ${{ steps.version.outputs.app_version }}
       env: ${{ steps.version.outputs.env }}
+      release_body: ${{ steps.store_body.outputs.release_body }}
     steps:
       - name: Validate release tag and compute pubspec version
         id: version
@@ -30,50 +31,28 @@ jobs:
           echo "env=${ENV}" >> "${GITHUB_OUTPUT}"
           echo "app_version=${SEMVER}+${GITHUB_RUN_NUMBER}" >> "${GITHUB_OUTPUT}"
 
-      - name: Prepare changelogs for Google Play and TestFlight
-        id: relnotes
+      - name: Expose release body for store upload workflows
+        id: store_body
         env:
-          RELEASE_BODY: ${{ github.event.release.body }}
+          BODY: ${{ github.event.release.body }}
         run: |
           set -euo pipefail
-          python3 << 'PY'
+          python3 <<'PY'
           import os
-          from pathlib import Path
+          import secrets
 
-          body = (os.environ.get("RELEASE_BODY") or "").strip()
-          gh_out = os.environ.get("GITHUB_OUTPUT")
-          if not body:
-              Path("build/ci-release-notes").mkdir(parents=True, exist_ok=True)
-              (Path("build/ci-release-notes") / ".no_store_notes").write_text(
-                  "1", encoding="utf-8"
-              )
-              if gh_out:
-                  with open(gh_out, "a", encoding="utf-8") as f:
-                      f.write("has_store_notes=false\n")
-              print("::notice::Release has no description; store uploads will omit release notes.")
-          else:
-              # Google Play: 500 characters per locale. TestFlight "What to Test": 4000.
-              play = body[:500]
-              testflight = body[:4000]
-              p = Path("build/ci-release-notes/play")
-              p.mkdir(parents=True, exist_ok=True)
-              (p / "whatsnew-en-US").write_text(play, encoding="utf-8")
-              Path("build/ci-release-notes/testflight.txt").write_text(
-                  testflight, encoding="utf-8"
-              )
-              if gh_out:
-                  with open(gh_out, "a", encoding="utf-8") as f:
-                      f.write("has_store_notes=true\n")
+          body = os.environ.get("BODY") or ""
+          if len(body) > 10_000:
+              body = body[:10_000]
+          out = os.environ.get("GITHUB_OUTPUT", "")
+          delim = f"RB_{secrets.token_hex(16)}"
+          with open(out, "a", encoding="utf-8") as f:
+              f.write(f"release_body<<{delim}\n")
+              f.write(body)
+              f.write(f"\n{delim}\n")
+          if not body.strip():
+              print("::notice::No release description; store uploads will omit release notes.")
           PY
-
-      - name: Upload release changelog artifact
-        if: steps.relnotes.outputs.has_store_notes == 'true'
-        uses: actions/upload-artifact@v6
-        with:
-          name: github-release-changelog
-          path: build/ci-release-notes
-          retention-days: 2
-          if-no-files-found: error
 
   commit-version:
     needs: [validate-tag]
@@ -191,6 +170,7 @@ jobs:
       flavor: ${{ needs.validate-tag.outputs.env }}
       track: internal
       ref: ${{ needs.commit-version.outputs.bumped_sha }}
+      release_body: ${{ needs.validate-tag.outputs.release_body }}
 
   upload-ios-to-testflight:
     needs: [commit-version, validate-tag]
@@ -199,3 +179,4 @@ jobs:
     with:
       flavor: ${{ needs.validate-tag.outputs.env }}
       ref: ${{ needs.commit-version.outputs.bumped_sha }}
+      release_body: ${{ needs.validate-tag.outputs.release_body }}

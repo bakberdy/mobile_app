@@ -20,6 +20,11 @@ on:
         description: "Play release status. Use draft until the app is published; completed fails on draft app listings (Google API)."
         type: string
         default: draft
+      release_body:
+        description: "Optional. Release notes source (e.g. GitHub Release body) for en-US Play What's new; first 500 chars used."
+        type: string
+        required: false
+        default: ""
   workflow_call:
     inputs:
       flavor:
@@ -39,6 +44,11 @@ on:
         description: "Play release status. Use draft until the app is published; completed fails on draft app listings (Google API)."
         type: string
         default: draft
+      release_body:
+        description: "Optional. Passed by release-on-publish. Release notes for en-US Play What's new (first 500 chars)."
+        type: string
+        required: false
+        default: ""
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -53,6 +63,26 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.ref || github.sha }}
+
+      - name: Write Play release notes from workflow input
+        if: ${{ inputs.release_body != '' }}
+        env:
+          RELEASE_BODY: ${{ inputs.release_body }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import os
+          from pathlib import Path
+
+          body = (os.environ.get("RELEASE_BODY") or "").strip()
+          if not body:
+              raise SystemExit(0)
+          play = body[:500]
+          p = Path(os.environ["GITHUB_WORKSPACE"]) / "release-notes" / "play"
+          p.mkdir(parents=True, exist_ok=True)
+          (p / "whatsnew-en-US").write_text(play, encoding="utf-8")
+          print("Wrote release-notes/play/whatsnew-en-US for Google Play (max 500 chars).")
+          PY
 
       - name: Check required secrets
         env:
@@ -245,26 +275,15 @@ jobs:
           fi
           echo "path=${AAB_PATH}" >> "${GITHUB_OUTPUT}"
 
-      - name: Download release changelog (release workflow artifact)
-        id: download_release_notes
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: github-release-changelog
-          path: release-notes
-
       - name: Expose Google Play "What's new" path
-        if: always()
         run: |
           set -euo pipefail
           PLAY_DIR="${GITHUB_WORKSPACE}/release-notes/play"
           if [ -d "${PLAY_DIR}" ] && [ -f "${PLAY_DIR}/whatsnew-en-US" ] && [ -s "${PLAY_DIR}/whatsnew-en-US" ]; then
-            {
-              echo "PLAY_WHATS_NEW_DIR=${PLAY_DIR}"
-            } >> "${GITHUB_ENV}"
-            echo "Using Play release notes from artifact (en-US, max 500 chars)."
+            echo "PLAY_WHATS_NEW_DIR=${PLAY_DIR}" >> "${GITHUB_ENV}"
+            echo "Using Play release notes from workflow input (en-US, max 500 chars)."
           else
-            echo "No release changelog artifact; upload without What's new text."
+            echo "No release_body input; upload without What's new text."
           fi
 
       - name: Upload AAB to Google Play
