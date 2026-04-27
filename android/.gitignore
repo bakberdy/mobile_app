@@ -13,3 +13,11 @@ key.properties
 key.*.properties
 **/*.keystore
 **/*.jks
+
+# Fastlane local env / signing assets (mirror of ios/keys/)
+vendor/bundle
+.bundle
+keys/*
+!keys/.env.example
+fastlane/report.xml
+fastlane/README.md

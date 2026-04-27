@@ -1,0 +1,16 @@
+# Template for android/key.<flavor>.properties (gitignored). One file per flavor.
+#
+#   cp android/key.properties.example android/key.production.properties
+#   cp android/key.properties.example android/key.development.properties
+#
+# storeFile: relative to the android/ directory, or an absolute path. After copying,
+# adjust storeFile if needed, e.g.:
+#   production  → keystores/production/upload.jks
+#   development → keystores/development/upload.jks
+#
+# See .github/docs/android.md — Step A1–A2.
+
+storeFile=keystores/production/upload.jks
+storePassword=
+keyAlias=upload
+keyPassword=

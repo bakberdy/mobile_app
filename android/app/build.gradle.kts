@@ -1,5 +1,9 @@
+import java.io.File
 import java.io.FileInputStream
 import java.util.Properties
+import org.gradle.api.GradleException
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
@@ -24,6 +28,39 @@ fun loadKeyProps(name: String): Properties? {
     return p
 }
 
+/**
+ * [storeFile] in key.*.properties:
+ * - **Absolute** — must be a real path (e.g. `~/...` expanded to `/Users/you/...`). A value like
+ *   `/keys/...` is the filesystem root, not "keys under your home" — that file must exist or we fail
+ *   with a clear error.
+ * - **Relative** — resolved from the [android] project directory (`rootProject`, not `app/`),
+ *   e.g. `keys/upload.jks` → `android/keys/upload.jks`.
+ */
+fun resolveKeyStoreFile(propsFile: String, raw: String): File {
+    val trimmed = raw.trim()
+    if (trimmed.isEmpty()) {
+        throw GradleException("$propsFile: storeFile is empty")
+    }
+    val direct = File(trimmed)
+    if (direct.isAbsolute) {
+        if (direct.isFile) return direct
+        val home = System.getProperty("user.home") ?: "your home"
+        throw GradleException(
+            """
+            $propsFile: keystore not found at storeFile=$trimmed
+              That path is absolute from the disk root. A path like /keys/... is NOT your home folder.
+              Use the full path to the .jks (e.g. $home/keys/.../upload.jks) or a path under this repo's
+              android/ directory (e.g. keys/upload.jks for android/keys/upload.jks).
+            """.trimIndent(),
+        )
+    }
+    val fromAndroid = rootProject.file(trimmed)
+    if (fromAndroid.isFile) return fromAndroid
+    throw GradleException(
+        "$propsFile: keystore not found at storeFile=$trimmed (looked for ${fromAndroid.absoluteFile})",
+    )
+}
+
 val productionKeyProps = loadKeyProps("key.production.properties")
 val developmentKeyProps = loadKeyProps("key.development.properties")
 val sharedKeyProps = loadKeyProps("key.properties")
@@ -36,10 +73,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     defaultConfig {
@@ -55,7 +88,7 @@ android {
             create("production") {
                 keyAlias = props.getProperty("keyAlias")
                 keyPassword = props.getProperty("keyPassword")
-                storeFile = file(props.getProperty("storeFile"))
+                storeFile = resolveKeyStoreFile("key.production.properties", props.getProperty("storeFile")!!)
                 storePassword = props.getProperty("storePassword")
             }
         }
@@ -63,7 +96,7 @@ android {
             create("development") {
                 keyAlias = props.getProperty("keyAlias")
                 keyPassword = props.getProperty("keyPassword")
-                storeFile = file(props.getProperty("storeFile"))
+                storeFile = resolveKeyStoreFile("key.development.properties", props.getProperty("storeFile")!!)
                 storePassword = props.getProperty("storePassword")
             }
         }
@@ -71,7 +104,7 @@ android {
             create("release") {
                 keyAlias = props.getProperty("keyAlias")
                 keyPassword = props.getProperty("keyPassword")
-                storeFile = file(props.getProperty("storeFile"))
+                storeFile = resolveKeyStoreFile("key.properties", props.getProperty("storeFile")!!)
                 storePassword = props.getProperty("storePassword")
             }
         }
@@ -101,6 +134,12 @@ android {
             // as higher priority than productFlavor for signingConfig, so any value
             // set here would override the per-flavor cascade above.
         }
+    }
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

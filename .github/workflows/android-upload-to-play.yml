@@ -16,6 +16,10 @@ on:
         type: string
         required: false
         default: ""
+      release_status:
+        description: "Play release status. Use draft until the app is published; completed fails on draft app listings (Google API)."
+        type: string
+        default: draft
   workflow_call:
     inputs:
       flavor:
@@ -31,6 +35,10 @@ on:
         type: string
         required: false
         default: ""
+      release_status:
+        description: "Play release status. Use draft until the app is published; completed fails on draft app listings (Google API)."
+        type: string
+        default: draft
 
 jobs:
   upload-to-play:
@@ -237,7 +245,7 @@ jobs:
           packageName: ${{ steps.pkg.outputs.package_name }}
           releaseFiles: ${{ steps.aab.outputs.path }}
           track: ${{ inputs.track }}
-          status: completed
+          status: ${{ inputs.release_status }}
 
       - name: Upload AAB artifact
         if: success()

@@ -48,6 +48,8 @@ keytool -list -v -keystore ~/keys/mobile-app/production/upload.jks -storepass '<
 
 > Run from: **repo root** (the `cat > android/key.<flavor>.properties` blocks write to relative paths).
 
+Committed template (no secrets): [`android/key.properties.example`](../../android/key.properties.example). Copy to `android/key.production.properties` and/or `android/key.development.properties`, set `storePassword` and `keyPassword`, and point `storeFile` at each flavor’s `.jks` (see comments in the example).
+
 `build.gradle.kts` resolves signing in this order, so you can keep all three files on disk simultaneously and `flutter build appbundle --flavor <flavor>` automatically picks the right one — **no swapping needed**:
 
 1. `android/key.<flavor>.properties` — flavor-specific signing config (preferred)
@@ -58,33 +60,31 @@ All three patterns are gitignored (`key.properties`, `key.*.properties`, plus `*
 
 | Key | Meaning |
 |-----|---------|
-| `storeFile` | Path to the upload keystore (`.jks`) — absolute, or relative to `android/app/` |
+| `storeFile` | Path to the upload keystore (`.jks`) — **relative to the `android/` directory** (e.g. `keystores/production/upload.jks` → `android/keystores/production/upload.jks`), or an **absolute** path anywhere on disk. Do **not** use `/keys/...` — that is the disk root, not a folder in your home. |
 | `storePassword` | Keystore (store) password |
 | `keyAlias` | Key alias inside the keystore (the commands in A1 use `upload`) |
 | `keyPassword` | Key password (often equal to `storePassword`) |
 
-**Replace your home dir, store password, and key password before running.** Run only the flavors you ship.
+**In-project keystores:** copy or generate the `.jks` into `android/keystores/production/` and `.../development/` (paths must match `storeFile` in the templates). The `keystores/` tree can be partly tracked; `**/*.jks` stays gitignored so keystore files are never committed.
+
+**Replace store password and key password before running.** Run only the flavors you ship.
 
 #### production
 
 ```bash
-cat > android/key.production.properties <<EOF
-storeFile=/Users/bakberdi.yessentay/keys/mobile-app/production/upload.jks
-storePassword=<store password>
-keyAlias=upload
-keyPassword=<key password>
-EOF
+mkdir -p android/keystores/production
+# cp /path/to/upload.jks android/keystores/production/upload.jks
+cp android/key.properties.example android/key.production.properties
+# Edit: set storePassword and keyPassword; keep or change storeFile to match the .jks path.
 ```
 
 #### development
 
 ```bash
-cat > android/key.development.properties <<EOF
-storeFile=/Users/bakberdi.yessentay/keys/mobile-app/development/upload.jks
-storePassword=<store password>
-keyAlias=upload
-keyPassword=<key password>
-EOF
+mkdir -p android/keystores/development
+# cp /path/to/upload.jks android/keystores/development/upload.jks
+cp android/key.properties.example android/key.development.properties
+# Edit: set passwords; set storeFile=keystores/development/upload.jks if you use the template’s production path.
 ```
 
 ## Step A3 — Build the AAB locally
@@ -115,7 +115,7 @@ flutter build appbundle --release --flavor development \
 
 > Run from: **repo root** (the `--aab build/app/outputs/...` paths are relative to it).
 
-Two paths — pick whichever you prefer.
+Three paths — pick whichever you prefer. **Path 3 (Fastlane lane) replaces Step A3 + this step in one command** (same upload rules as GitHub Actions).
 
 **Path 1 — Drag-drop in Play Console (simplest, no extra setup):**
 
@@ -150,6 +150,21 @@ fastlane supply \
   --skip_upload_images true \
   --skip_upload_screenshots true
 ```
+
+**Path 3 — Fastlane lane (build + upload in one command).** Mirrors the iOS `beta_<flavor>` lanes and is what CI runs. One-time: `cd android && bundle install`. Create `android/keys/.env` from `android/keys/.env.example` and point `PLAY_STORE_SERVICE_ACCOUNT_JSON_PATH` at your `play-service-account.json`. Then from **repo root**:
+
+```bash
+make -f MakeFile android-production-deploy
+# or: android-development-deploy
+```
+
+This runs `cd android && bundle exec fastlane beta_<flavor>` which calls the `prepare → build → deploy` lanes in `android/fastlane/`. The lane uses your existing `android/key.<flavor>.properties` for signing (Step A2) and uploads to the **internal** track by default. Override with `PLAY_TRACK=alpha` (or `beta`/`production`) in `android/keys/.env`, or pass `track:alpha` directly:
+
+```bash
+cd android && bundle exec fastlane beta_production track:alpha
+```
+
+**Release status (`draft` vs `completed`):** While the app is still a **draft** in Play Console (first-time setup, or not yet published to a track), Google’s API only allows creating a **draft** release. The default is `draft` (`PLAY_RELEASE_STATUS` in `android/keys/.env`). If you see `Only releases with status draft may be created on draft app`, keep `draft` and finish the rollout in Play Console. After the app is fully live, you can set `PLAY_RELEASE_STATUS=completed` (or `release_status:completed` on the lane) to publish the release in one step.
 
 The Play Console app must already exist for the chosen flavor — see Step B1 below.
 
@@ -303,6 +318,7 @@ The App needs **Repository permissions → Contents = Read and write**, must be 
 - **Inputs:**
   - `flavor` — `development` | `production` (default `production`)
   - `track` — `internal` | `alpha` | `beta` | `production` (default `internal`)
+  - `release_status` — `draft` | `completed` | … (default `draft`). Use `draft` until the Play app is no longer a draft listing; `completed` fails with *“Only releases with status draft may be created on draft app”* in that case.
   - `ref` — optional Git ref/SHA to check out (defaults to event ref)
 - **`packageName`** is derived from `flavor` automatically (see Step B1 table).
 - **Tag releases:** `.github/workflows/release-on-tag.yml` triggers on `release: published`, validates the tag must be `development-MAJOR.MINOR.PATCH` or `production-MAJOR.MINOR.PATCH`, bumps `pubspec.yaml`, then calls this workflow with `flavor: <prefix>` and `track: internal`. The bumped commit's SHA is passed as `ref` so the AAB is built from the version-bumped source, not the original tag commit.
@@ -323,6 +339,11 @@ The App needs **Repository permissions → Contents = Read and write**, must be 
 | Release AAB | `build/app/outputs/bundle/<flavor>Release/app-<flavor>-release.aab` |
 | Decoded upload keystore in CI | `${RUNNER_TEMP}/upload.jks` |
 | Generated signing config in CI | `android/key.<flavor>.properties` (CI-written; gitignored) |
+
+| Fastlane lane | Flavor | `make` target (from repo root) |
+|---------------|--------|-------------------------------|
+| `beta_development` | development | `make -f MakeFile android-development-deploy` |
+| `beta_production` | production | `make -f MakeFile android-production-deploy` |
 
 | Tag prefix | Triggers flavor |
 |------------|------------------|

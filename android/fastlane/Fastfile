@@ -1,0 +1,26 @@
+default_platform(:android)
+
+FASTLANE_DIR = File.expand_path(__dir__)
+ANDROID_DIR  = File.expand_path("..", FASTLANE_DIR)
+PROJECT_ROOT = File.expand_path("..", ANDROID_DIR)
+
+import "helpers.rb"
+import "lanes/prepare.rb"
+import "lanes/build.rb"
+import "lanes/deploy.rb"
+
+platform :android do
+  desc "Build and upload development AAB to Google Play"
+  lane :beta_development do |options|
+    prepare(flavor: "development")
+    build(flavor: "development")
+    deploy(flavor: "development", track: options[:track], release_status: options[:release_status])
+  end
+
+  desc "Build and upload production AAB to Google Play"
+  lane :beta_production do |options|
+    prepare(flavor: "production")
+    build(flavor: "production")
+    deploy(flavor: "production", track: options[:track], release_status: options[:release_status])
+  end
+end
