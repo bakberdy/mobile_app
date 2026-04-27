@@ -124,4 +124,4 @@ For a given workflow run, the workflow `inputs.flavor` must have its profile pai
 
 **Dart / compile-time defines:** `API_URL` and `ENVIRONMENT` come from `lib/app_config.dart`. **Local:** `config/run/*.json`. **CI:** secrets `<FLAVOR>_<KEY>` (see Step 6). New key: add to `config.example.json` + `DART_DEFINE_KEYS` in `ios/fastlane/helpers.rb` + `String.fromEnvironment` in Dart, then add e.g. `DEVELOPMENT_NEWKEY`, `STAGING_NEWKEY`, `PRODUCTION_NEWKEY` in GitHub and in the workflow `env` for the iOS job.
 
-**Android CI:** [.github/docs/android/build.md](android/build.md)
+**Android CI:** [.github/docs/android.md](android.md)

@@ -32,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      bumped_sha: ${{ steps.bump.outputs.bumped_sha }}
     steps:
       - name: Prepare GitHub App private key (PEM newlines / base64)
         id: prep-app-key
@@ -95,6 +97,7 @@ jobs:
           git config user.email "${USER_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
 
       - name: Bump pubspec and push to default branch
+        id: bump
         env:
           APP_VERSION: ${{ needs.validate-tag.outputs.app_version }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -104,6 +107,7 @@ jobs:
           sed -i -E "s/^version:.+/version: ${APP_VERSION}/" pubspec.yaml
           if git diff --quiet pubspec.yaml; then
             echo "pubspec.yaml already at ${APP_VERSION}; nothing to commit."
+            echo "bumped_sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
             exit 0
           fi
           TAG_SHA=$(git rev-parse HEAD)
@@ -129,16 +133,21 @@ jobs:
             echo "::error::Push refused for the release bot. (1) App → Repository permissions: Contents = Read and write, save, then open Install App → Configure and accept the permission update for this repo. (2) Ruleset bypass for this app must be Always allow — if it is For pull requests only, direct pushes to ${DEFAULT_BRANCH} stay blocked."
             exit 1
           fi
+          echo "bumped_sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
 
-  build-android-production:
-    needs: [commit-version]
-    uses: ./.github/workflows/android-build-production.yml
+  upload-android-to-play:
+    needs: [commit-version, validate-tag]
+    uses: ./.github/workflows/android-upload-to-play.yml
     secrets: inherit
+    with:
+      flavor: ${{ needs.validate-tag.outputs.env }}
+      track: internal
+      ref: ${{ needs.commit-version.outputs.bumped_sha }}
 
-  
   upload-ios-to-testflight:
-    needs: [commit-version]
+    needs: [commit-version, validate-tag]
     uses: ./.github/workflows/ios-upload-to-testflight.yml
     secrets: inherit
     with:
-      flavor: production
+      flavor: ${{ needs.validate-tag.outputs.env }}
+      ref: ${{ needs.commit-version.outputs.bumped_sha }}

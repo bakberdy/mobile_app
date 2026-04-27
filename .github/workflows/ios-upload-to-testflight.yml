@@ -7,12 +7,22 @@ on:
         description: "Flutter iOS flavor to build and upload (development, staging, or production)"
         type: string
         default: production
+      ref:
+        description: "Git ref or SHA to checkout (defaults to the event ref)"
+        type: string
+        required: false
+        default: ""
   workflow_call:
     inputs:
       flavor:
         description: "Flutter iOS flavor to build and upload (development, staging, or production)"
         type: string
         default: production
+      ref:
+        description: "Git ref or SHA to checkout (defaults to the event ref)"
+        type: string
+        required: false
+        default: ""
 
 jobs:
   upload-to-testflight:
@@ -22,6 +32,8 @@ jobs:
       CI: "true"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Check required secrets
         env:

@@ -1,0 +1,279 @@
+name: android-upload-to-play
+
+on:
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: "Flutter Android flavor to build and upload (development, staging, or production)"
+        type: string
+        default: production
+      track:
+        description: "Google Play track to upload to (internal, alpha, beta, production)"
+        type: string
+        default: internal
+      ref:
+        description: "Git ref or SHA to checkout (defaults to the event ref)"
+        type: string
+        required: false
+        default: ""
+  workflow_call:
+    inputs:
+      flavor:
+        description: "Flutter Android flavor to build and upload (development, staging, or production)"
+        type: string
+        default: production
+      track:
+        description: "Google Play track to upload to (internal, alpha, beta, production)"
+        type: string
+        default: internal
+      ref:
+        description: "Git ref or SHA to checkout (defaults to the event ref)"
+        type: string
+        required: false
+        default: ""
+
+jobs:
+  upload-to-play:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - name: Check required secrets
+        env:
+          FLAVOR: ${{ inputs.flavor }}
+          TRACK: ${{ inputs.track }}
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          ANDROID_KEYSTORE_BASE64_DEVELOPMENT: ${{ secrets.ANDROID_KEYSTORE_BASE64_DEVELOPMENT }}
+          ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT }}
+          ANDROID_KEY_ALIAS_DEVELOPMENT: ${{ secrets.ANDROID_KEY_ALIAS_DEVELOPMENT }}
+          ANDROID_KEY_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEY_PASSWORD_DEVELOPMENT }}
+          ANDROID_KEYSTORE_BASE64_STAGING: ${{ secrets.ANDROID_KEYSTORE_BASE64_STAGING }}
+          ANDROID_KEYSTORE_PASSWORD_STAGING: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_STAGING }}
+          ANDROID_KEY_ALIAS_STAGING: ${{ secrets.ANDROID_KEY_ALIAS_STAGING }}
+          ANDROID_KEY_PASSWORD_STAGING: ${{ secrets.ANDROID_KEY_PASSWORD_STAGING }}
+          ANDROID_KEYSTORE_BASE64_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_BASE64_PRODUCTION }}
+          ANDROID_KEYSTORE_PASSWORD_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_PRODUCTION }}
+          ANDROID_KEY_ALIAS_PRODUCTION: ${{ secrets.ANDROID_KEY_ALIAS_PRODUCTION }}
+          ANDROID_KEY_PASSWORD_PRODUCTION: ${{ secrets.ANDROID_KEY_PASSWORD_PRODUCTION }}
+          DEVELOPMENT_API_URL: ${{ secrets.DEVELOPMENT_API_URL }}
+          DEVELOPMENT_ENVIRONMENT: ${{ secrets.DEVELOPMENT_ENVIRONMENT }}
+          STAGING_API_URL: ${{ secrets.STAGING_API_URL }}
+          STAGING_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
+          PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+          PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
+        run: |
+          set -euo pipefail
+          rc=0
+
+          case "${TRACK}" in
+            internal|alpha|beta|production) ;;
+            *)
+              echo "::error::Invalid track '${TRACK}'. Use internal, alpha, beta, or production."
+              exit 1
+              ;;
+          esac
+
+          if [ -z "${PLAY_STORE_SERVICE_ACCOUNT_JSON}" ]; then echo "::error::Secret PLAY_STORE_SERVICE_ACCOUNT_JSON is missing or empty (Google Play API service account JSON)."; rc=1; fi
+
+          case "${FLAVOR}" in
+            production)
+              if [ -z "${ANDROID_KEYSTORE_BASE64_PRODUCTION}" ]; then echo "::error::For flavor production, secret ANDROID_KEYSTORE_BASE64_PRODUCTION is required (Base64 of upload keystore .jks)."; rc=1; fi
+              if [ -z "${ANDROID_KEYSTORE_PASSWORD_PRODUCTION}" ]; then echo "::error::For flavor production, secret ANDROID_KEYSTORE_PASSWORD_PRODUCTION is required."; rc=1; fi
+              if [ -z "${ANDROID_KEY_ALIAS_PRODUCTION}" ]; then echo "::error::For flavor production, secret ANDROID_KEY_ALIAS_PRODUCTION is required."; rc=1; fi
+              if [ -z "${ANDROID_KEY_PASSWORD_PRODUCTION}" ]; then echo "::error::For flavor production, secret ANDROID_KEY_PASSWORD_PRODUCTION is required."; rc=1; fi
+              if [ -z "${PRODUCTION_API_URL}" ]; then echo "::error::For flavor production, secret PRODUCTION_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
+              if [ -z "${PRODUCTION_ENVIRONMENT}" ]; then echo "::error::For flavor production, secret PRODUCTION_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
+              ;;
+            staging)
+              if [ -z "${ANDROID_KEYSTORE_BASE64_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEYSTORE_BASE64_STAGING is required (Base64 of upload keystore .jks)."; rc=1; fi
+              if [ -z "${ANDROID_KEYSTORE_PASSWORD_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEYSTORE_PASSWORD_STAGING is required."; rc=1; fi
+              if [ -z "${ANDROID_KEY_ALIAS_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEY_ALIAS_STAGING is required."; rc=1; fi
+              if [ -z "${ANDROID_KEY_PASSWORD_STAGING}" ]; then echo "::error::For flavor staging, secret ANDROID_KEY_PASSWORD_STAGING is required."; rc=1; fi
+              if [ -z "${STAGING_API_URL}" ]; then echo "::error::For flavor staging, secret STAGING_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
+              if [ -z "${STAGING_ENVIRONMENT}" ]; then echo "::error::For flavor staging, secret STAGING_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
+              ;;
+            development)
+              if [ -z "${ANDROID_KEYSTORE_BASE64_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret ANDROID_KEYSTORE_BASE64_DEVELOPMENT is required (Base64 of upload keystore .jks)."; rc=1; fi
+              if [ -z "${ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT is required."; rc=1; fi
+              if [ -z "${ANDROID_KEY_ALIAS_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret ANDROID_KEY_ALIAS_DEVELOPMENT is required."; rc=1; fi
+              if [ -z "${ANDROID_KEY_PASSWORD_DEVELOPMENT}" ]; then echo "::error::For flavor development, secret ANDROID_KEY_PASSWORD_DEVELOPMENT is required."; rc=1; fi
+              if [ -z "${DEVELOPMENT_API_URL}" ]; then echo "::error::For flavor development, secret DEVELOPMENT_API_URL is required (build config; see config/run/config.example.json)."; rc=1; fi
+              if [ -z "${DEVELOPMENT_ENVIRONMENT}" ]; then echo "::error::For flavor development, secret DEVELOPMENT_ENVIRONMENT is required (build config; see config/run/config.example.json)."; rc=1; fi
+              ;;
+            *)
+              echo "::error::Invalid flavor '${FLAVOR}'. Use development, staging, or production."
+              exit 1
+              ;;
+          esac
+
+          if [ "${rc}" -ne 0 ]; then
+            echo "::error::Add the listed secrets under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Flutter clean, pub get
+        run: |
+          set -euo pipefail
+          flutter clean
+          flutter pub get
+
+      - name: Resolve packageName from flavor
+        id: pkg
+        env:
+          FLAVOR: ${{ inputs.flavor }}
+        run: |
+          set -euo pipefail
+          case "${FLAVOR}" in
+            production)  PKG="com.bakberdi.mobile_app" ;;
+            staging)     PKG="com.bakberdi.mobile_app.staging" ;;
+            development) PKG="com.bakberdi.mobile_app.development" ;;
+          esac
+          echo "package_name=${PKG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Parse version from pubspec.yaml
+        id: pubspec-version
+        run: |
+          set -euo pipefail
+          LINE=$(grep -E '^version:' pubspec.yaml | head -1)
+          RAW=$(printf '%s' "$LINE" | sed -E 's/^version:[[:space:]]*//' | tr -d "'\"")
+          if [[ "$RAW" == *+* ]]; then
+            echo "version_name=${RAW%+*}" >> "$GITHUB_OUTPUT"
+            echo "version_code=${RAW#*+}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version_name=${RAW}" >> "$GITHUB_OUTPUT"
+            echo "version_code=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Write keystore and key.properties
+        env:
+          FLAVOR: ${{ inputs.flavor }}
+          ANDROID_KEYSTORE_BASE64_DEVELOPMENT: ${{ secrets.ANDROID_KEYSTORE_BASE64_DEVELOPMENT }}
+          ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT }}
+          ANDROID_KEY_ALIAS_DEVELOPMENT: ${{ secrets.ANDROID_KEY_ALIAS_DEVELOPMENT }}
+          ANDROID_KEY_PASSWORD_DEVELOPMENT: ${{ secrets.ANDROID_KEY_PASSWORD_DEVELOPMENT }}
+          ANDROID_KEYSTORE_BASE64_STAGING: ${{ secrets.ANDROID_KEYSTORE_BASE64_STAGING }}
+          ANDROID_KEYSTORE_PASSWORD_STAGING: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_STAGING }}
+          ANDROID_KEY_ALIAS_STAGING: ${{ secrets.ANDROID_KEY_ALIAS_STAGING }}
+          ANDROID_KEY_PASSWORD_STAGING: ${{ secrets.ANDROID_KEY_PASSWORD_STAGING }}
+          ANDROID_KEYSTORE_BASE64_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_BASE64_PRODUCTION }}
+          ANDROID_KEYSTORE_PASSWORD_PRODUCTION: ${{ secrets.ANDROID_KEYSTORE_PASSWORD_PRODUCTION }}
+          ANDROID_KEY_ALIAS_PRODUCTION: ${{ secrets.ANDROID_KEY_ALIAS_PRODUCTION }}
+          ANDROID_KEY_PASSWORD_PRODUCTION: ${{ secrets.ANDROID_KEY_PASSWORD_PRODUCTION }}
+        run: |
+          set -euo pipefail
+          KEYSTORE_PATH="${RUNNER_TEMP}/upload.jks"
+
+          case "${FLAVOR}" in
+            production)
+              KEYSTORE_B64="${ANDROID_KEYSTORE_BASE64_PRODUCTION}"
+              STORE_PASSWORD="${ANDROID_KEYSTORE_PASSWORD_PRODUCTION}"
+              KEY_ALIAS="${ANDROID_KEY_ALIAS_PRODUCTION}"
+              KEY_PASSWORD="${ANDROID_KEY_PASSWORD_PRODUCTION}"
+              ;;
+            staging)
+              KEYSTORE_B64="${ANDROID_KEYSTORE_BASE64_STAGING}"
+              STORE_PASSWORD="${ANDROID_KEYSTORE_PASSWORD_STAGING}"
+              KEY_ALIAS="${ANDROID_KEY_ALIAS_STAGING}"
+              KEY_PASSWORD="${ANDROID_KEY_PASSWORD_STAGING}"
+              ;;
+            development)
+              KEYSTORE_B64="${ANDROID_KEYSTORE_BASE64_DEVELOPMENT}"
+              STORE_PASSWORD="${ANDROID_KEYSTORE_PASSWORD_DEVELOPMENT}"
+              KEY_ALIAS="${ANDROID_KEY_ALIAS_DEVELOPMENT}"
+              KEY_PASSWORD="${ANDROID_KEY_PASSWORD_DEVELOPMENT}"
+              ;;
+          esac
+
+          printf '%s' "${KEYSTORE_B64}" | tr -d '\r\n ' | base64 -d > "${KEYSTORE_PATH}"
+          if [ ! -s "${KEYSTORE_PATH}" ]; then
+            echo "::error::Decoded keystore is empty. Verify ANDROID_KEYSTORE_BASE64_${FLAVOR^^} contains the Base64 of the .jks file (\`base64 -i upload.jks\`)."
+            exit 1
+          fi
+
+          KEY_PROPS="${GITHUB_WORKSPACE}/android/key.${FLAVOR}.properties"
+          {
+            echo "storeFile=${KEYSTORE_PATH}"
+            echo "storePassword=${STORE_PASSWORD}"
+            echo "keyAlias=${KEY_ALIAS}"
+            echo "keyPassword=${KEY_PASSWORD}"
+          } > "${KEY_PROPS}"
+
+      - name: Build AAB
+        env:
+          FLAVOR: ${{ inputs.flavor }}
+          DEVELOPMENT_API_URL: ${{ secrets.DEVELOPMENT_API_URL }}
+          DEVELOPMENT_ENVIRONMENT: ${{ secrets.DEVELOPMENT_ENVIRONMENT }}
+          STAGING_API_URL: ${{ secrets.STAGING_API_URL }}
+          STAGING_ENVIRONMENT: ${{ secrets.STAGING_ENVIRONMENT }}
+          PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+          PRODUCTION_ENVIRONMENT: ${{ secrets.PRODUCTION_ENVIRONMENT }}
+        run: |
+          set -euo pipefail
+          case "${FLAVOR}" in
+            production)
+              CFG_API_URL="${PRODUCTION_API_URL}"
+              CFG_ENVIRONMENT="${PRODUCTION_ENVIRONMENT}"
+              ;;
+            staging)
+              CFG_API_URL="${STAGING_API_URL}"
+              CFG_ENVIRONMENT="${STAGING_ENVIRONMENT}"
+              ;;
+            development)
+              CFG_API_URL="${DEVELOPMENT_API_URL}"
+              CFG_ENVIRONMENT="${DEVELOPMENT_ENVIRONMENT}"
+              ;;
+          esac
+          flutter build appbundle --release --flavor "${FLAVOR}" \
+            --build-number "${GITHUB_RUN_ID}" \
+            --dart-define=API_URL="${CFG_API_URL}" \
+            --dart-define=ENVIRONMENT="${CFG_ENVIRONMENT}"
+
+      - name: Locate AAB
+        id: aab
+        env:
+          FLAVOR: ${{ inputs.flavor }}
+        run: |
+          set -euo pipefail
+          AAB_PATH="build/app/outputs/bundle/${FLAVOR}Release/app-${FLAVOR}-release.aab"
+          if [ ! -f "${AAB_PATH}" ]; then
+            echo "::error::AAB not found at ${AAB_PATH}. Listing build/app/outputs/bundle:"
+            find build/app/outputs/bundle -type f -name '*.aab' || true
+            exit 1
+          fi
+          echo "path=${AAB_PATH}" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload AAB to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ steps.pkg.outputs.package_name }}
+          releaseFiles: ${{ steps.aab.outputs.path }}
+          track: ${{ inputs.track }}
+          status: completed
+
+      - name: Upload AAB artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ inputs.flavor }}-aab-${{ steps.pubspec-version.outputs.version_name }}-${{ steps.pubspec-version.outputs.version_code }}
+          path: ${{ steps.aab.outputs.path }}
+          if-no-files-found: error

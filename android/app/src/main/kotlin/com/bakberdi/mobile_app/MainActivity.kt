@@ -1,4 +1,4 @@
-package com.bakberdi.mobile-app
+package com.bakberdi.mobile_app
 
 import io.flutter.embedding.android.FlutterActivity
 
